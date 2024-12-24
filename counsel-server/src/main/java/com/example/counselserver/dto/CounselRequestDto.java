@@ -6,6 +6,7 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
 public class CounselRequestDto {
     private String name;
     private String cellPhone;
