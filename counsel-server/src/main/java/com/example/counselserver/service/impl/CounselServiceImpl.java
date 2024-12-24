@@ -25,6 +25,7 @@ public class CounselServiceImpl implements ICounselService {
     public CounselResponseDto create(CounselRequestDto request) {
         Counsel counsel = CounselMapper.mapToCounsel(request);
         counsel.setAppliedAt(LocalDateTime.now());
+        counsel.setIsDeleted(false);
         Counsel created = counselRepository.save(counsel);
         return CounselMapper.mapToCounselResponseDto(created);
     }
