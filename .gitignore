@@ -1,0 +1,61 @@
+# Maven and Gradle directories
+**/target/
+**/out/
+**/build/
+
+# Compiled class files
+**/classes/
+
+# Maven specific files
+**/target/
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+
+# Gradle specific files
+.gradle/
+build/
+
+# Logs
+*.log
+**/logs/
+**/*.log
+
+# IDE specific files
+# IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# VS Code
+.vscode/
+
+# Operating system files
+.DS_Store
+Thumbs.db
+
+# Exclude Node.js dependencies
+node_modules/
+
+# Exclude environment variable files
+.env*
+
+# Exclude Java Dependency Management
+**/lib/
+
+# Exclude generated documentation
+**/docs/
+
+# grafana related data
+docker-compose/**/.data
+
+# Exclude temporarily generated files
+*~
