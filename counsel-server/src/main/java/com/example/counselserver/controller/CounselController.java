@@ -3,23 +3,37 @@ package com.example.counselserver.controller;
 import com.example.counselserver.dto.CounselRequestDto;
 import com.example.counselserver.dto.CounselResponseDto;
 import com.example.counselserver.dto.ResponseDTO;
+import com.example.counselserver.service.ICounselService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
 
+import static com.example.counselserver.dto.ResponseDTO.ok;
+
+@RequiredArgsConstructor
+@RequestMapping("/counsels")
+@RestController
 public class CounselController {
 
-    public ResponseDTO<CounselResponseDto> create(CounselRequestDto request) {
-        return null;
+    private final ICounselService counselService;
+
+    @PostMapping
+    public ResponseDTO<CounselResponseDto> create(@RequestBody CounselRequestDto request) {
+        return ok(counselService.create(request));
     }
 
-
-    public ResponseDTO<CounselResponseDto> get(Long counselId) {
-        return null;
+    @GetMapping("/{counselId}")
+    public ResponseDTO<CounselResponseDto> get(@PathVariable Long counselId) {
+        return ok(counselService.get(counselId));
     }
 
-    public ResponseDTO<CounselResponseDto> update(Long counselId, CounselRequestDto request) {
-        return null;
+    @PutMapping("/{counselId}")
+    public ResponseDTO<CounselResponseDto> update(@PathVariable Long counselId, @RequestBody CounselRequestDto request) {
+        return ok(counselService.update(counselId, request));
     }
 
-    public ResponseDTO<CounselResponseDto> delete(Long counselId) {
-        return null;
+    @DeleteMapping("/{counselId}")
+    public ResponseDTO<CounselResponseDto> delete(@PathVariable Long counselId) {
+        counselService.delete(counselId);
+        return ok();
     }
 }
