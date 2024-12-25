@@ -1,5 +1,6 @@
 package com.example.counselserver.exception;
 
+import com.example.counselserver.constants.ResultType;
 import com.example.counselserver.dto.ErrorResponseDto;
 import com.example.counselserver.dto.ResponseDTO;
 import com.example.counselserver.dto.ResultObject;
@@ -27,5 +28,19 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
                 .result(new ResultObject(exception))
                 .data(errorResponseDto)
                 .build(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<?> handleGlobalException(Exception exception, WebRequest request) {
+        ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
+                .apiPath(request.getDescription(false))
+                .errorCode(HttpStatus.INTERNAL_SERVER_ERROR)
+                .errorMessage(exception.getMessage())
+                .errorTime(LocalDateTime.now())
+                .build();
+        return new ResponseEntity<>(ResponseDTO.builder()
+                .result(new ResultObject(ResultType.SYSTEM_ERROR))
+                .data(errorResponseDto)
+                .build(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
