@@ -18,6 +18,7 @@ public class CounselResponseDto {
     private String address;
     private String addressDetail;
     private String zipCode;
+    private LocalDateTime appliedAt;
     private LocalDateTime createdAt;
     private String createdBy;
     private LocalDateTime updatedAt;

@@ -28,6 +28,7 @@ public class CounselMapper {
                 .zipCode(counsel.getZipCode())
                 .address(counsel.getAddress())
                 .addressDetail(counsel.getAddressDetail())
+                .appliedAt(counsel.getAppliedAt())
                 .createdAt(counsel.getCreatedAt())
                 .createdBy(counsel.getCreatedBy())
                 .updatedAt(counsel.getUpdatedAt())
