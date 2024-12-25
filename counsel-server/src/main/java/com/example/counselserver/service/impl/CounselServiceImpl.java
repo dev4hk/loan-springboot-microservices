@@ -9,6 +9,7 @@ import com.example.counselserver.mapper.CounselMapper;
 import com.example.counselserver.repository.CounselRepository;
 import com.example.counselserver.service.ICounselService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,14 +35,14 @@ public class CounselServiceImpl implements ICounselService {
     @Override
     public CounselResponseDto get(Long counselId) {
         Counsel counsel = counselRepository.findById(counselId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
         return CounselMapper.mapToCounselResponseDto(counsel);
     }
 
     @Override
     public CounselResponseDto update(Long counselId, CounselRequestDto request) {
         Counsel counsel = counselRepository.findById(counselId).orElseThrow(() ->
-                new BaseException(ResultType.RESOURCE_NOT_FOUND));
+                new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
         counsel.setName(request.getName());
         counsel.setCellPhone(request.getCellPhone());
         counsel.setEmail(request.getEmail());
@@ -55,7 +56,7 @@ public class CounselServiceImpl implements ICounselService {
     @Override
     public void delete(Long counselId) {
         Counsel counsel = counselRepository.findById(counselId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
         counsel.setIsDeleted(true);
     }
 }

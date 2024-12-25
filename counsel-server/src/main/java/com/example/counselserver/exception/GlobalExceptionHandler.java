@@ -20,14 +20,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     public ResponseEntity<?> handleBaseException(BaseException exception, WebRequest request) {
         ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
                 .apiPath(request.getDescription(false))
-                .errorCode(HttpStatus.BAD_REQUEST)
+                .errorCode(exception.getHttpStatus())
                 .errorMessage(exception.getDesc())
                 .errorTime(LocalDateTime.now())
                 .build();
         return new ResponseEntity<>(ResponseDTO.builder()
                 .result(new ResultObject(exception))
                 .data(errorResponseDto)
-                .build(), HttpStatus.BAD_REQUEST);
+                .build(), exception.getHttpStatus());
     }
 
     @ExceptionHandler(Exception.class)

@@ -13,6 +13,7 @@ import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 import java.util.Optional;
 
@@ -75,7 +76,7 @@ class CounselServiceImplTest {
     @Test
     void Should_ThrowException_When_RequestNonExistCounselId() {
         Long counselId = 2L;
-        when(counselRepository.findById(counselId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND));
+        when(counselRepository.findById(counselId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
         assertThrows(BaseException.class, () -> counselService.get(counselId));
     }
 
@@ -110,7 +111,7 @@ class CounselServiceImplTest {
                 .name("Member Lee")
                 .build();
 
-        when(counselRepository.findById(counselId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND));
+        when(counselRepository.findById(counselId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
         assertThrows(BaseException.class, () -> counselService.update(counselId, request));
 
     }
@@ -136,7 +137,7 @@ class CounselServiceImplTest {
     void Should_DeleteCounselEntity_When_RequestDeleteNonExistCounsel() {
         Long counselId = 1L;
 
-        when(counselRepository.findById(counselId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND));
+        when(counselRepository.findById(counselId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
 
         assertThrows(BaseException.class, () -> counselService.delete(counselId));
     }
