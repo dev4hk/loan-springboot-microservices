@@ -1,10 +1,15 @@
 package com.example.counselserver.dto;
 
 import com.example.counselserver.exception.BaseException;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
 import java.io.Serializable;
 
+@Schema(
+        name = "Response",
+        description = "Schema to hold response information"
+)
 @Getter
 @Setter
 @Builder
@@ -12,8 +17,14 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class ResponseDTO<T> implements Serializable {
 
+    @Schema(
+            description = "Schema to hold result information"
+    )
     private ResultObject result;
 
+    @Schema(
+            description = "Schema to hold data information"
+    )
     private T data;
 
     public ResponseDTO(ResultObject result) {
