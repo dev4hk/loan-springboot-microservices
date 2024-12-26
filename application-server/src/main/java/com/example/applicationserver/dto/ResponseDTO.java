@@ -1,6 +1,6 @@
 package com.example.applicationserver.dto;
 
-import com.example.counselserver.exception.BaseException;
+import com.example.applicationserver.exception.BaseException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
