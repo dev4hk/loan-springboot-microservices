@@ -24,7 +24,9 @@ public class Counsel extends BaseEntity {
 
     private LocalDateTime appliedAt;
 
-    private String name;
+    private String firstname;
+
+    private String lastname;
 
     private String cellPhone;
 

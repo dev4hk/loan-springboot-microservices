@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS `counsel` (
     `counsel_id` int AUTO_INCREMENT  PRIMARY KEY,
-    `name` varchar(100) NOT NULL,
+    `firstname` varchar(100) NOT NULL,
+    `lastname` varchar(100) NOT NULL,
     `address` varchar(100) NOT NULL,
     `address_detail` varchar(100) NOT NULL,
     `zip_code` varchar(10) NOT NULL,

@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 @Setter
 public class CounselResponseDto {
     private Long counselId;
-    private String name;
+    private String firstname;
+    private String lastname;
     private String cellPhone;
     private String email;
     private String memo;

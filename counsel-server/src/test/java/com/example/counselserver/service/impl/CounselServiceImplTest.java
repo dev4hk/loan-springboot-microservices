@@ -34,7 +34,8 @@ class CounselServiceImplTest {
     @Test
     void Should_ReturnResponseOfNewCounselEntity_When_RequestCounsel() {
         Counsel entity = Counsel.builder()
-                .name("Random Name")
+                .firstname("firstname")
+                .lastname("lastname")
                 .cellPhone("123-456-7890")
                 .email("mail@abc.de")
                 .memo("I want to get a loan")
@@ -44,7 +45,8 @@ class CounselServiceImplTest {
                 .build();
 
         CounselRequestDto request = CounselRequestDto.builder()
-                .name("Random Name")
+                .firstname("firstname")
+                .lastname("lastname")
                 .cellPhone("123-456-7890")
                 .email("mail@abc.de")
                 .memo("I want to get a loan")
@@ -57,7 +59,7 @@ class CounselServiceImplTest {
 
         CounselResponseDto actual = counselService.create(request);
 
-        assertThat(actual.getName()).isSameAs(entity.getName());
+        assertThat(actual.getFirstname()).isSameAs(entity.getFirstname());
     }
 
     @DisplayName("Get a counsel by id")
@@ -86,11 +88,11 @@ class CounselServiceImplTest {
         Long counselId = 1L;
         Counsel entity = Counsel.builder()
                 .counselId(1L)
-                .name("Random Name1")
+                .firstname("firstname1")
                 .build();
 
         CounselRequestDto request = CounselRequestDto.builder()
-                .name("Random Name2")
+                .firstname("firstname2")
                 .build();
 
         when(counselRepository.findById(counselId)).thenReturn(Optional.of(entity));
@@ -98,7 +100,7 @@ class CounselServiceImplTest {
         CounselResponseDto actual = counselService.update(counselId, request);
 
         assertThat(actual.getCounselId()).isSameAs(counselId);
-        assertThat(actual.getName()).isSameAs(request.getName());
+        assertThat(actual.getFirstname()).isSameAs(request.getFirstname());
 
     }
 
@@ -108,7 +110,7 @@ class CounselServiceImplTest {
         Long counselId = 1L;
 
         CounselRequestDto request = CounselRequestDto.builder()
-                .name("Member Lee")
+                .firstname("update")
                 .build();
 
         when(counselRepository.findById(counselId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));

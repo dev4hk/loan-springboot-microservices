@@ -8,7 +8,8 @@ public class CounselMapper {
 
     public static Counsel mapToCounsel(CounselRequestDto request) {
         return Counsel.builder()
-                .name(request.getName())
+                .firstname(request.getFirstname())
+                .lastname(request.getLastname())
                 .cellPhone(request.getCellPhone())
                 .email(request.getEmail())
                 .memo(request.getMemo())
@@ -21,7 +22,8 @@ public class CounselMapper {
     public static CounselResponseDto mapToCounselResponseDto(Counsel counsel) {
         return CounselResponseDto.builder()
                 .counselId(counsel.getCounselId())
-                .name(counsel.getName())
+                .firstname(counsel.getFirstname())
+                .lastname(counsel.getLastname())
                 .cellPhone(counsel.getCellPhone())
                 .email(counsel.getEmail())
                 .memo(counsel.getMemo())

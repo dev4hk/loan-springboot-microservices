@@ -43,7 +43,8 @@ public class CounselServiceImpl implements ICounselService {
     public CounselResponseDto update(Long counselId, CounselRequestDto request) {
         Counsel counsel = counselRepository.findById(counselId).orElseThrow(() ->
                 new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
-        counsel.setName(request.getName());
+        counsel.setFirstname(request.getFirstname());
+        counsel.setLastname(request.getLastname());
         counsel.setCellPhone(request.getCellPhone());
         counsel.setEmail(request.getEmail());
         counsel.setMemo(request.getMemo());
