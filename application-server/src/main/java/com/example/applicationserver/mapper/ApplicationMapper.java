@@ -26,7 +26,9 @@ public class ApplicationMapper {
                 .hopeAmount(application.getHopeAmount())
                 .appliedAt(application.getAppliedAt())
                 .createdAt(application.getCreatedAt())
+                .createdBy(application.getCreatedBy())
                 .updatedAt(application.getUpdatedAt())
+                .updatedBy(application.getUpdatedBy())
                 .build();
     }
 }

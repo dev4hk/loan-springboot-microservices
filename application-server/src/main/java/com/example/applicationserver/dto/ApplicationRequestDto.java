@@ -3,6 +3,7 @@ package com.example.applicationserver.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,7 +53,7 @@ public class ApplicationRequestDto {
     @Schema(
             description = "Hope amount", example = "100.00"
     )
-    @NotEmpty(message = "Hope amount cannot be null or empty")
+    @NotNull(message = "Hope amount cannot be null or empty")
     @Digits(integer = 15, fraction = 2, message = "Hope amount must be a number with up to 2 decimal places")
     private BigDecimal hopeAmount;
 
