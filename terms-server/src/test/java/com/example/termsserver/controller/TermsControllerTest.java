@@ -6,19 +6,16 @@ import com.example.termsserver.dto.TermsResponseDto;
 import com.example.termsserver.service.ITermsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-@ExtendWith(MockitoExtension.class)
 class TermsControllerTest {
 
     @InjectMocks
@@ -51,7 +48,7 @@ class TermsControllerTest {
     public void getAllTerms() {
         when(termsService.getAll()).thenReturn(List.of(response));
 
-        ResponseDTO<TermsResponseDto> result = termsController.getAll();
+        ResponseDTO<List<TermsResponseDto>> result = termsController.getAll();
 
         assertEquals(List.of(response), result.getData());
         verify(termsService, times(1)).getAll();
