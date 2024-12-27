@@ -1,5 +1,6 @@
 package com.example.accepttermsserver.dto;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,8 +14,10 @@ import java.util.List;
 @Getter
 public class AcceptTermsRequestDto {
 
+    @NotNull(message = "Application id cannot be null or empty")
     private Long applicationId;
 
-    private List<Long> termsIds;
+    @NotNull(message = "Terms ids cannot be null or empty")
+    private List<@NotNull(message = "Terms id cannot be null or empty") Long> termsIds;
 
 }
