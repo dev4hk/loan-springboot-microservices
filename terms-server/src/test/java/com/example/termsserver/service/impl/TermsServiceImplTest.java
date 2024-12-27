@@ -14,6 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -47,6 +48,18 @@ class TermsServiceImplTest {
         assertThat(actual.getTermsDetailUrl()).isSameAs(entity.getTermsDetailUrl());
     }
 
+    @DisplayName("Get a Terms by id")
+    @Test
+    void Should_ReturnResponseOfExistTermsEntity_When_RequestExistTermsId() {
+        Long termsId = 1L;
+        Terms entity = Terms.builder()
+                .termsId(1L)
+                .build();
+        when(termsRepository.findById(termsId)).thenReturn(Optional.of(entity));
+        TermsResponseDto actual = termsService.get(termsId);
+        assertThat(actual.getTermsId()).isSameAs(termsId);
+    }
+
     @DisplayName("Get All Terms")
     @Test
     void Should_ReturnAllResponseOfExistTermsEntities_When_RequestTermsList() {
@@ -63,6 +76,40 @@ class TermsServiceImplTest {
         List<TermsResponseDto> actual = termsService.getAll();
         assertThat(actual).isNotNull();
         assertThat(actual.size()).isSameAs(list.size());
+    }
+
+    @DisplayName("Update a Terms")
+    @Test
+    void Should_ReturnUpdatedResponseOfExistTermsEntity_When_RequestUpdateExistTermsInfo() {
+        Long termsId = 1L;
+        Terms entity = Terms.builder()
+                .termsId(1L)
+                .name("Terms 1")
+                .termsDetailUrl("https://randomTermsPage/terms1")
+                .build();
+        TermsRequestDto request = TermsRequestDto.builder()
+                .name("Terms 2")
+                .termsDetailUrl("https://randomTermsPage/terms2")
+                .build();
+        when(termsRepository.findById(termsId)).thenReturn(Optional.of(entity));
+        TermsResponseDto actual = termsService.update(termsId, request);
+        assertThat(actual.getTermsId()).isSameAs(termsId);
+        assertThat(actual.getName()).isSameAs(request.getName());
+        assertThat(actual.getTermsDetailUrl()).isSameAs(request.getTermsDetailUrl());
+    }
+
+    @DisplayName("Delete a Terms")
+    @Test
+    void Should_ReturnDeletedResponseOfExistTermsEntity_When_RequestExistTermsId() {
+        Long termsId = 1L;
+        Terms entity = Terms.builder()
+                .termsId(1L)
+                .name("Terms 1")
+                .termsDetailUrl("https://randomTermsPage/terms1")
+                .build();
+        when(termsRepository.findById(termsId)).thenReturn(Optional.of(entity));
+        termsService.delete(termsId);
+        assertThat(entity.getIsDeleted()).isSameAs(true);
     }
 
 }

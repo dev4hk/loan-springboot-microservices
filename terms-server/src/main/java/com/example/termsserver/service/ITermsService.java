@@ -9,4 +9,10 @@ public interface ITermsService {
     TermsResponseDto create(TermsRequestDto request);
 
     List<TermsResponseDto> getAll();
+
+    TermsResponseDto get(Long termsId);
+
+    TermsResponseDto update(Long termsId, TermsRequestDto request);
+
+    void delete(Long termsId);
 }
