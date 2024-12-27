@@ -17,6 +17,7 @@ public class AcceptTermsController {
 
     @PostMapping
     public ResponseDTO<?> create(AcceptTermsRequestDto acceptTermsRequestDto) {
-        return null;
+        acceptTermsService.create(acceptTermsRequestDto);
+        return ResponseDTO.ok();
     }
 }
