@@ -1,10 +1,9 @@
 package com.example.accepttermsserver.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.SQLRestriction;
 
 @Setter
@@ -14,7 +13,7 @@ import org.hibernate.annotations.SQLRestriction;
 @AllArgsConstructor
 @Entity
 @SQLRestriction("is_deleted=false")
-public class AcceptTerms extends BaseEntity {
+public class AcceptTerms extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

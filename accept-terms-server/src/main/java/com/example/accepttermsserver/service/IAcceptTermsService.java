@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface IAcceptTermsService {
 
-    AcceptTermsResponseDto create(AcceptTermsRequestDto acceptTermsRequestDto);
+    void create(AcceptTermsRequestDto acceptTermsRequestDto);
 
 }

@@ -10,5 +10,4 @@ public interface AcceptTermsRepository extends JpaRepository<AcceptTerms, Long> 
 
     Boolean existsByApplicationIdAndTermsId(long applicationId, long termsId);
 
-    List<AcceptTerms> findByApplicationId(long applicationId);
 }
