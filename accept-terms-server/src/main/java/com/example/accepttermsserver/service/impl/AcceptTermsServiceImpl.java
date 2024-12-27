@@ -6,6 +6,8 @@ import com.example.accepttermsserver.service.IAcceptTermsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @RequiredArgsConstructor
 @Service
 public class AcceptTermsServiceImpl implements IAcceptTermsService {
@@ -14,18 +16,4 @@ public class AcceptTermsServiceImpl implements IAcceptTermsService {
         return null;
     }
 
-    @Override
-    public AcceptTermsResponseDto get(Long acceptTermsId) {
-        return null;
-    }
-
-    @Override
-    public AcceptTermsResponseDto update(Long acceptTermsId, AcceptTermsRequestDto acceptTermsRequestDto) {
-        return null;
-    }
-
-    @Override
-    public void delete(Long acceptTermsId) {
-
-    }
 }
