@@ -190,4 +190,79 @@ class ApplicationServiceImplTest {
 
     }
 
+    @DisplayName("accept terms throw exception with non-existing applicationId")
+    @Test
+    void Should_ThrowException_When_RequestAcceptTermsWithNonExistingApplicationId() {
+        Long applicationId = 1L;
+        AcceptTermsRequestDto request = AcceptTermsRequestDto.builder()
+                .applicationId(applicationId)
+                .termsIds(List.of(1L, 2L))
+                .build();
+        when(applicationRepository.findById(applicationId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+        assertThrows(BaseException.class, () -> applicationService.acceptTerms(request));
+    }
+
+    @DisplayName("accept terms throw exception with empty termsIds")
+    @Test
+    void Should_ThrowException_When_RequestAcceptTermsWithEmptyTermsIds() {
+        Long applicationId = 1L;
+        AcceptTermsRequestDto request = AcceptTermsRequestDto.builder()
+                .applicationId(applicationId)
+                .termsIds(List.of())
+                .build();
+        assertThrows(BaseException.class, () -> applicationService.acceptTerms(request));
+    }
+
+    @DisplayName("accept terms throw exception with different size of terms list from terms service and request terms list")
+    @Test
+    void Should_ThrowException_When_RequestAcceptTermsWithDifferentSizeOfTerms() {
+        Long applicationId = 1L;
+        AcceptTermsRequestDto request = AcceptTermsRequestDto.builder()
+                .applicationId(applicationId)
+                .termsIds(List.of(1L))
+                .build();
+        when(termsClient.getAll()).thenReturn(
+                new ResponseDTO<>(
+                        List.of(
+                                TermsResponseDto
+                                        .builder()
+                                        .name("terms1")
+                                        .termsId(1L)
+                                        .build(),
+                                TermsResponseDto
+                                        .builder()
+                                        .name("terms2")
+                                        .termsId(2L)
+                                        .build()
+                        )
+                        ));
+        assertThrows(BaseException.class, () -> applicationService.acceptTerms(request));
+    }
+
+    @DisplayName("accept terms throw exception with different terms Ids")
+    @Test
+    void Should_ThrowException_When_RequestAcceptTermsWithDifferentTermsIds() {
+        Long applicationId = 1L;
+        AcceptTermsRequestDto request = AcceptTermsRequestDto.builder()
+                .applicationId(applicationId)
+                .termsIds(List.of(1L, 3L))
+                .build();
+        when(termsClient.getAll()).thenReturn(
+                new ResponseDTO<>(
+                        List.of(
+                                TermsResponseDto
+                                        .builder()
+                                        .name("terms1")
+                                        .termsId(1L)
+                                        .build(),
+                                TermsResponseDto
+                                        .builder()
+                                        .name("terms2")
+                                        .termsId(2L)
+                                        .build()
+                        )
+                        ));
+        assertThrows(BaseException.class, () -> applicationService.acceptTerms(request));
+    }
+
 }
