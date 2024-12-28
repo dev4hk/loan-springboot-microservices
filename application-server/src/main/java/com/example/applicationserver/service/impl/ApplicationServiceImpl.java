@@ -1,6 +1,9 @@
 package com.example.applicationserver.service.impl;
 
+import com.example.applicationserver.cllient.AcceptTermsClient;
+import com.example.applicationserver.cllient.TermsClient;
 import com.example.applicationserver.cllient.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.cllient.dto.TermsResponseDto;
 import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
@@ -15,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Transactional
 @RequiredArgsConstructor
@@ -22,6 +26,8 @@ import java.time.LocalDateTime;
 public class ApplicationServiceImpl implements IApplicationService {
 
     private final ApplicationRepository applicationRepository;
+    private final TermsClient termClient;
+    private final AcceptTermsClient acceptTermsClient;
 
     @Override
     public ApplicationResponseDto create(ApplicationRequestDto request) {
@@ -61,5 +67,29 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     public void acceptTerms(AcceptTermsRequestDto request) {
+        get(request.getApplicationId());
+        List<TermsResponseDto> terms = termClient.getAll().getData();
+        if(terms.isEmpty()) {
+            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        List<Long> requestTermsIds = request.getTermsIds();
+
+        if(terms.size() != requestTermsIds.size()) {
+            throw new BaseException(ResultType.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+        }
+
+        List<Long> termsIds = terms.stream().map(TermsResponseDto::getTermsId).toList();
+
+        if(!termsIds.containsAll(requestTermsIds)) {
+            throw new BaseException(ResultType.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+        }
+
+        AcceptTermsRequestDto.builder()
+                .termsIds(requestTermsIds)
+                .applicationId(request.getApplicationId())
+                .build();
+
+        acceptTermsClient.create(request);
     }
 }

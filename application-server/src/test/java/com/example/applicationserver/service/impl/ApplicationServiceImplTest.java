@@ -221,21 +221,19 @@ class ApplicationServiceImplTest {
                 .applicationId(applicationId)
                 .termsIds(List.of(1L))
                 .build();
-        when(termsClient.getAll()).thenReturn(
+        lenient().when(termsClient.getAll()).thenReturn(
                 new ResponseDTO<>(
                         List.of(
-                                TermsResponseDto
-                                        .builder()
+                                TermsResponseDto.builder()
                                         .name("terms1")
                                         .termsId(1L)
                                         .build(),
-                                TermsResponseDto
-                                        .builder()
+                                TermsResponseDto.builder()
                                         .name("terms2")
                                         .termsId(2L)
                                         .build()
-                        )
-                        ));
+                        ))
+        );
         assertThrows(BaseException.class, () -> applicationService.acceptTerms(request));
     }
 
@@ -247,7 +245,7 @@ class ApplicationServiceImplTest {
                 .applicationId(applicationId)
                 .termsIds(List.of(1L, 3L))
                 .build();
-        when(termsClient.getAll()).thenReturn(
+        lenient().when(termsClient.getAll()).thenReturn(
                 new ResponseDTO<>(
                         List.of(
                                 TermsResponseDto
