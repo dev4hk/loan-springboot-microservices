@@ -1,5 +1,6 @@
 package com.example.applicationserver.service.impl;
 
+import com.example.applicationserver.cllient.dto.AcceptTermsRequestDto;
 import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
@@ -56,5 +57,9 @@ public class ApplicationServiceImpl implements IApplicationService {
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
         application.setIsDeleted(true);
+    }
+
+    @Override
+    public void acceptTerms(AcceptTermsRequestDto request) {
     }
 }
