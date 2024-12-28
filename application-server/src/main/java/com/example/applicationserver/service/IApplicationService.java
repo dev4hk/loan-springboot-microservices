@@ -13,5 +13,5 @@ public interface IApplicationService {
 
     void delete(Long applicationId);
 
-    void acceptTerms(AcceptTermsRequestDto request);
+    void acceptTerms(Long applicationId, AcceptTermsRequestDto request);
 }

@@ -66,8 +66,8 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
     @Override
-    public void acceptTerms(AcceptTermsRequestDto request) {
-        get(request.getApplicationId());
+    public void acceptTerms(Long applicationId, AcceptTermsRequestDto request) {
+        get(applicationId);
         List<TermsResponseDto> terms = termClient.getAll().getData();
         if(terms.isEmpty()) {
             throw new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -87,7 +87,7 @@ public class ApplicationServiceImpl implements IApplicationService {
 
         AcceptTermsRequestDto.builder()
                 .termsIds(requestTermsIds)
-                .applicationId(request.getApplicationId())
+                .applicationId(applicationId)
                 .build();
 
         acceptTermsClient.create(request);

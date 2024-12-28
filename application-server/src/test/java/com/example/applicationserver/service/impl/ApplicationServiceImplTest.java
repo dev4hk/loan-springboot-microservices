@@ -182,7 +182,7 @@ class ApplicationServiceImplTest {
                         .build()
         )));
 
-        applicationService.acceptTerms(request);
+        applicationService.acceptTerms(applicationId, request);
 
         verify(applicationRepository, times(1)).findById(applicationId);
         verify(termsClient, times(1)).getAll();
@@ -199,7 +199,7 @@ class ApplicationServiceImplTest {
                 .termsIds(List.of(1L, 2L))
                 .build();
         when(applicationRepository.findById(applicationId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
-        assertThrows(BaseException.class, () -> applicationService.acceptTerms(request));
+        assertThrows(BaseException.class, () -> applicationService.acceptTerms(applicationId, request));
     }
 
     @DisplayName("accept terms throw exception with empty termsIds")
@@ -210,7 +210,7 @@ class ApplicationServiceImplTest {
                 .applicationId(applicationId)
                 .termsIds(List.of())
                 .build();
-        assertThrows(BaseException.class, () -> applicationService.acceptTerms(request));
+        assertThrows(BaseException.class, () -> applicationService.acceptTerms(applicationId, request));
     }
 
     @DisplayName("accept terms throw exception with different size of terms list from terms service and request terms list")
@@ -234,7 +234,7 @@ class ApplicationServiceImplTest {
                                         .build()
                         ))
         );
-        assertThrows(BaseException.class, () -> applicationService.acceptTerms(request));
+        assertThrows(BaseException.class, () -> applicationService.acceptTerms(applicationId, request));
     }
 
     @DisplayName("accept terms throw exception with different terms Ids")
@@ -260,7 +260,7 @@ class ApplicationServiceImplTest {
                                         .build()
                         )
                         ));
-        assertThrows(BaseException.class, () -> applicationService.acceptTerms(request));
+        assertThrows(BaseException.class, () -> applicationService.acceptTerms(applicationId, request));
     }
 
 }
