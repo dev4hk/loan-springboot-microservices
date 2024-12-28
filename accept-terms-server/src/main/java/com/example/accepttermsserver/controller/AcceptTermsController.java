@@ -1,6 +1,7 @@
 package com.example.accepttermsserver.controller;
 
 import com.example.accepttermsserver.dto.AcceptTermsRequestDto;
+import com.example.accepttermsserver.dto.AcceptTermsResponseDto;
 import com.example.accepttermsserver.dto.ResponseDTO;
 import com.example.accepttermsserver.service.IAcceptTermsService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Tag(
         name = "CRUD REST APIs for Accept Terms",
@@ -52,8 +55,7 @@ public class AcceptTermsController {
     }
     )
     @PostMapping
-    public ResponseDTO<?> create(@Valid @RequestBody AcceptTermsRequestDto acceptTermsRequestDto) {
-        acceptTermsService.create(acceptTermsRequestDto);
-        return ResponseDTO.ok();
+    public ResponseDTO<List<AcceptTermsResponseDto>> create(@Valid @RequestBody AcceptTermsRequestDto acceptTermsRequestDto) {
+        return ResponseDTO.ok(acceptTermsService.create(acceptTermsRequestDto));
     }
 }

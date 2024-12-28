@@ -11,7 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -28,9 +28,9 @@ class AcceptTermsServiceImplTest {
 
     @DisplayName("Create AcceptTerms")
     @Test
-    void Should_ReturnResponseOfNewAcceptTermsEntity_When_RequestAcceptTerms() {
+    void Should_SaveNewAcceptTermsEntities_When_RequestAcceptTerms() {
         AcceptTermsRequestDto request = AcceptTermsRequestDto.builder()
-                .termsIds(Arrays.asList(1L))
+                .termsIds(List.of(1L))
                 .applicationId(1L)
                 .build();
 
@@ -39,15 +39,15 @@ class AcceptTermsServiceImplTest {
 
         acceptTermsService.create(request);
 
-        verify(acceptTermsRepository, times(1)).save(any(AcceptTerms.class));
         verify(acceptTermsRepository, times(1)).existsByApplicationIdAndTermsId(1L, 1L);
+        verify(acceptTermsRepository, times(1)).save(any(AcceptTerms.class));
     }
 
     @DisplayName("Create AcceptTerms with empty termsIds")
     @Test
     void Should_ThrowException_When_RequestAcceptTermsWithEmptyTermsIds() {
         AcceptTermsRequestDto request = AcceptTermsRequestDto.builder()
-                .termsIds(Arrays.asList())
+                .termsIds(List.of())
                 .applicationId(1L)
                 .build();
 
@@ -58,7 +58,7 @@ class AcceptTermsServiceImplTest {
     @Test
     void Should_ThrowException_When_RequestAcceptTermsWithExistingTermsIds() {
         AcceptTermsRequestDto request = AcceptTermsRequestDto.builder()
-                .termsIds(Arrays.asList(1L))
+                .termsIds(List.of(1L))
                 .applicationId(1L)
                 .build();
         when(acceptTermsRepository.existsByApplicationIdAndTermsId(1L, 1L)).thenReturn(true);
@@ -66,7 +66,4 @@ class AcceptTermsServiceImplTest {
         assertThrows(BaseException.class, () -> acceptTermsService.create(request));
     }
 }
-
-
-
 
