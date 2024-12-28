@@ -2,8 +2,10 @@ package com.example.accepttermsserver.service.impl;
 
 import com.example.accepttermsserver.constants.ResultType;
 import com.example.accepttermsserver.dto.AcceptTermsRequestDto;
+import com.example.accepttermsserver.dto.AcceptTermsResponseDto;
 import com.example.accepttermsserver.entity.AcceptTerms;
 import com.example.accepttermsserver.exception.BaseException;
+import com.example.accepttermsserver.mapper.AcceptTermsMapper;
 import com.example.accepttermsserver.repository.AcceptTermsRepository;
 import com.example.accepttermsserver.service.IAcceptTermsService;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -22,8 +25,8 @@ public class AcceptTermsServiceImpl implements IAcceptTermsService {
     private final AcceptTermsRepository acceptTermsRepository;
 
     @Override
-    public void create(AcceptTermsRequestDto acceptTermsRequestDto) {
-        List<Long> termsIds = acceptTermsRequestDto.getTermsIds();
+    public List<AcceptTermsResponseDto> create(AcceptTermsRequestDto acceptTermsRequestDto) {
+        List<Long> termsIds = new ArrayList<>(acceptTermsRequestDto.getTermsIds());
 
         if (termsIds.isEmpty()) {
             throw new BaseException(ResultType.BAD_REQUEST, HttpStatus.BAD_REQUEST);
@@ -33,7 +36,7 @@ public class AcceptTermsServiceImpl implements IAcceptTermsService {
 
         Long applicationId = acceptTermsRequestDto.getApplicationId();
 
-
+        List<AcceptTermsResponseDto> acceptTermsResponseDtos = new ArrayList<>();
         termsIds.forEach(termsId -> {
             if (acceptTermsRepository.existsByApplicationIdAndTermsId(applicationId, termsId)) {
                 throw new BaseException(ResultType.DUPLICATED_ACCEPT_TERMS, HttpStatus.BAD_REQUEST);
@@ -42,8 +45,12 @@ public class AcceptTermsServiceImpl implements IAcceptTermsService {
                     .applicationId(applicationId)
                     .termsId(termsId)
                     .build();
-            acceptTermsRepository.save(acceptTerms);
+            AcceptTerms created = acceptTermsRepository.save(acceptTerms);
+            acceptTermsResponseDtos.add(AcceptTermsMapper.mapToResponseDto(created));
         });
+
+        return acceptTermsResponseDtos;
+
     }
 
 }

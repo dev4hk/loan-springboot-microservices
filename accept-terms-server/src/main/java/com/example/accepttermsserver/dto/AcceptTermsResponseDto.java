@@ -13,7 +13,7 @@ import java.util.List;
 public class AcceptTermsResponseDto {
     private Long acceptTermsId;
     private Long applicationId;
-    private List<Long> termsIds;
+    private Long termsId;
     private LocalDateTime createdAt;
     private String createdBy;
     private LocalDateTime updatedAt;
