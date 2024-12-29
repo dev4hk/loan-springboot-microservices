@@ -1,6 +1,7 @@
 package com.example.applicationserver.controller;
 
 import com.example.applicationserver.cllient.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.cllient.dto.FileResponseDto;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.ResponseDTO;
@@ -13,8 +14,13 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 import static com.example.applicationserver.dto.ResponseDTO.ok;
 
@@ -139,9 +145,176 @@ public class ApplicationController {
         return ok();
     }
 
+    @Operation(
+            summary = "Accept terms REST API",
+            description = "REST API to accept terms"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status Bad Request",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "HTTP Not Found",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
     @PostMapping("/{applicationId}/terms")
     public ResponseDTO<Void> acceptTerms(@PathVariable Long applicationId, @RequestBody AcceptTermsRequestDto request) {
         applicationService.acceptTerms(applicationId, request);
+        return ok();
+    }
+
+    @Operation(
+            summary = "Upload file REST API",
+            description = "REST API to upload file"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status Bad Request",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "HTTP Not Found",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @PostMapping("/{applicationId}/files")
+    public ResponseDTO<Void> upload(@PathVariable Long applicationId, MultipartFile file) {
+        applicationService.uploadFile(applicationId, file);
+        return ok();
+    }
+
+    @Operation(
+            summary = "Download file REST API",
+            description = "REST API to download file"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status Bad Request",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "HTTP Not Found",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @GetMapping("/{applicationId}/files")
+    public ResponseDTO<Resource> download(@PathVariable Long applicationId, @RequestParam(value = "fileName") String fileName) {
+        return ok(applicationService.downloadFile(applicationId, fileName));
+    }
+
+    @Operation(
+            summary = "Fetch files info REST API",
+            description = "REST API to fetch files info"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status Bad Request",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "HTTP Not Found",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @GetMapping("/{applicationId}/files/info")
+    public ResponseDTO<List<FileResponseDto>> getFilesInfo(@PathVariable Long applicationId) {
+        return ok(applicationService.loadAllFiles(applicationId));
+    }
+
+    @Operation(
+            summary = "Delete files REST API",
+            description = "REST API to delete files"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status Bad Request",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "HTTP Not Found",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @DeleteMapping("{applicationId}/files")
+    public ResponseDTO<Void> deleteAllFiles(@PathVariable Long applicationId) {
+        applicationService.deleteAllFiles(applicationId);
         return ok();
     }
 
