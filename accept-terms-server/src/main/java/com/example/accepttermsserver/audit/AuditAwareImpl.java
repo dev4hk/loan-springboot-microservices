@@ -10,7 +10,7 @@ public class AuditAwareImpl implements AuditorAware<String> {
 
     @Override
     public Optional<String> getCurrentAuditor() {
-        return Optional.of("COUNSEL_MS");
+        return Optional.of("ACCEPT_TERMS_MS");
     }
 	
 }

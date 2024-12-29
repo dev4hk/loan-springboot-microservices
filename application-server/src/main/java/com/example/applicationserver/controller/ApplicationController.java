@@ -1,5 +1,6 @@
 package com.example.applicationserver.controller;
 
+import com.example.applicationserver.cllient.dto.AcceptTermsRequestDto;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.ResponseDTO;
@@ -135,6 +136,12 @@ public class ApplicationController {
     @DeleteMapping("/{applicationId}")
     public ResponseDTO<ApplicationResponseDto> delete(@PathVariable Long applicationId) {
         applicationService.delete(applicationId);
+        return ok();
+    }
+
+    @PostMapping("/{applicationId}/terms")
+    public ResponseDTO<Void> acceptTerms(@PathVariable Long applicationId, @RequestBody AcceptTermsRequestDto request) {
+        applicationService.acceptTerms(applicationId, request);
         return ok();
     }
 
