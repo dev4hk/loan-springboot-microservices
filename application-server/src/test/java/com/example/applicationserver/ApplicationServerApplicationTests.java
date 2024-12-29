@@ -172,5 +172,4 @@ class ApplicationServerApplicationTests {
                 .body("data.firstname", equalTo("First name must contain only letters"));
     }
 
-
 }
