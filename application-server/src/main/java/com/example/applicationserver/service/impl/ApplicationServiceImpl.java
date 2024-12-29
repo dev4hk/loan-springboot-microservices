@@ -1,8 +1,10 @@
 package com.example.applicationserver.service.impl;
 
 import com.example.applicationserver.cllient.AcceptTermsClient;
+import com.example.applicationserver.cllient.FileStorageClient;
 import com.example.applicationserver.cllient.TermsClient;
 import com.example.applicationserver.cllient.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.cllient.dto.FileResponseDto;
 import com.example.applicationserver.cllient.dto.TermsResponseDto;
 import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.ApplicationRequestDto;
@@ -13,12 +15,17 @@ import com.example.applicationserver.mapper.ApplicationMapper;
 import com.example.applicationserver.repository.ApplicationRepository;
 import com.example.applicationserver.service.IApplicationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 @Transactional
 @RequiredArgsConstructor
@@ -28,6 +35,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     private final ApplicationRepository applicationRepository;
     private final TermsClient termClient;
     private final AcceptTermsClient acceptTermsClient;
+    private final FileStorageClient fileStorageClient;
 
     @Override
     public ApplicationResponseDto create(ApplicationRequestDto request) {
@@ -91,5 +99,33 @@ public class ApplicationServiceImpl implements IApplicationService {
                 .build();
 
         acceptTermsClient.create(request);
+    }
+
+    @Override
+    public void uploadFile(Long applicationId, MultipartFile file) {
+        if(!isPresentApplication(applicationId)) {
+            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
+        }
+
+        fileStorageClient.upload(applicationId, file);
+    }
+
+    @Override
+    public Resource downloadFile(Long applicationId, String fileName) {
+        return fileStorageClient.download(applicationId, fileName).getBody();
+    }
+
+    @Override
+    public List<FileResponseDto> loadAllFiles(Long applicationId) {
+        return fileStorageClient.getFilesInfo(applicationId).getData();
+    }
+
+    @Override
+    public void deleteAllFiles(Long applicationId) {
+        fileStorageClient.deleteAll(applicationId);
+    }
+
+    private boolean isPresentApplication(Long applicationId) {
+        return applicationRepository.existsById(applicationId);
     }
 }
