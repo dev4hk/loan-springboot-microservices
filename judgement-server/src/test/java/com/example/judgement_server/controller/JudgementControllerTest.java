@@ -75,12 +75,12 @@ public class JudgementControllerTest {
 
     @Test
     public void getJudgmentOfApplication() {
-        when(judgementService.getJudgmentOfApplication(anyLong())).thenReturn(response);
+        when(judgementService.getJudgementOfApplication(anyLong())).thenReturn(response);
 
         ResponseDTO<JudgementResponseDto> result = judgementController.getJudgmentOfApplication(1L);
 
         assertEquals(response, result.getData());
-        verify(judgementService, times(1)).getJudgmentOfApplication(anyLong());
+        verify(judgementService, times(1)).getJudgementOfApplication(anyLong());
     }
 
     @Test

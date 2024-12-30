@@ -17,7 +17,7 @@ public class Judgement extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long judgmentId;
+    private Long judgementId;
 
     private Long applicationId;
 

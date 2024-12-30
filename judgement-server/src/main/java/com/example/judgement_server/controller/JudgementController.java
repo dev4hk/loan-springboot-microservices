@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.example.judgement_server.dto.ResponseDTO.ok;
 
 @RequiredArgsConstructor
-@RequestMapping("/judgments")
+@RequestMapping("/judgements")
 @RestController
 public class JudgementController {
 
@@ -22,30 +22,30 @@ public class JudgementController {
         return ok(judgementService.create(request));
     }
 
-    @GetMapping("/{judgmentId}")
-    public ResponseDTO<JudgementResponseDto> get(@PathVariable Long judgmentId) {
-        return ok(judgementService.get(judgmentId));
+    @GetMapping("/{judgementId}")
+    public ResponseDTO<JudgementResponseDto> get(@PathVariable Long judgementId) {
+        return ok(judgementService.get(judgementId));
     }
 
     @GetMapping("/applications/{applicationId}")
     public ResponseDTO<JudgementResponseDto> getJudgmentOfApplication(@PathVariable Long applicationId) {
-        return ok(judgementService.getJudgmentOfApplication(applicationId));
+        return ok(judgementService.getJudgementOfApplication(applicationId));
     }
 
-    @PutMapping("/{judgmentId}")
-    public ResponseDTO<JudgementResponseDto> update(@PathVariable Long judgmentId, @RequestBody JudgementRequestDto request) {
-        return ok(judgementService.update(judgmentId, request));
+    @PutMapping("/{judgementId}")
+    public ResponseDTO<JudgementResponseDto> update(@PathVariable Long judgementId, @RequestBody JudgementRequestDto request) {
+        return ok(judgementService.update(judgementId, request));
     }
 
-    @DeleteMapping("/{judgmentId}")
-    public ResponseDTO<Void> delete(@PathVariable Long judgmentId) {
-        judgementService.delete(judgmentId);
+    @DeleteMapping("/{judgementId}")
+    public ResponseDTO<Void> delete(@PathVariable Long judgementId) {
+        judgementService.delete(judgementId);
         return ok();
     }
 
-    @PatchMapping("/{judgmentId}/grants")
-    public ResponseDTO<GrantAmountDto> grant(@PathVariable Long judgmentId) {
-        return ok(judgementService.grant(judgmentId));
+    @PatchMapping("/{judgementId}/grants")
+    public ResponseDTO<GrantAmountDto> grant(@PathVariable Long judgementId) {
+        return ok(judgementService.grant(judgementId));
     }
 
 }

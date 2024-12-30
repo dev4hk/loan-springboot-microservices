@@ -15,9 +15,11 @@ import com.example.judgement_server.service.IJudgementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
+@Transactional
 @RequiredArgsConstructor
 @Service
 public class JudgementServiceImpl implements IJudgementService {
@@ -34,6 +36,7 @@ public class JudgementServiceImpl implements IJudgementService {
         return JudgementMapper.mapToJudgementResponseDto(created);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public JudgementResponseDto get(Long judgementId) {
         Judgement judgement = judgementRepository.findById(judgementId)
@@ -41,8 +44,9 @@ public class JudgementServiceImpl implements IJudgementService {
         return JudgementMapper.mapToJudgementResponseDto(judgement);
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public JudgementResponseDto getJudgmentOfApplication(Long applicationId) {
+    public JudgementResponseDto getJudgementOfApplication(Long applicationId) {
         ensureApplicationExists(applicationId);
         Judgement judgement = judgementRepository.findByApplicationId(applicationId)
                 .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));

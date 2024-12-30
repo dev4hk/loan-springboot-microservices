@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "application-server", url = "http://localhost:8081")
+@FeignClient(name = "application-server", url = "${client.application.url}")
 public interface ApplicationClient {
 
     @GetMapping("/applications/{applicationId}")

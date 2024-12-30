@@ -50,7 +50,7 @@ public class JudgementServiceImplTest {
                 .build();
 
         judgement = Judgement.builder()
-                .judgmentId(1L)
+                .judgementId(1L)
                 .applicationId(1L)
                 .firstname("JudgeFirstName")
                 .lastname("JudgeLastName")
@@ -106,11 +106,11 @@ public class JudgementServiceImplTest {
     }
 
     @Test
-    void testGetJudgmentOfApplication() {
+    void testGetJudgementOfApplication() {
         when(applicationClient.get(1L)).thenReturn(applicationResponse);
         when(judgementRepository.findByApplicationId(1L)).thenReturn(Optional.of(judgement));
 
-        JudgementResponseDto result = judgementService.getJudgmentOfApplication(1L);
+        JudgementResponseDto result = judgementService.getJudgementOfApplication(1L);
 
         assertNotNull(result);
         assertEquals(1L, result.getApplicationId());

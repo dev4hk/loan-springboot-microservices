@@ -8,6 +8,7 @@ public class JudgementMapper {
 
     public static JudgementResponseDto mapToJudgementResponseDto(Judgement judgement) {
         return JudgementResponseDto.builder()
+                .judgementId(judgement.getJudgementId())
                 .applicationId(judgement.getApplicationId())
                 .firstname(judgement.getFirstname())
                 .lastname(judgement.getLastname())

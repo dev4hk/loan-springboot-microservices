@@ -12,6 +12,8 @@ import java.time.LocalDateTime;
 @Setter
 public class JudgementResponseDto {
 
+    private Long judgementId;
+
     private Long applicationId;
 
     private String firstname;
