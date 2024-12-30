@@ -21,6 +21,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
@@ -65,7 +66,6 @@ public class JudgementServerApplicationTests {
 
     @AfterEach
     void tearDown() {
-        // No need for clean-up since we are mocking the repository
     }
 
     @Test
@@ -83,7 +83,6 @@ public class JudgementServerApplicationTests {
                 .body()
                 .asString();
 
-        // Use JsonPath to extract values
         JsonPath jsonPath = new JsonPath(responseBody);
         String firstname = jsonPath.getString("data.firstname");
         String lastname = jsonPath.getString("data.lastname");
@@ -96,7 +95,6 @@ public class JudgementServerApplicationTests {
 
     @Test
     void should_get_judgement() {
-        // Create a judgement first
         ApplicationStub.stubApplicationGetCall(1L);
         String createResponse = RestAssured.given()
                 .contentType("application/json")
@@ -112,7 +110,6 @@ public class JudgementServerApplicationTests {
         JsonPath createJsonPath = new JsonPath(createResponse);
         Long judgmentId = createJsonPath.getLong("data.judgementId");
 
-        // Now get the created judgement
         String getResponse = RestAssured.given()
                 .when()
                 .get("/judgements/" + judgmentId)
@@ -137,7 +134,6 @@ public class JudgementServerApplicationTests {
 
     @Test
     void should_get_judgment_of_application() {
-        // Create a judgement first
         ApplicationStub.stubApplicationGetCall(1L);
         String createResponse = RestAssured.given()
                 .contentType("application/json")
@@ -150,7 +146,6 @@ public class JudgementServerApplicationTests {
                 .body()
                 .asString();
 
-        // Now get the judgement by application ID
         String getResponse = RestAssured.given()
                 .when()
                 .get("/judgements/applications/1")
@@ -175,7 +170,6 @@ public class JudgementServerApplicationTests {
 
     @Test
     void should_update_judgement() {
-        // Create a judgement first
         ApplicationStub.stubApplicationGetCall(1L);
         String createResponse = RestAssured.given()
                 .contentType("application/json")
@@ -191,11 +185,10 @@ public class JudgementServerApplicationTests {
         JsonPath createJsonPath = new JsonPath(createResponse);
         Long judgmentId = createJsonPath.getLong("data.judgementId");
 
-        // Update the created judgement
         JudgementRequestDto updatedRequestDto = JudgementRequestDto.builder()
                 .applicationId(1L)
-                .firstname("updated_firstname")
-                .lastname("updated_lastname")
+                .firstname("UpdatedFirstname")
+                .lastname("UpdatedLastname")
                 .approvalAmount(BigDecimal.valueOf(20))
                 .build();
 
@@ -216,12 +209,13 @@ public class JudgementServerApplicationTests {
         BigDecimal approvalAmount = new BigDecimal(updateJsonPath.getFloat("data.approvalAmount"));
 
         assertNotNull(firstname);
-        assertEquals("updated_firstname", firstname);
+        assertEquals("UpdatedFirstname", firstname);
         assertNotNull(lastname);
-        assertEquals("updated_lastname", lastname);
+        assertEquals("UpdatedLastname", lastname);
         assertNotNull(approvalAmount);
         assertEquals(BigDecimal.valueOf(20), approvalAmount);
     }
+
 
     @Test
     void should_delete_judgement() {
@@ -241,7 +235,6 @@ public class JudgementServerApplicationTests {
         JsonPath jsonPath = new JsonPath(responseBody);
         Long judgementId = jsonPath.getLong("data.judgementId");
 
-        // Perform the soft delete operation
         RestAssured.given()
                 .when()
                 .delete("/judgements/" + judgementId)
@@ -253,7 +246,6 @@ public class JudgementServerApplicationTests {
 
     @Test
     void should_grant_judgement() {
-        // Create a judgement first
         ApplicationStub.stubApplicationGetCall(1L);
         String createResponse = RestAssured.given()
                 .contentType("application/json")
@@ -269,7 +261,6 @@ public class JudgementServerApplicationTests {
         JsonPath createJsonPath = new JsonPath(createResponse);
         Long judgmentId = createJsonPath.getLong("data.judgementId");
 
-        // Grant the created judgement
         GrantAmountDto grantAmountDto = GrantAmountDto.builder()
                 .applicationId(1L)
                 .approvalAmount(BigDecimal.TEN)
@@ -293,6 +284,81 @@ public class JudgementServerApplicationTests {
         assertEquals(1L, applicationId);
         assertNotNull(approvalAmount);
         assertEquals(BigDecimal.TEN, approvalAmount);
+    }
+
+    @Test
+    void should_fail_when_applicationId_is_missing() {
+        JudgementRequestDto judgementRequestDto = JudgementRequestDto.builder()
+                .firstname("John")
+                .lastname("Doe")
+                .approvalAmount(BigDecimal.TEN)
+                .build();
+
+        RestAssured.given()
+                .contentType("application/json")
+                .body(judgementRequestDto)
+                .when()
+                .post("/judgements")
+                .then()
+                .statusCode(400)
+                .body("data.applicationId", equalTo("ApplicationId is required"));
+    }
+
+    @Test
+    void should_fail_when_firstname_is_invalid() {
+        JudgementRequestDto judgementRequestDto = JudgementRequestDto.builder()
+                .applicationId(1L)
+                .firstname("John123")
+                .lastname("Doe")
+                .approvalAmount(BigDecimal.TEN)
+                .build();
+
+        RestAssured.given()
+                .contentType("application/json")
+                .body(judgementRequestDto)
+                .when()
+                .post("/judgements")
+                .then()
+                .statusCode(400)
+                .body("data.firstname", equalTo("First name must contain only letters"));
+    }
+
+    @Test
+    void should_fail_when_lastname_is_invalid() {
+        JudgementRequestDto judgementRequestDto = JudgementRequestDto.builder()
+                .applicationId(1L)
+                .firstname("John")
+                .lastname("Doe123")
+                .approvalAmount(BigDecimal.TEN)
+                .build();
+
+        RestAssured.given()
+                .contentType("application/json")
+                .body(judgementRequestDto)
+                .when()
+                .post("/judgements")
+                .then()
+                .statusCode(400)
+                .body("data.lastname", equalTo("Last name must contain only letters"));
+    }
+
+    @Test
+    void should_fail_when_approval_amount_is_invalid() {
+        JudgementRequestDto judgementRequestDto = JudgementRequestDto.builder()
+                .applicationId(1L)
+                .firstname("John")
+                .lastname("Doe")
+                .approvalAmount(new BigDecimal("1234567890123456.00"))  // Exceeds the allowed precision
+                .build();
+
+        RestAssured.given()
+                .contentType("application/json")
+                .body(judgementRequestDto)
+                .when()
+                .post("/judgements")
+                .then()
+                .statusCode(400)
+                .body("data.approvalAmount", equalTo("Hope amount must be a number with up to 2 decimal places"));
     }
 
 }

@@ -5,11 +5,14 @@ import com.example.judgement_server.dto.JudgementRequestDto;
 import com.example.judgement_server.dto.JudgementResponseDto;
 import com.example.judgement_server.dto.ResponseDTO;
 import com.example.judgement_server.service.IJudgementService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import static com.example.judgement_server.dto.ResponseDTO.ok;
 
+@Validated
 @RequiredArgsConstructor
 @RequestMapping("/judgements")
 @RestController
@@ -18,7 +21,7 @@ public class JudgementController {
     private final IJudgementService judgementService;
 
     @PostMapping
-    public ResponseDTO<JudgementResponseDto> create(@RequestBody JudgementRequestDto request) {
+    public ResponseDTO<JudgementResponseDto> create(@Valid @RequestBody JudgementRequestDto request) {
         return ok(judgementService.create(request));
     }
 
@@ -33,7 +36,7 @@ public class JudgementController {
     }
 
     @PutMapping("/{judgementId}")
-    public ResponseDTO<JudgementResponseDto> update(@PathVariable Long judgementId, @RequestBody JudgementRequestDto request) {
+    public ResponseDTO<JudgementResponseDto> update(@PathVariable Long judgementId, @Valid @RequestBody JudgementRequestDto request) {
         return ok(judgementService.update(judgementId, request));
     }
 
