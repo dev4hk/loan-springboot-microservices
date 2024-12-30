@@ -1,7 +1,8 @@
-CREATE TABLE Judgment (
+CREATE TABLE IF NOT EXISTS Judgement (
     judgmentId BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     applicationId BIGINT NOT NULL,
-    name VARCHAR(12) NOT NULL,
+    firstname VARCHAR(30) NOT NULL,
+    lastname VARCHAR(30) NOT NULL,
     approvalAmount DECIMAL(15, 2) NOT NULL,
     created_at date NOT NULL,
     created_by varchar(20) NOT NULL,

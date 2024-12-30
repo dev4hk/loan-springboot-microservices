@@ -21,8 +21,9 @@ public class Judgement extends BaseEntity {
 
     private Long applicationId;
 
-    @Column(columnDefinition = "varchar(12) NOT NULL COMMENT 'Judge'")
-    private String name;
+    private String firstname;
+
+    private String lastname;
 
     private BigDecimal approvalAmount;
 
