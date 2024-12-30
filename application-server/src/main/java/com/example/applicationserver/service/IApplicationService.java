@@ -4,6 +4,8 @@ import com.example.applicationserver.cllient.dto.AcceptTermsRequestDto;
 import com.example.applicationserver.cllient.dto.FileResponseDto;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
+import com.example.applicationserver.dto.GrantAmountDto;
+import jakarta.validation.Valid;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,4 +32,6 @@ public interface IApplicationService {
     List<FileResponseDto> loadAllFiles(Long applicationId);
 
     void deleteAllFiles(Long applicationId);
+
+    void updateGrant(Long applicationId, GrantAmountDto grantAmountDto);
 }

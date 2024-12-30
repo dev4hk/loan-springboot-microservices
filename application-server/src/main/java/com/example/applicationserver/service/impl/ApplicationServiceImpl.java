@@ -9,6 +9,7 @@ import com.example.applicationserver.cllient.dto.TermsResponseDto;
 import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
+import com.example.applicationserver.dto.GrantAmountDto;
 import com.example.applicationserver.entity.Application;
 import com.example.applicationserver.exception.BaseException;
 import com.example.applicationserver.mapper.ApplicationMapper;
@@ -123,6 +124,13 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public void deleteAllFiles(Long applicationId) {
         fileStorageClient.deleteAll(applicationId);
+    }
+
+    @Override
+    public void updateGrant(Long applicationId, GrantAmountDto grantAmountDto) {
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+        application.setApprovalAmount(grantAmountDto.getApprovalAmount());
     }
 
     private boolean isPresentApplication(Long applicationId) {

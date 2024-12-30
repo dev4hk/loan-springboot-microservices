@@ -3,6 +3,7 @@ package com.example.judgement_server.service.impl;
 import com.example.judgement_server.client.ApplicationClient;
 import com.example.judgement_server.client.dto.ApplicationResponseDto;
 import com.example.judgement_server.constants.ResultType;
+import com.example.judgement_server.dto.GrantAmountDto;
 import com.example.judgement_server.dto.JudgementRequestDto;
 import com.example.judgement_server.dto.JudgementResponseDto;
 import com.example.judgement_server.dto.ResponseDTO;
@@ -139,4 +140,40 @@ public class JudgementServiceImplTest {
         assertTrue(judgement.getIsDeleted());
         verify(judgementRepository, times(1)).findById(1L);
     }
+
+    @Test
+    void testGrant() {
+        when(judgementRepository.findById(1L)).thenReturn(Optional.of(judgement));
+        when(applicationClient.get(1L)).thenReturn(applicationResponse);
+
+        GrantAmountDto expectedGrantAmountDto = GrantAmountDto.builder()
+                .approvalAmount(BigDecimal.valueOf(10000))
+                .applicationId(1L)
+                .build();
+
+        GrantAmountDto result = judgementService.grant(1L);
+
+        assertNotNull(result);
+        assertEquals(expectedGrantAmountDto.getApplicationId(), result.getApplicationId());
+        assertEquals(expectedGrantAmountDto.getApprovalAmount(), result.getApprovalAmount());
+        verify(judgementRepository, times(1)).findById(1L);
+        verify(applicationClient, times(1)).get(1L);
+        verify(applicationClient, times(1)).updateGrant(eq(1L), refEq(expectedGrantAmountDto));
+    }
+
+    @Test
+    void testGrantApplicationNotFound() {
+        when(judgementRepository.findById(1L)).thenReturn(Optional.of(judgement));
+        when(applicationClient.get(1L)).thenReturn(null);
+
+        BaseException exception = assertThrows(BaseException.class, () -> {
+            judgementService.grant(1L);
+        });
+
+        assertEquals(ResultType.RESOURCE_NOT_FOUND.getCode(), exception.getCode());
+        verify(judgementRepository, times(1)).findById(1L);
+        verify(applicationClient, times(1)).get(1L);
+        verify(applicationClient, never()).updateGrant(anyLong(), any(GrantAmountDto.class));
+    }
 }
+

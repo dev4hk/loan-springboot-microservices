@@ -4,6 +4,7 @@ import com.example.applicationserver.cllient.dto.AcceptTermsRequestDto;
 import com.example.applicationserver.cllient.dto.FileResponseDto;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
+import com.example.applicationserver.dto.GrantAmountDto;
 import com.example.applicationserver.dto.ResponseDTO;
 import com.example.applicationserver.service.IApplicationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -312,9 +313,15 @@ public class ApplicationController {
             )
     }
     )
-    @DeleteMapping("{applicationId}/files")
+    @DeleteMapping("/{applicationId}/files")
     public ResponseDTO<Void> deleteAllFiles(@PathVariable Long applicationId) {
         applicationService.deleteAllFiles(applicationId);
+        return ok();
+    }
+
+    @PutMapping("/{applicationId}/grant")
+    public ResponseDTO<Void> updateGrant(@PathVariable Long applicationId, @Valid @RequestBody GrantAmountDto grantAmountDto) {
+        applicationService.updateGrant(applicationId, grantAmountDto);
         return ok();
     }
 

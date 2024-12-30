@@ -3,6 +3,7 @@ package com.example.judgement_server.service.impl;
 import com.example.judgement_server.client.ApplicationClient;
 import com.example.judgement_server.client.dto.ApplicationResponseDto;
 import com.example.judgement_server.constants.ResultType;
+import com.example.judgement_server.dto.GrantAmountDto;
 import com.example.judgement_server.dto.JudgementRequestDto;
 import com.example.judgement_server.dto.JudgementResponseDto;
 import com.example.judgement_server.dto.ResponseDTO;
@@ -14,6 +15,8 @@ import com.example.judgement_server.service.IJudgementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
 
 @RequiredArgsConstructor
 @Service
@@ -32,8 +35,8 @@ public class JudgementServiceImpl implements IJudgementService {
     }
 
     @Override
-    public JudgementResponseDto get(Long judgmentId) {
-        Judgement judgement = judgementRepository.findById(judgmentId)
+    public JudgementResponseDto get(Long judgementId) {
+        Judgement judgement = judgementRepository.findById(judgementId)
                 .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
         return JudgementMapper.mapToJudgementResponseDto(judgement);
     }
@@ -47,9 +50,9 @@ public class JudgementServiceImpl implements IJudgementService {
     }
 
     @Override
-    public JudgementResponseDto update(Long judgmentId, JudgementRequestDto request) {
+    public JudgementResponseDto update(Long judgementId, JudgementRequestDto request) {
         ensureApplicationExists(request.getApplicationId());
-        Judgement judgement = judgementRepository.findById(judgmentId)
+        Judgement judgement = judgementRepository.findById(judgementId)
                 .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
         judgement.setFirstname(request.getFirstname());
         judgement.setLastname(request.getLastname());
@@ -58,10 +61,27 @@ public class JudgementServiceImpl implements IJudgementService {
     }
 
     @Override
-    public void delete(Long judgmentId) {
-        Judgement judgement = judgementRepository.findById(judgmentId)
+    public void delete(Long judgementId) {
+        Judgement judgement = judgementRepository.findById(judgementId)
                 .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
         judgement.setIsDeleted(true);
+    }
+
+    @Override
+    public GrantAmountDto grant(Long judgementId) {
+        Judgement judgement = judgementRepository.findById(judgementId).orElseThrow(() ->
+                new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND)
+        );
+
+        Long applicationId = judgement.getApplicationId();
+        ensureApplicationExists(applicationId);
+        BigDecimal approvalAmount = judgement.getApprovalAmount();
+        GrantAmountDto grantAmountDto = GrantAmountDto.builder()
+                .approvalAmount(approvalAmount)
+                .applicationId(applicationId)
+                .build();
+        applicationClient.updateGrant(applicationId, grantAmountDto);
+        return grantAmountDto;
     }
 
     private void ensureApplicationExists(Long applicationId) {

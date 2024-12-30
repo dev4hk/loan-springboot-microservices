@@ -24,6 +24,8 @@ public class ApplicationResponseDto {
 
     private BigDecimal hopeAmount;
 
+    private BigDecimal approvalAmount;
+
     private LocalDateTime appliedAt;
 
     private LocalDateTime createdAt;
