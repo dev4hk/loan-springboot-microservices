@@ -35,7 +35,6 @@ public class ApplicationControllerTest {
 
     @BeforeEach
     public void setup() {
-        MockitoAnnotations.openMocks(this);
         request = new ApplicationRequestDto();
         response = new ApplicationResponseDto();
     }
