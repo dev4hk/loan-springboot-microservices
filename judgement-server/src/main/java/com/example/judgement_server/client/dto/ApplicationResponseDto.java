@@ -1,4 +1,4 @@
-package com.example.applicationserver.dto;
+package com.example.judgement_server.client.dto;
 
 import lombok.*;
 

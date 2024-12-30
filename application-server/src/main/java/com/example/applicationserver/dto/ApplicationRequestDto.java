@@ -57,4 +57,10 @@ public class ApplicationRequestDto {
     @Digits(integer = 15, fraction = 2, message = "Hope amount must be a number with up to 2 decimal places")
     private BigDecimal hopeAmount;
 
+    @Schema(
+            description = "Approval amount", example = "100.00"
+    )
+    @Digits(integer = 15, fraction = 2, message = "Approval amount must be a number with up to 2 decimal places")
+    private BigDecimal approvalAmount;
+
 }

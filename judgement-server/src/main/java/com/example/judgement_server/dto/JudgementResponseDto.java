@@ -1,4 +1,4 @@
-package com.example.applicationserver.dto;
+package com.example.judgement_server.dto;
 
 import lombok.*;
 
@@ -10,7 +10,9 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
-public class ApplicationResponseDto {
+public class JudgementResponseDto {
+
+    private Long judgementId;
 
     private Long applicationId;
 
@@ -18,15 +20,7 @@ public class ApplicationResponseDto {
 
     private String lastname;
 
-    private String cellPhone;
-
-    private String email;
-
-    private BigDecimal hopeAmount;
-
     private BigDecimal approvalAmount;
-
-    private LocalDateTime appliedAt;
 
     private LocalDateTime createdAt;
 
