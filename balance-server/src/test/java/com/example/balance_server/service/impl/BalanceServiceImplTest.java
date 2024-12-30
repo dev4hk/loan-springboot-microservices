@@ -53,26 +53,30 @@ class BalanceServiceImplTest {
     @Test
     void should_create_balance() {
         Long applicationId = 1L;
-        when(balanceRepository.findByApplicationId(applicationId)).thenReturn(Optional.empty());
-        Balance savedBalance = Balance.builder()
-                .balanceId(1L)
-                .applicationId(1L)
-                .balance(BigDecimal.valueOf(500))
-                .build();
-        when(balanceRepository.save(any(Balance.class))).thenReturn(savedBalance);
-
         BalanceRequestDto request = BalanceRequestDto.builder()
-                .applicationId(1L)
+                .applicationId(applicationId)
                 .entryAmount(BigDecimal.valueOf(500))
                 .build();
+
+        Balance balance = Balance.builder()
+                .balanceId(1L)
+                .applicationId(applicationId)
+                .balance(BigDecimal.valueOf(500))
+                .build();
+
+        when(balanceRepository.findByApplicationId(applicationId)).thenReturn(Optional.empty());
+        when(balanceRepository.save(any(Balance.class))).thenReturn(balance);
 
         BalanceResponseDto response = balanceService.create(applicationId, request);
 
         assertNotNull(response);
         assertEquals(applicationId, response.getApplicationId());
         assertEquals(BigDecimal.valueOf(500), response.getBalance());
+
+        verify(balanceRepository, times(1)).findByApplicationId(applicationId);
         verify(balanceRepository, times(1)).save(any(Balance.class));
     }
+
 
     @DisplayName("get balance")
     @Test
@@ -138,8 +142,9 @@ class BalanceServiceImplTest {
 
         balanceService.delete(applicationId);
 
-        verify(balanceRepository, times(1)).save(any(Balance.class));
+        verify(balanceRepository, times(1)).findByApplicationId(applicationId);
         assertTrue(this.balance.getIsDeleted());
     }
+
 
 }
