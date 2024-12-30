@@ -21,12 +21,4 @@ public class JudgementRequestDto {
 
     private BigDecimal approvalAmount;
 
-    private LocalDateTime createdAt;
-
-    private String createdBy;
-
-    private LocalDateTime updatedAt;
-
-    private String updatedBy;
-
 }
