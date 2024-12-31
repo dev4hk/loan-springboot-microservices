@@ -1,5 +1,8 @@
-package com.example.entry_server.dto;
+package com.example.entry_server.client.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Digits;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -9,9 +12,7 @@ import java.math.BigDecimal;
 @Builder
 @Getter
 @Setter
-public class EntryUpdateResponseDto {
-
-    private Long entryId;
+public class BalanceUpdateRequestDto {
 
     private Long applicationId;
 

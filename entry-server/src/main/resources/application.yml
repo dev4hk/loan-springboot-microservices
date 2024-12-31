@@ -20,3 +20,5 @@ spring:
 client:
   application:
     url: http://localhost:8081
+  balance:
+    url: http://localhost:8086
