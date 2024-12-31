@@ -25,6 +25,7 @@ public class ApplicationMapper {
                 .email(application.getEmail())
                 .hopeAmount(application.getHopeAmount())
                 .appliedAt(application.getAppliedAt())
+                .contractedAt(application.getContractedAt())
                 .createdAt(application.getCreatedAt())
                 .createdBy(application.getCreatedBy())
                 .updatedAt(application.getUpdatedAt())

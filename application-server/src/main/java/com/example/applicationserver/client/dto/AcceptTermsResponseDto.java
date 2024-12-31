@@ -1,4 +1,4 @@
-package com.example.applicationserver.cllient.dto;
+package com.example.applicationserver.client.dto;
 
 import lombok.*;
 
@@ -9,18 +9,12 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
-public class TermsResponseDto {
+public class AcceptTermsResponseDto {
+    private Long acceptTermsId;
+    private Long applicationId;
     private Long termsId;
-
-    private String name;
-
-    private String termsDetailUrl;
-
     private LocalDateTime createdAt;
-
     private String createdBy;
-
     private LocalDateTime updatedAt;
-
     private String updatedBy;
 }
