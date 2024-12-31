@@ -1,6 +1,6 @@
 package com.example.entry_server.exception;
 
-import com.example.termsserver.constants.ResultType;
+import com.example.entry_server.constants.ResultType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

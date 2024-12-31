@@ -28,6 +28,8 @@ public class ApplicationResponseDto {
 
     private LocalDateTime appliedAt;
 
+    private LocalDateTime contractedAt;
+
     private LocalDateTime createdAt;
 
     private String createdBy;
