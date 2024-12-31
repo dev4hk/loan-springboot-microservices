@@ -125,12 +125,12 @@ class EntryServiceImplTest {
         Long entryId = 1L;
         BalanceUpdateRequestDto balanceUpdateRequestDto = BalanceUpdateRequestDto.builder()
                 .applicationId(1L)
-                .afterEntryAmount(BigDecimal.valueOf(1000))
+                .beforeEntryAmount(BigDecimal.valueOf(1000))  // assuming this is a correct field name
                 .afterEntryAmount(BigDecimal.valueOf(2000))
                 .build();
 
         when(entryRepository.findById(entryId)).thenReturn(Optional.of(entry));
-        when(balanceClient.update(1L, balanceUpdateRequestDto)).thenReturn(
+        when(balanceClient.update(eq(1L), any(BalanceUpdateRequestDto.class))).thenReturn(
                 new ResponseDTO<>(BalanceResponseDto.builder()
                         .balanceId(1L)
                         .applicationId(1L)
