@@ -36,9 +36,9 @@ public class BalanceServiceImpl implements IBalanceService {
             balance.setUpdatedAt(b.getUpdatedAt());
         });
 
-        balanceRepository.save(balance);
+        Balance created = balanceRepository.save(balance);
 
-        return BalanceMapper.mapToBalanceResponseDto(balance);
+        return BalanceMapper.mapToBalanceResponseDto(created);
     }
 
     @Transactional(readOnly = true)
