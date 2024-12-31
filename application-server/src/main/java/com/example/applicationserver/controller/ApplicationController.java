@@ -1,7 +1,7 @@
 package com.example.applicationserver.controller;
 
-import com.example.applicationserver.cllient.dto.AcceptTermsRequestDto;
-import com.example.applicationserver.cllient.dto.FileResponseDto;
+import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.client.dto.FileResponseDto;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.GrantAmountDto;
@@ -16,7 +16,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;

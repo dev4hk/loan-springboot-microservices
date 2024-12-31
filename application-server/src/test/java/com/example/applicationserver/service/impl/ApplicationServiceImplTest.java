@@ -1,10 +1,12 @@
 package com.example.applicationserver.service.impl;
 
-import com.example.applicationserver.cllient.AcceptTermsClient;
-import com.example.applicationserver.cllient.TermsClient;
-import com.example.applicationserver.cllient.dto.AcceptTermsRequestDto;
-import com.example.applicationserver.cllient.dto.AcceptTermsResponseDto;
-import com.example.applicationserver.cllient.dto.TermsResponseDto;
+import com.example.applicationserver.client.AcceptTermsClient;
+import com.example.applicationserver.client.JudgementClient;
+import com.example.applicationserver.client.TermsClient;
+import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.client.dto.AcceptTermsResponseDto;
+import com.example.applicationserver.client.dto.JudgementResponseDto;
+import com.example.applicationserver.client.dto.TermsResponseDto;
 import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
@@ -26,7 +28,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,6 +45,9 @@ class ApplicationServiceImplTest {
 
     @Mock
     AcceptTermsClient acceptTermsClient;
+
+    @Mock
+    JudgementClient judgementClient;
 
     @DisplayName("Create Application")
     @Test
@@ -263,4 +268,90 @@ class ApplicationServiceImplTest {
         assertThrows(BaseException.class, () -> applicationService.acceptTerms(applicationId, request));
     }
 
+    @DisplayName("contract")
+    @Test
+    void should_contract() {
+        Long applicationId = 1L;
+        Application entity = Application.builder()
+                .applicationId(1L)
+                .firstname("firstname")
+                .lastname("lastname")
+                .cellPhone("1234567890")
+                .email("mail@abcd.efg")
+                .hopeAmount(BigDecimal.valueOf(50000))
+                .approvalAmount(BigDecimal.valueOf(50000))
+                .build();
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(entity));
+        when(judgementClient.getJudgmentOfApplication(applicationId)).thenReturn(
+                new ResponseDTO<>(
+                        JudgementResponseDto.builder()
+                                .judgementId(1L)
+                                .applicationId(1L)
+                                .firstname("firstname")
+                                .lastname("lastname")
+                                .approvalAmount(BigDecimal.valueOf(1000.00))
+                                .build()
+                )
+        );
+        ApplicationResponseDto applicationResponseDto = applicationService.contract(applicationId);
+        verify(applicationRepository, times(1)).findById(applicationId);
+        verify(judgementClient, times(1)).getJudgmentOfApplication(applicationId);
+        assertNotNull(applicationResponseDto.getContractedAt());
+    }
+
+    @DisplayName("contract throw exception with application not found")
+    @Test
+    void should_throw_exception_when_contract_for_non_existing_application() {
+        Long applicationId = 1L;
+        when(applicationRepository.findById(applicationId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+        assertThrows(BaseException.class, () -> applicationService.contract(applicationId));
+    }
+
+    @DisplayName("contract throw exception with null judgement data")
+    @Test
+    void should_throw_exception_when_contract_with_null_judgement_data() {
+        Long applicationId = 1L;
+        Application entity = Application.builder()
+                .applicationId(1L)
+                .firstname("firstname")
+                .lastname("lastname")
+                .cellPhone("1234567890")
+                .email("mail@abcd.efg")
+                .hopeAmount(BigDecimal.valueOf(50000))
+                .approvalAmount(BigDecimal.valueOf(50000))
+                .build();
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(entity));
+        when(judgementClient.getJudgmentOfApplication(applicationId)).thenReturn(
+                new ResponseDTO<>()
+        );
+
+        assertThrows(BaseException.class, () -> applicationService.contract(applicationId));
+    }
+
+    @DisplayName("contract throw exception with null approval amount")
+    @Test
+    void should_throw_exception_when_contract_for_application_with_null_approval_amount() {
+        Long applicationId = 1L;
+        Application entity = Application.builder()
+                .applicationId(1L)
+                .firstname("firstname")
+                .lastname("lastname")
+                .cellPhone("1234567890")
+                .email("mail@abcd.efg")
+                .hopeAmount(BigDecimal.valueOf(50000))
+                .build();
+        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(entity));
+        when(judgementClient.getJudgmentOfApplication(applicationId)).thenReturn(
+                new ResponseDTO<>(
+                        JudgementResponseDto.builder()
+                                .judgementId(1L)
+                                .applicationId(1L)
+                                .firstname("firstname")
+                                .lastname("lastname")
+                                .approvalAmount(BigDecimal.valueOf(1000.00))
+                                .build()
+                )
+        );
+        assertThrows(BaseException.class, () -> applicationService.contract(applicationId));
+    }
 }

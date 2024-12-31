@@ -1,4 +1,4 @@
-package com.example.applicationserver.cllient.dto;
+package com.example.applicationserver.client.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

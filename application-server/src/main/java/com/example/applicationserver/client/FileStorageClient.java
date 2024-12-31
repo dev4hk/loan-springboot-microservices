@@ -1,6 +1,6 @@
-package com.example.applicationserver.cllient;
+package com.example.applicationserver.client;
 
-import com.example.applicationserver.cllient.dto.FileResponseDto;
+import com.example.applicationserver.client.dto.FileResponseDto;
 import com.example.applicationserver.dto.ResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.core.io.Resource;
@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@FeignClient(name = "file-storage-server", url = "http://localhost:8084")
+@FeignClient(name = "file-storage-server", url = "${client.file-storage.url}")
 public interface FileStorageClient {
 
     @PostMapping("/files/{applicationId}")
