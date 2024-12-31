@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS application (
     maturity DATETIME DEFAULT NULL,
     hope_amount DECIMAL(15,2) NOT NULL,
     applied_at DATETIME NOT NULL,
+    contracted_at DATETIME DEFAULT NULL,
     approval_amount DECIMAL(15,2) DEFAULT NULL,
     created_at date NOT NULL,
     created_by varchar(20) NOT NULL,

@@ -43,4 +43,6 @@ public class Application extends BaseEntity {
 
     private BigDecimal approvalAmount;
 
+    private LocalDateTime contractedAt;
+
 }

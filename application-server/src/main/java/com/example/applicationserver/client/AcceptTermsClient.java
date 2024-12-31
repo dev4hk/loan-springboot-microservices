@@ -1,7 +1,7 @@
-package com.example.applicationserver.cllient;
+package com.example.applicationserver.client;
 
-import com.example.applicationserver.cllient.dto.AcceptTermsRequestDto;
-import com.example.applicationserver.cllient.dto.AcceptTermsResponseDto;
+import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.client.dto.AcceptTermsResponseDto;
 import com.example.applicationserver.dto.ResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(name = "accept-terms-server", url = "http://localhost:8083")
+@FeignClient(name = "accept-terms-server", url = "${client.accept-terms.url}")
 public interface AcceptTermsClient {
     @PostMapping(value = "/accept-terms")
     ResponseDTO<List<AcceptTermsResponseDto>> create(@RequestBody AcceptTermsRequestDto acceptTermsRequestDto);
