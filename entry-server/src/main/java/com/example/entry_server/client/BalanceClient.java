@@ -10,13 +10,13 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "application-server", url = "${client.balance.url}")
+@FeignClient(name = "balance-server", url = "${client.balance.url}")
 public interface BalanceClient {
 
-    @PostMapping("/{applicationId}")
+    @PostMapping("/balances/{applicationId}")
     ResponseDTO<BalanceResponseDto> create(@PathVariable Long applicationId, @RequestBody BalanceRequestDto request);
 
-    @PutMapping("/{applicationId}")
+    @PutMapping("/balances/{applicationId}")
     ResponseDTO<BalanceResponseDto> update(@PathVariable Long applicationId, @RequestBody BalanceUpdateRequestDto request);
 
 }

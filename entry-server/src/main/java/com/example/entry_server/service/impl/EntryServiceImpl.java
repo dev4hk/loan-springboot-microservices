@@ -44,6 +44,7 @@ public class EntryServiceImpl implements IEntryService {
         entryRepository.save(entry);
         balanceClient.create(applicationId,
                 BalanceRequestDto.builder()
+                        .applicationId(applicationId)
                         .entryAmount(request.getEntryAmount())
                         .build()
         );
@@ -78,6 +79,7 @@ public class EntryServiceImpl implements IEntryService {
 
         balanceClient.update(applicationId,
                 BalanceUpdateRequestDto.builder()
+                        .applicationId(applicationId)
                         .beforeEntryAmount(beforeEntryAmount)
                         .afterEntryAmount(request.getEntryAmount())
                         .build()
@@ -100,6 +102,7 @@ public class EntryServiceImpl implements IEntryService {
         balanceClient.update(
                 applicationId,
                 BalanceUpdateRequestDto.builder()
+                        .applicationId(applicationId)
                         .beforeEntryAmount(beforeEntryAMount)
                         .afterEntryAmount(BigDecimal.ZERO)
                         .build()
