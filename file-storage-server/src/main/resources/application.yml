@@ -2,6 +2,8 @@ server:
   port: 8084
 
 spring:
+  application:
+    name: file-storage-server
   servlet:
     multipart:
       enabled: true
