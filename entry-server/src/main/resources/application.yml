@@ -1,0 +1,24 @@
+server:
+  port: 8085
+spring:
+  application:
+    name: entry-server
+  datasource:
+    url: ${DATASOURCE_URL}
+    driverClassName: org.h2.Driver
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+client:
+  application:
+    url: http://localhost:8081
+  balance:
+    url: http://localhost:8086
