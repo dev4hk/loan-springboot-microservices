@@ -160,7 +160,7 @@ class BalanceServerApplicationTests {
 		RestAssured.given()
 				.contentType("application/json")
 				.body(requestDto)
-				.patch("/balances/1/repayment")
+				.put("/balances/1/repayment")
 				.then()
 				.log().all()
 				.statusCode(200)
@@ -180,7 +180,7 @@ class BalanceServerApplicationTests {
 		RestAssured.given()
 				.contentType("application/json")
 				.body(requestDto)
-				.patch("/balances/1/repayment")
+				.put("/balances/1/repayment")
 				.then()
 				.log().all()
 				.statusCode(400);

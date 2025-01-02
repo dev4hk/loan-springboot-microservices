@@ -1,7 +1,7 @@
-package com.example.balance_server.controller;
+package com.example.repayment_server.controller;
 
-import com.example.balance_server.dto.*;
-import com.example.balance_server.service.IBalanceService;
+import com.example.repayment_server.dto.*;
+import com.example.repayment_server.service.IRepaymentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,21 +13,25 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
+import static com.example.repayment_server.dto.ResponseDTO.ok;
+
 @Tag(
-        name = "CRUD REST APIs for Balance",
-        description = "CRUD REST APIs to CREATE, UPDATE, FETCH AND DELETE balance details"
+        name = "CRUD REST APIs for Repayment",
+        description = "CRUD REST APIs to CREATE, UPDATE, FETCH AND DELETE repayment details"
 )
 @Validated
 @RestController
-@RequestMapping("/balances")
+@RequestMapping("/repayments")
 @RequiredArgsConstructor
-public class BalanceController {
+public class RepaymentController {
 
-    private final IBalanceService balanceService;
+    private final IRepaymentService repaymentService;
 
     @Operation(
-            summary = "Create Balance REST API",
-            description = "REST API to create new balance"
+            summary = "Create Repayment REST API",
+            description = "REST API to create repayment"
     )
     @ApiResponses({
             @ApiResponse(
@@ -48,14 +52,16 @@ public class BalanceController {
     }
     )
     @PostMapping("/{applicationId}")
-    public ResponseDTO<BalanceResponseDto> create(@PathVariable Long applicationId, @Valid @RequestBody BalanceRequestDto request) {
-        BalanceResponseDto response = balanceService.create(applicationId, request);
-        return ResponseDTO.ok(response);
+    public ResponseDTO<RepaymentResponseDto> createRepayment(
+            @PathVariable Long applicationId,
+            @Valid @RequestBody RepaymentRequestDto repaymentRequestDto) {
+        RepaymentResponseDto responseDto = repaymentService.create(applicationId, repaymentRequestDto);
+        return ok(responseDto);
     }
 
     @Operation(
-            summary = "Get Balance REST API",
-            description = "REST API to get balance"
+            summary = "Get Repayments REST API",
+            description = "REST API to get repayments"
     )
     @ApiResponses({
             @ApiResponse(
@@ -76,14 +82,15 @@ public class BalanceController {
     }
     )
     @GetMapping("/{applicationId}")
-    public ResponseDTO<BalanceResponseDto> get(@PathVariable Long applicationId) {
-        BalanceResponseDto response = balanceService.get(applicationId);
-        return ResponseDTO.ok(response);
+    public ResponseDTO<List<RepaymentListResponseDto>> getRepayments(
+            @PathVariable Long applicationId) {
+        List<RepaymentListResponseDto> responseDtos = repaymentService.get(applicationId);
+        return ok(responseDtos);
     }
 
     @Operation(
-            summary = "Update Balance REST API",
-            description = "REST API to update balance"
+            summary = "Update Repayment REST API",
+            description = "REST API to update repayment"
     )
     @ApiResponses({
             @ApiResponse(
@@ -103,15 +110,17 @@ public class BalanceController {
             )
     }
     )
-    @PutMapping("/{applicationId}")
-    public ResponseDTO<BalanceResponseDto> update(@PathVariable Long applicationId, @Valid @RequestBody BalanceUpdateRequestDto request) {
-        BalanceResponseDto response = balanceService.update(applicationId, request);
-        return ResponseDTO.ok(response);
+    @PutMapping("/{repaymentId}")
+    public ResponseDTO<RepaymentUpdateResponseDto> updateRepayment(
+            @PathVariable Long repaymentId,
+            @Valid @RequestBody RepaymentRequestDto repaymentRequestDto) {
+        RepaymentUpdateResponseDto responseDto = repaymentService.update(repaymentId, repaymentRequestDto);
+        return ok(responseDto);
     }
 
     @Operation(
-            summary = "Repayment REST API",
-            description = "REST API to make repayment"
+            summary = "Celete Repayment REST API",
+            description = "REST API to delete repayment"
     )
     @ApiResponses({
             @ApiResponse(
@@ -131,37 +140,11 @@ public class BalanceController {
             )
     }
     )
-    @PutMapping("/{applicationId}/repayment")
-    public ResponseDTO<BalanceResponseDto> repaymentUpdate(@PathVariable Long applicationId, @Valid @RequestBody BalanceRepaymentRequestDto request) {
-        BalanceResponseDto response = balanceService.repaymentUpdate(applicationId, request);
-        return ResponseDTO.ok(response);
-    }
-
-    @Operation(
-            summary = "Delete Balance REST API",
-            description = "REST API to delete balance"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "HTTP Status Bad Request",
-                    content = @Content(
-                            schema = @Schema(implementation = ResponseDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error"
-            )
-    }
-    )
-    @DeleteMapping("/{applicationId}")
-    public ResponseDTO<Void> delete(@PathVariable Long applicationId) {
-        balanceService.delete(applicationId);
-        return ResponseDTO.ok();
+    @DeleteMapping("/{repaymentId}")
+    public ResponseDTO<Void> deleteRepayment(
+            @PathVariable Long repaymentId) {
+        repaymentService.delete(repaymentId);
+        return ok();
     }
 }
+
