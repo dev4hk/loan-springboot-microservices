@@ -131,7 +131,7 @@ public class BalanceController {
             )
     }
     )
-    @PatchMapping("/{applicationId}/repayment")
+    @PutMapping("/{applicationId}/repayment")
     public ResponseDTO<BalanceResponseDto> repaymentUpdate(@PathVariable Long applicationId, @Valid @RequestBody BalanceRepaymentRequestDto request) {
         BalanceResponseDto response = balanceService.repaymentUpdate(applicationId, request);
         return ResponseDTO.ok(response);
