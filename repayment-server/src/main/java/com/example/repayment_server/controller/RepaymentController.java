@@ -2,13 +2,16 @@ package com.example.repayment_server.controller;
 
 import com.example.repayment_server.dto.*;
 import com.example.repayment_server.service.IRepaymentService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 import static com.example.repayment_server.dto.ResponseDTO.ok;
 
+@Validated
 @RestController
 @RequestMapping("/repayments")
 @RequiredArgsConstructor
@@ -19,7 +22,7 @@ public class RepaymentController {
     @PostMapping("/{applicationId}")
     public ResponseDTO<RepaymentResponseDto> createRepayment(
             @PathVariable Long applicationId,
-            @RequestBody RepaymentRequestDto repaymentRequestDto) {
+            @Valid @RequestBody RepaymentRequestDto repaymentRequestDto) {
         RepaymentResponseDto responseDto = repaymentService.create(applicationId, repaymentRequestDto);
         return ok(responseDto);
     }
@@ -34,7 +37,7 @@ public class RepaymentController {
     @PutMapping("/{repaymentId}")
     public ResponseDTO<RepaymentUpdateResponseDto> updateRepayment(
             @PathVariable Long repaymentId,
-            @RequestBody RepaymentRequestDto repaymentRequestDto) {
+            @Valid @RequestBody RepaymentRequestDto repaymentRequestDto) {
         RepaymentUpdateResponseDto responseDto = repaymentService.update(repaymentId, repaymentRequestDto);
         return ok(responseDto);
     }
