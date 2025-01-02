@@ -1,0 +1,7 @@
+client:
+  application:
+    url: http://localhost:${wiremock.server.port}
+  balance:
+    url: http://localhost:${wiremock.server.port}
+  entry:
+    url: http://localhost:${wiremock.server.port}

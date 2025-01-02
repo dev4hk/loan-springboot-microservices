@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 @FeignClient(name = "balance-server", url = "${client.balance.url}")
 public interface BalanceClient {
 
-    @PatchMapping("/{applicationId}/repayment")
+    @PatchMapping("/balances/{applicationId}/repayment")
     ResponseDTO<BalanceResponseDto> repaymentUpdate(@PathVariable Long applicationId, @Valid @RequestBody BalanceRepaymentRequestDto request);
 
 }
