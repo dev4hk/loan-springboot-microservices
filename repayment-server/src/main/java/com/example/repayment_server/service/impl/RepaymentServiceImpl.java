@@ -13,12 +13,12 @@ import com.example.repayment_server.entity.Repayment;
 import com.example.repayment_server.exception.BaseException;
 import com.example.repayment_server.mapper.RepaymentMapper;
 import com.example.repayment_server.repository.RepaymentRepository;
+import com.example.repayment_server.service.IRepaymentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.xml.transform.Result;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,13 +26,14 @@ import java.util.stream.Collectors;
 @Transactional
 @RequiredArgsConstructor
 @Service
-public class RepaymentServiceImpl {
+public class RepaymentServiceImpl implements IRepaymentService {
 
     private final RepaymentRepository repaymentRepository;
     private final ApplicationClient applicationClient;
     private final BalanceClient balanceClient;
     private final EntryClient entryClient;
 
+    @Override
     public RepaymentResponseDto create(Long applicationId, RepaymentRequestDto repaymentRequestDto) {
         if (!isRepayableApplication(applicationId)) {
             throw new BaseException(ResultType.BAD_REQUEST, HttpStatus.BAD_REQUEST);
@@ -74,11 +75,13 @@ public class RepaymentServiceImpl {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public List<RepaymentListResponseDto> get(Long applicationId) {
         List<Repayment> repayments = repaymentRepository.findAllByApplicationId(applicationId);
         return repayments.stream().map(RepaymentMapper::mapToRepaymentListResponseDto).collect(Collectors.toList());
     }
 
+    @Override
     public RepaymentUpdateResponseDto update(Long repaymentId, RepaymentRequestDto repaymentRequestDto) {
         Repayment repayment = repaymentRepository.findById(repaymentId).orElseThrow(() ->
                 new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND)
@@ -114,6 +117,7 @@ public class RepaymentServiceImpl {
                 .build();
     }
 
+    @Override
     public void delete(Long repaymentId) {
         Repayment repayment = repaymentRepository.findById(repaymentId).orElseThrow(() ->
                 new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND)

@@ -14,6 +14,7 @@ public class RepaymentMapper {
 
     public static RepaymentResponseDto mapToRepaymentResponseDto(Repayment repayment) {
         return RepaymentResponseDto.builder()
+                .repaymentId(repayment.getRepaymentId())
                 .applicationId(repayment.getApplicationId())
                 .repaymentAmount(repayment.getRepaymentAmount())
                 .createdAt(repayment.getCreatedAt())

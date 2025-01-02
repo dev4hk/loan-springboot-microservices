@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 public class RepaymentResponseDto {
+    private Long repaymentId;
     private Long applicationId;
     private BigDecimal repaymentAmount;
     private BigDecimal balance;
