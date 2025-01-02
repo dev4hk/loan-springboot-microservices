@@ -16,3 +16,11 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+client:
+  application:
+    url: http://localhost:8081
+  balance:
+    url: http://localhost:8087
+  entry:
+    url: http://localhost:8086
