@@ -17,5 +17,7 @@ public class RepaymentResponseDto {
     private BigDecimal repaymentAmount;
     private BigDecimal balance;
     private LocalDateTime createdAt;
+    private String createdBy;
     private LocalDateTime updatedAt;
+    private String updatedBy;
 }

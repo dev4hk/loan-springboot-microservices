@@ -105,11 +105,11 @@ class RepaymentServiceImplTest {
         when(applicationClient.get(applicationId)).thenReturn(new ResponseDTO<>(applicationResponseDto));
         when(entryClient.getEntry(applicationId)).thenReturn(new ResponseDTO<>(entryResponseDto));
         when(repaymentRepository.save(any(Repayment.class))).thenReturn(repayment);
-        when(balanceClient.repaymentUpdate(applicationId, balanceRepaymentDto)).thenReturn(new ResponseDTO<>(balanceResponseDto));
+        when(balanceClient.repaymentUpdate(eq(applicationId), any(BalanceRepaymentRequestDto.class))).thenReturn(new ResponseDTO<>(balanceResponseDto));
 
         RepaymentResponseDto response = repaymentService.create(applicationId, repaymentRequestDto);
 
-        assertEquals(1000F, response.getBalance());
+        assertEquals(BigDecimal.valueOf(1000), response.getBalance());
 
     }
 
@@ -128,7 +128,7 @@ class RepaymentServiceImplTest {
     void should_update_repayment() {
         Long repaymentId = 1L;
         when(repaymentRepository.findById(repaymentId)).thenReturn(Optional.of(repayment));
-        when(balanceClient.repaymentUpdate(anyLong(), eq(balanceRepaymentDto))).thenReturn(new ResponseDTO<>(balanceResponseDto));
+        when(balanceClient.repaymentUpdate(eq(1L), any(BalanceRepaymentRequestDto.class))).thenReturn(new ResponseDTO<>(balanceResponseDto));
         RepaymentUpdateResponseDto response = repaymentService.update(repaymentId, repaymentRequestDto);
         assertEquals(1l, response.getApplicationId());
         assertEquals(balanceResponseDto.getBalance(), response.getBalance());
@@ -141,7 +141,7 @@ class RepaymentServiceImplTest {
     void should_delete_repayment() {
         Long repaymentId = 1L;
         when(repaymentRepository.findById(repaymentId)).thenReturn(Optional.of(repayment));
-        when(balanceClient.repaymentUpdate(anyLong(), eq(balanceRepaymentDto))).thenReturn(new ResponseDTO<>(balanceResponseDto));
+        when(balanceClient.repaymentUpdate(eq(repaymentId), any(BalanceRepaymentRequestDto.class))).thenReturn(new ResponseDTO<>(balanceResponseDto));
         repaymentService.delete(repaymentId);
         verify(repaymentRepository, times(1)).findById(repaymentId);
         verify(balanceClient, times(1)).repaymentUpdate(anyLong(), any(BalanceRepaymentRequestDto.class));

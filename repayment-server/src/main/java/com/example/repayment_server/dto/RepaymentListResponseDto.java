@@ -14,5 +14,7 @@ public class RepaymentListResponseDto {
     private Long repaymentId;
     private BigDecimal repaymentAmount;
     private LocalDateTime createdAt;
+    private String createdBy;
     private LocalDateTime updatedAt;
+    private String updatedBy;
 }
