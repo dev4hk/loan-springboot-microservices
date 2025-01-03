@@ -1,0 +1,22 @@
+server:
+  port: 8083
+spring:
+  datasource:
+    url: ${DATASOURCE_URL}
+    driverClassName: org.h2.Driver
+    username: ${DATASOURCE_USERNAME}
+    password: ${DATASOURCE_PASSWORD}
+  h2:
+    console:
+      enabled: true
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
