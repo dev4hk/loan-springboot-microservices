@@ -1,0 +1,12 @@
+services:
+  network-deploy-service:
+    networks:
+      - ms-loan
+
+  microservice-base-config:
+    extends:
+      service: network-deploy-service
+    deploy:
+      resources:
+        limits:
+          memory: 700m
