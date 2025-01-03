@@ -35,7 +35,7 @@ public class EntryServiceImpl implements IEntryService {
     public EntryResponseDto create(Long applicationId, EntryRequestDto request) {
 
         if (!isContractedApplication(applicationId)) {
-            throw new BaseException(ResultType.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+            throw new BaseException(ResultType.BAD_REQUEST, "Application is not contracted", HttpStatus.BAD_REQUEST);
         }
 
         Entry entry = EntryMapper.mapToEntry(request);
@@ -56,7 +56,7 @@ public class EntryServiceImpl implements IEntryService {
     private boolean isContractedApplication(Long applicationId) {
         ResponseDTO<ApplicationResponseDto> responseDto = applicationClient.get(applicationId);
         if (responseDto == null || responseDto.getData() == null) {
-            throw new BaseException(ResultType.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+            throw new BaseException(ResultType.BAD_REQUEST, "Application does not exist", HttpStatus.BAD_REQUEST);
         }
         return responseDto.getData().getContractedAt() != null;
     }
@@ -65,14 +65,14 @@ public class EntryServiceImpl implements IEntryService {
     @Override
     public EntryResponseDto get(Long applicationId) {
         Entry entry = entryRepository.findByApplicationId(applicationId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Entry does not exist", HttpStatus.NOT_FOUND));
         return EntryMapper.mapToEntryResponseDto(entry);
     }
 
     @Override
     public EntryUpdateResponseDto update(Long entryId, EntryRequestDto request) {
         Entry entry = entryRepository.findById(entryId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Entry does not exist", HttpStatus.NOT_FOUND));
         BigDecimal beforeEntryAmount = entry.getEntryAmount();
         entry.setEntryAmount(request.getEntryAmount());
         Long applicationId = entry.getApplicationId();
@@ -95,7 +95,7 @@ public class EntryServiceImpl implements IEntryService {
     @Override
     public void delete(Long entryId) {
         Entry entry = entryRepository.findById(entryId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "entry does not exist", HttpStatus.NOT_FOUND));
         entry.setIsDeleted(true);
         BigDecimal beforeEntryAMount = entry.getEntryAmount();
         Long applicationId = entry.getApplicationId();
