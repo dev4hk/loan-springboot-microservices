@@ -1,6 +1,7 @@
 package com.example.accepttermsserver.controller;
 
 import com.example.accepttermsserver.dto.AcceptTermsRequestDto;
+import com.example.accepttermsserver.dto.AcceptTermsResponseDto;
 import com.example.accepttermsserver.service.IAcceptTermsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,6 +10,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -34,7 +36,7 @@ class AcceptTermsControllerTest {
 
     @Test
     public void createAcceptTerms() {
-        doNothing().when(acceptTermsService).create(acceptTermsRequestDto);
+        when(acceptTermsService.create(acceptTermsRequestDto)).thenReturn(List.of(AcceptTermsResponseDto.builder().build()));
         acceptTermsController.create(acceptTermsRequestDto);
         verify(acceptTermsService, times(1)).create(acceptTermsRequestDto);
     }

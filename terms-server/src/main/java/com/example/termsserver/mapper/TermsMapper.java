@@ -13,11 +13,15 @@ public class TermsMapper {
                 .build();
     }
 
-    public static TermsResponseDto mapToTermsResponseDto(Terms created) {
+    public static TermsResponseDto mapToTermsResponseDto(Terms terms) {
         return TermsResponseDto.builder()
-                .termsId(created.getTermsId())
-                .name(created.getName())
-                .termsDetailUrl(created.getTermsDetailUrl())
+                .termsId(terms.getTermsId())
+                .name(terms.getName())
+                .termsDetailUrl(terms.getTermsDetailUrl())
+                .createdAt(terms.getCreatedAt())
+                .createdBy(terms.getCreatedBy())
+                .updatedAt(terms.getUpdatedAt())
+                .updatedBy(terms.getUpdatedBy())
                 .build();
     }
 
