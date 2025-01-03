@@ -40,7 +40,7 @@ public class JudgementServiceImpl implements IJudgementService {
     @Override
     public JudgementResponseDto get(Long judgementId) {
         Judgement judgement = judgementRepository.findById(judgementId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND));
         return JudgementMapper.mapToJudgementResponseDto(judgement);
     }
 
@@ -49,7 +49,7 @@ public class JudgementServiceImpl implements IJudgementService {
     public JudgementResponseDto getJudgementOfApplication(Long applicationId) {
         ensureApplicationExists(applicationId);
         Judgement judgement = judgementRepository.findByApplicationId(applicationId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND));
         return JudgementMapper.mapToJudgementResponseDto(judgement);
     }
 
@@ -57,7 +57,7 @@ public class JudgementServiceImpl implements IJudgementService {
     public JudgementResponseDto update(Long judgementId, JudgementRequestDto request) {
         ensureApplicationExists(request.getApplicationId());
         Judgement judgement = judgementRepository.findById(judgementId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND));
         judgement.setFirstname(request.getFirstname());
         judgement.setLastname(request.getLastname());
         judgement.setApprovalAmount(request.getApprovalAmount());
@@ -67,14 +67,14 @@ public class JudgementServiceImpl implements IJudgementService {
     @Override
     public void delete(Long judgementId) {
         Judgement judgement = judgementRepository.findById(judgementId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND));
         judgement.setIsDeleted(true);
     }
 
     @Override
     public GrantAmountDto grant(Long judgementId) {
         Judgement judgement = judgementRepository.findById(judgementId).orElseThrow(() ->
-                new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND)
+                new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND)
         );
 
         Long applicationId = judgement.getApplicationId();
@@ -91,7 +91,7 @@ public class JudgementServiceImpl implements IJudgementService {
     private void ensureApplicationExists(Long applicationId) {
         ResponseDTO<ApplicationResponseDto> response = applicationClient.get(applicationId);
         if (response == null || response.getData() == null) {
-            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
+            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application server error", HttpStatus.NOT_FOUND);
         }
     }
 }

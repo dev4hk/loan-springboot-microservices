@@ -41,6 +41,7 @@ public class JudgementRequestDto {
     )
     @NotNull(message = "Hope amount cannot be null or empty")
     @Digits(integer = 15, fraction = 2, message = "Hope amount must be a number with up to 2 decimal places")
+    @DecimalMin(value = "0.0", inclusive = false, message = "Approval amount must be greater than zero")
     private BigDecimal approvalAmount;
 
 }

@@ -41,7 +41,7 @@ public class FileStorageServiceImpl implements IFileStorageService {
             );
         } catch (IOException e) {
             System.out.println(e.getLocalizedMessage());
-            throw new BaseException(ResultType.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new BaseException(ResultType.SYSTEM_ERROR, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -55,7 +55,7 @@ public class FileStorageServiceImpl implements IFileStorageService {
             if (resource.exists() && resource.isReadable()) {
                 return resource;
             } else {
-                throw new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
+                throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "File does not exist", HttpStatus.NOT_FOUND);
             }
 
         } catch (BaseException e) {
@@ -72,7 +72,7 @@ public class FileStorageServiceImpl implements IFileStorageService {
             String applicationPath = uploadPath.concat("/" + applicationId);
             return Files.walk(Paths.get(applicationPath), 1).filter(path -> !path.equals(Paths.get(applicationPath)));
         } catch (Exception e) {
-            throw new BaseException(ResultType.SYSTEM_ERROR, HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new BaseException(ResultType.SYSTEM_ERROR, e.getLocalizedMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

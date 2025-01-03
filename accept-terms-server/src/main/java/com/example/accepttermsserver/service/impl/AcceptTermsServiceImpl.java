@@ -29,7 +29,7 @@ public class AcceptTermsServiceImpl implements IAcceptTermsService {
         List<Long> termsIds = new ArrayList<>(acceptTermsRequestDto.getTermsIds());
 
         if (termsIds.isEmpty()) {
-            throw new BaseException(ResultType.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+            throw new BaseException(ResultType.BAD_REQUEST, "Terms does not exist", HttpStatus.BAD_REQUEST);
         }
 
         Collections.sort(termsIds);
@@ -39,7 +39,7 @@ public class AcceptTermsServiceImpl implements IAcceptTermsService {
         List<AcceptTermsResponseDto> acceptTermsResponseDtos = new ArrayList<>();
         termsIds.forEach(termsId -> {
             if (acceptTermsRepository.existsByApplicationIdAndTermsId(applicationId, termsId)) {
-                throw new BaseException(ResultType.DUPLICATED_ACCEPT_TERMS, HttpStatus.BAD_REQUEST);
+                throw new BaseException(ResultType.DUPLICATED_ACCEPT_TERMS, "Accept Terms already exists", HttpStatus.BAD_REQUEST);
             }
             AcceptTerms acceptTerms = AcceptTerms.builder()
                     .applicationId(applicationId)

@@ -16,6 +16,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -175,7 +177,7 @@ public class ApplicationController {
     }
     )
     @PostMapping("/{applicationId}/terms")
-    public ResponseDTO<Void> acceptTerms(@PathVariable Long applicationId, @RequestBody AcceptTermsRequestDto request) {
+    public ResponseDTO<Void> acceptTerms(@PathVariable Long applicationId, @Valid @RequestBody AcceptTermsRequestDto request) {
         applicationService.acceptTerms(applicationId, request);
         return ok();
     }
@@ -209,7 +211,7 @@ public class ApplicationController {
             )
     }
     )
-    @PostMapping("/{applicationId}/files")
+    @PostMapping(value = "/{applicationId}/files", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseDTO<Void> upload(@PathVariable Long applicationId, MultipartFile file) {
         applicationService.uploadFile(applicationId, file);
         return ok();
@@ -245,8 +247,8 @@ public class ApplicationController {
     }
     )
     @GetMapping("/{applicationId}/files")
-    public ResponseDTO<Resource> download(@PathVariable Long applicationId, @RequestParam(value = "fileName") String fileName) {
-        return ok(applicationService.downloadFile(applicationId, fileName));
+    public ResponseEntity<Resource> download(@PathVariable Long applicationId, @RequestParam(value = "fileName") String fileName) {
+        return ResponseEntity.ok(applicationService.downloadFile(applicationId, fileName));
     }
 
     @Operation(
@@ -322,6 +324,11 @@ public class ApplicationController {
     public ResponseDTO<Void> updateGrant(@PathVariable Long applicationId, @Valid @RequestBody GrantAmountDto grantAmountDto) {
         applicationService.updateGrant(applicationId, grantAmountDto);
         return ok();
+    }
+
+    @PutMapping("/{applicationId}/contract")
+    public ResponseDTO<ApplicationResponseDto> contract(@PathVariable Long applicationId) {
+        return ok(applicationService.contract(applicationId));
     }
 
 }
