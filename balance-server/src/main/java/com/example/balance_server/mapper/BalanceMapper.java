@@ -18,6 +18,10 @@ public class BalanceMapper {
                 .balanceId(balance.getBalanceId())
                 .applicationId(balance.getApplicationId())
                 .balance(balance.getBalance())
+                .createdAt(balance.getCreatedAt())
+                .createdBy(balance.getCreatedBy())
+                .updatedAt(balance.getUpdatedAt())
+                .updatedBy(balance.getUpdatedBy())
                 .build();
     }
 }

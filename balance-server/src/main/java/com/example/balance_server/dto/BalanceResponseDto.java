@@ -3,6 +3,7 @@ package com.example.balance_server.dto;
 import lombok.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -16,5 +17,13 @@ public class BalanceResponseDto {
     private Long applicationId;
 
     private BigDecimal balance;
+
+    private LocalDateTime createdAt;
+
+    private String createdBy;
+
+    private LocalDateTime updatedAt;
+
+    private String updatedBy;
 
 }
