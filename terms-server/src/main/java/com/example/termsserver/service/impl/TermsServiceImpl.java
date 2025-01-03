@@ -39,13 +39,13 @@ public class TermsServiceImpl implements ITermsService {
     @Transactional(readOnly = true)
     @Override
     public TermsResponseDto get(Long termsId) {
-        Terms terms = termsRepository.findById(termsId).orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+        Terms terms = termsRepository.findById(termsId).orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Terms does not exist",HttpStatus.NOT_FOUND));
         return TermsMapper.mapToTermsResponseDto(terms);
     }
 
     @Override
     public TermsResponseDto update(Long termsId, TermsRequestDto request) {
-        Terms terms = termsRepository.findById(termsId).orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+        Terms terms = termsRepository.findById(termsId).orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Terms does not exist",HttpStatus.NOT_FOUND));
         terms.setName(request.getName());
         terms.setTermsDetailUrl(request.getTermsDetailUrl());
         return TermsMapper.mapToTermsResponseDto(terms);
@@ -53,7 +53,7 @@ public class TermsServiceImpl implements ITermsService {
 
     @Override
     public void delete(Long termsId) {
-        Terms terms = termsRepository.findById(termsId).orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+        Terms terms = termsRepository.findById(termsId).orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Terms does not exist",HttpStatus.NOT_FOUND));
         terms.setIsDeleted(true);
     }
 

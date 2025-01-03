@@ -45,7 +45,7 @@ public class BalanceServiceImpl implements IBalanceService {
     @Override
     public BalanceResponseDto get(Long applicationId) {
         Balance balance = balanceRepository.findByApplicationId(applicationId).orElseThrow(() -> {
-            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
+            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Balance does not exist", HttpStatus.NOT_FOUND);
         });
         return BalanceMapper.mapToBalanceResponseDto(balance);
     }
@@ -53,7 +53,7 @@ public class BalanceServiceImpl implements IBalanceService {
     @Override
     public BalanceResponseDto update(Long applicationId, BalanceUpdateRequestDto request) {
         Balance balance = balanceRepository.findByApplicationId(applicationId).orElseThrow(() ->
-                new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                new BaseException(ResultType.RESOURCE_NOT_FOUND, "Balance does not exist", HttpStatus.NOT_FOUND));
         BigDecimal beforeEntryAmount = request.getBeforeEntryAmount();
         BigDecimal afterEntryAmount = request.getAfterEntryAmount();
         BigDecimal updatedBalance = balance.getBalance();
@@ -67,7 +67,7 @@ public class BalanceServiceImpl implements IBalanceService {
     @Override
     public BalanceResponseDto repaymentUpdate(Long applicationId, BalanceRepaymentRequestDto request) {
         Balance balance = balanceRepository.findByApplicationId(applicationId).orElseThrow(() -> {
-            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
+            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Balance does not exist", HttpStatus.NOT_FOUND);
         });
         BigDecimal updatedBalance = balance.getBalance();
         BigDecimal repaymentAmount = request.getRepaymentAmount();
@@ -83,7 +83,7 @@ public class BalanceServiceImpl implements IBalanceService {
     @Override
     public void delete(Long applicationId) {
         Balance balance = balanceRepository.findByApplicationId(applicationId).orElseThrow(() ->
-                new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                new BaseException(ResultType.RESOURCE_NOT_FOUND, "Balance does not exist", HttpStatus.NOT_FOUND));
         balance.setIsDeleted(true);
     }
 }

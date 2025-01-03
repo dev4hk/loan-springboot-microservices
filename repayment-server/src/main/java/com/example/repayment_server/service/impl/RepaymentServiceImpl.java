@@ -36,7 +36,7 @@ public class RepaymentServiceImpl implements IRepaymentService {
     @Override
     public RepaymentResponseDto create(Long applicationId, RepaymentRequestDto repaymentRequestDto) {
         if (!isRepayableApplication(applicationId)) {
-            throw new BaseException(ResultType.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+            throw new BaseException(ResultType.BAD_REQUEST, "Application not repayable", HttpStatus.BAD_REQUEST);
         }
 
         Repayment repayment = RepaymentMapper.mapToRepayment(repaymentRequestDto);
@@ -84,7 +84,7 @@ public class RepaymentServiceImpl implements IRepaymentService {
     @Override
     public RepaymentUpdateResponseDto update(Long repaymentId, RepaymentRequestDto repaymentRequestDto) {
         Repayment repayment = repaymentRepository.findById(repaymentId).orElseThrow(() ->
-                new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND)
+                new BaseException(ResultType.RESOURCE_NOT_FOUND, "Repayment does not exist", HttpStatus.NOT_FOUND)
         );
         Long applicationId = repayment.getApplicationId();
         BigDecimal beforeRepaymentAmount = repayment.getRepaymentAmount();
@@ -120,7 +120,7 @@ public class RepaymentServiceImpl implements IRepaymentService {
     @Override
     public void delete(Long repaymentId) {
         Repayment repayment = repaymentRepository.findById(repaymentId).orElseThrow(() ->
-                new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND)
+                new BaseException(ResultType.RESOURCE_NOT_FOUND, "Repayment does not exist", HttpStatus.NOT_FOUND)
         );
 
         Long applicationid = repayment.getApplicationId();

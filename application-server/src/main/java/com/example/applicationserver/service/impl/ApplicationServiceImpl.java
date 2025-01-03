@@ -52,14 +52,14 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public ApplicationResponseDto get(Long applicationId) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exists", HttpStatus.NOT_FOUND));
         return ApplicationMapper.mapToApplicationResponseDto(application);
     }
 
     @Override
     public ApplicationResponseDto update(Long applicationId, ApplicationRequestDto request) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exists", HttpStatus.NOT_FOUND));
         application.setFirstname(request.getFirstname());
         application.setLastname(request.getLastname());
         application.setCellPhone(request.getCellPhone());
@@ -72,7 +72,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public void delete(Long applicationId) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exists", HttpStatus.NOT_FOUND));
         application.setIsDeleted(true);
     }
 
@@ -81,19 +81,19 @@ public class ApplicationServiceImpl implements IApplicationService {
         get(applicationId);
         List<TermsResponseDto> terms = termClient.getAll().getData();
         if (terms.isEmpty()) {
-            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
+            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Terms server error", HttpStatus.NOT_FOUND);
         }
 
         List<Long> requestTermsIds = request.getTermsIds();
 
         if (terms.size() != requestTermsIds.size()) {
-            throw new BaseException(ResultType.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+            throw new BaseException(ResultType.BAD_REQUEST, "Terms size does not match", HttpStatus.BAD_REQUEST);
         }
 
         List<Long> termsIds = terms.stream().map(TermsResponseDto::getTermsId).toList();
 
         if (!termsIds.containsAll(requestTermsIds)) {
-            throw new BaseException(ResultType.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+            throw new BaseException(ResultType.BAD_REQUEST, "Terms does not match", HttpStatus.BAD_REQUEST);
         }
 
         AcceptTermsRequestDto.builder()
@@ -107,10 +107,13 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public void uploadFile(Long applicationId, MultipartFile file) {
         if (!isPresentApplication(applicationId)) {
-            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
+            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exists", HttpStatus.NOT_FOUND);
         }
-
-        fileStorageClient.upload(applicationId, file);
+        try{
+            fileStorageClient.upload(applicationId, file);
+        } catch (Exception e) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, "File Storager server error", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
@@ -131,21 +134,21 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public void updateGrant(Long applicationId, GrantAmountDto grantAmountDto) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exists", HttpStatus.NOT_FOUND));
         application.setApprovalAmount(grantAmountDto.getApprovalAmount());
     }
 
     @Override
     public ApplicationResponseDto contract(Long applicationId) {
         Application application = applicationRepository.findById(applicationId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exists", HttpStatus.NOT_FOUND));
         ResponseDTO<JudgementResponseDto> judgementResponse = judgementClient.getJudgmentOfApplication(applicationId);
         if (judgementResponse == null || judgementResponse.getData() == null) {
-            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND);
+            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND);
         }
 
         if (application.getApprovalAmount() == null || application.getApprovalAmount().compareTo(BigDecimal.ZERO) == 0) {
-            throw new BaseException(ResultType.BAD_REQUEST, HttpStatus.BAD_REQUEST);
+            throw new BaseException(ResultType.BAD_REQUEST, "Approval amount does not exist", HttpStatus.BAD_REQUEST);
         }
 
         application.setContractedAt(LocalDateTime.now());

@@ -35,14 +35,14 @@ public class CounselServiceImpl implements ICounselService {
     @Override
     public CounselResponseDto get(Long counselId) {
         Counsel counsel = counselRepository.findById(counselId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Counsel does not exist", HttpStatus.NOT_FOUND));
         return CounselMapper.mapToCounselResponseDto(counsel);
     }
 
     @Override
     public CounselResponseDto update(Long counselId, CounselRequestDto request) {
         Counsel counsel = counselRepository.findById(counselId).orElseThrow(() ->
-                new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                new BaseException(ResultType.RESOURCE_NOT_FOUND, "Counsel does not exist", HttpStatus.NOT_FOUND));
         counsel.setFirstname(request.getFirstname());
         counsel.setLastname(request.getLastname());
         counsel.setCellPhone(request.getCellPhone());
@@ -57,7 +57,7 @@ public class CounselServiceImpl implements ICounselService {
     @Override
     public void delete(Long counselId) {
         Counsel counsel = counselRepository.findById(counselId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Counsel does not exist", HttpStatus.NOT_FOUND));
         counsel.setIsDeleted(true);
     }
 }

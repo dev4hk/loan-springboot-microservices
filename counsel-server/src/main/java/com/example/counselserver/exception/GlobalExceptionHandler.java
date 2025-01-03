@@ -53,7 +53,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
                 .apiPath(request.getDescription(false))
                 .errorCode(exception.getHttpStatus())
-                .errorMessage(exception.getDesc())
+                .errorMessage(exception.getExtraMessage().isBlank() ? exception.getLocalizedMessage() : exception.getExtraMessage())
                 .errorTime(LocalDateTime.now())
                 .build();
         return new ResponseEntity<>(ResponseDTO.builder()
