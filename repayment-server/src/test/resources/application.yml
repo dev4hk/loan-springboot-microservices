@@ -1,3 +1,7 @@
+spring:
+  cloud:
+    config:
+      enabled: false
 client:
   application:
     url: http://localhost:${wiremock.server.port}
