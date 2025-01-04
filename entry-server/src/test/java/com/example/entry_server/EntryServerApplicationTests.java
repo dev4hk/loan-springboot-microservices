@@ -54,6 +54,7 @@ class EntryServerApplicationTests {
                 .body(request)
                 .post("/entries/" + applicationId)
                 .then()
+                .log().all()
                 .statusCode(200)
                 .body("data.entryId", equalTo(1))
                 .body("data.entryAmount", equalTo(1000.00F));
@@ -71,6 +72,7 @@ class EntryServerApplicationTests {
                 .contentType("application/json")
                 .get("/entries/" + applicationId)
                 .then()
+                .log().all()
                 .statusCode(200)
                 .body("data.applicationId", equalTo(1))
                 .body("data.entryAmount", equalTo(1000.00F));
@@ -100,6 +102,7 @@ class EntryServerApplicationTests {
                 .body(request)
                 .put("/entries/" + entryId)
                 .then()
+                .log().all()
                 .statusCode(200)
                 .body("data.entryId", equalTo(1))
                 .body("data.afterEntryAmount", equalTo(2000.00F));
@@ -124,6 +127,7 @@ class EntryServerApplicationTests {
                 .contentType("application/json")
                 .delete("/entries/" + entryId)
                 .then()
+                .log().all()
                 .statusCode(200);
     }
     @Order(5)
