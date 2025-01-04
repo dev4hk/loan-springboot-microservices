@@ -1,100 +1,143 @@
 services:
+
+  config-server:
+    image: "config-server:2.0"
+    container_name: "config-server-ms"
+    ports:
+      - "8071:8071"
+    healthcheck:
+      test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    extends:
+      file: common-config.yml
+      service: microservice-base-config
+
   counsel-server:
-    image: "counsel-server:1.0"
+    image: "counsel-server:2.0"
     container_name: "counsel-server-ms"
+    depends_on:
+      config-server:
+        condition: service_healthy
     ports:
       - "8080:8080"
     env_file:
       - "../../counsel-server/.env"
     extends:
       file: common-config.yml
-      service: microservice-base-config
+      service: microservice-configserver-config
 
   application-server:
-    image: "application-server:1.0"
+    image: "application-server:2.0"
     container_name: "application-server-ms"
+    depends_on:
+      config-server:
+        condition: service_healthy
     ports:
-      - "8081:8080"
+      - "8081:8081"
     env_file:
       - "../../application-server/.env"
     extends:
       file: common-config.yml
-      service: microservice-base-config
+      service: microservice-configserver-config
 
   terms-server:
-    image: "terms-server:1.0"
+    image: "terms-server:2.0"
     container_name: "terms-server-ms"
+    depends_on:
+      config-server:
+        condition: service_healthy
     ports:
-      - "8082:8080"
+      - "8082:8082"
     env_file:
       - "../../terms-server/.env"
     extends:
       file: common-config.yml
-      service: microservice-base-config
+      service: microservice-configserver-config
 
   accept-terms-server:
-    image: "accept-terms-server:1.0"
+    image: "accept-terms-server:2.0"
     container_name: "accept-terms-server-ms"
+    depends_on:
+      config-server:
+        condition: service_healthy
     ports:
-      - "8083:8080"
+      - "8083:8083"
     env_file:
       - "../../accept-terms-server/.env"
     extends:
       file: common-config.yml
-      service: microservice-base-config
+      service: microservice-configserver-config
 
   file-storage-server:
-    image: "file-storage-server:1.0"
+    image: "file-storage-server:2.0"
     container_name: "file-storage-server-ms"
+    depends_on:
+      config-server:
+        condition: service_healthy
     ports:
-      - "8084:8080"
+      - "8084:8084"
     extends:
       file: common-config.yml
-      service: microservice-base-config
+      service: microservice-configserver-config
 
   judgement-server:
-    image: "judgement-server:1.0"
+    image: "judgement-server:2.0"
     container_name: "judgement-server-ms"
+    depends_on:
+      config-server:
+        condition: service_healthy
     ports:
-      - "8085:8080"
+      - "8085:8085"
     env_file:
       - "../../judgement-server/.env"
     extends:
       file: common-config.yml
-      service: microservice-base-config
+      service: microservice-configserver-config
 
   entry-server:
-    image: "entry-server:1.0"
+    image: "entry-server:2.0"
     container_name: "entry-server-ms"
+    depends_on:
+      config-server:
+        condition: service_healthy
     ports:
-      - "8086:8080"
+      - "8086:8086"
     env_file:
       - "../../entry-server/.env"
     extends:
       file: common-config.yml
-      service: microservice-base-config
+      service: microservice-configserver-config
 
   balance-server:
-    image: "balance-server:1.0"
+    image: "balance-server:2.0"
     container_name: "balance-server-ms"
+    depends_on:
+      config-server:
+        condition: service_healthy
     ports:
-      - "8087:8080"
+      - "8087:8087"
     env_file:
       - "../../balance-server/.env"
     extends:
       file: common-config.yml
-      service: microservice-base-config
+      service: microservice-configserver-config
 
   repayment-server:
-    image: "repayment-server:1.0"
+    image: "repayment-server:2.0"
     container_name: "repayment-server-ms"
+    depends_on:
+      config-server:
+        condition: service_healthy
     ports:
-      - "8088:8080"
+      - "8088:8088"
     env_file:
       - "../../repayment-server/.env"
     extends:
       file: common-config.yml
-      service: microservice-base-config
+      service: microservice-configserver-config
 
 networks:
   ms-loan:
