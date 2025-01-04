@@ -1,4 +1,7 @@
 spring:
+  cloud:
+    config:
+      enabled: false
   servlet:
     multipart:
       location: ./upload/test
