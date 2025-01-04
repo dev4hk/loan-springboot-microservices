@@ -10,8 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-//@FeignClient(name = "balance-server", url = "${client.balance.url}")
-@FeignClient("balance-server")
+@FeignClient(value = "balance-server", url = "${client.balance.url}")
 public interface BalanceClient {
 
     @PostMapping("/balances/{applicationId}")
