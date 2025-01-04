@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
-@FeignClient(name = "file-storage-server", url = "${client.file-storage.url}")
+@FeignClient(value = "file-storage-server", url = "${client.file-storage.url}")
 public interface FileStorageClient {
 
     @PostMapping(value = "/files/{applicationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})

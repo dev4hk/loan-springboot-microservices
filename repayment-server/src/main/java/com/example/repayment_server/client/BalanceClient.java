@@ -8,7 +8,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "balance-server", url = "${client.balance.url}")
+//@FeignClient(name = "balance-server", url = "${client.balance.url}")
+@FeignClient("balance-server")
 public interface BalanceClient {
 
     @PutMapping("/balances/{applicationId}/repayment")

@@ -72,7 +72,7 @@ class BalanceServerApplicationTests {
 		String invalidRequestDto = """
                 {
                         "applicationId": 1,
-                        "beforeEntryAmount": -1000.001,
+                        "beforeEntryAmount": 1000.001,
                         "afterEntryAmount": 1000.00
                 }
                 """;
