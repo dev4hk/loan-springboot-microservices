@@ -124,7 +124,7 @@
 				<version>3.4.2</version>
 				<configuration>
 					<to>
-						<image>${project.artifactId}:1.0</image>
+						<image>${project.artifactId}:2.0</image>
 					</to>
 				</configuration>
 			</plugin>
