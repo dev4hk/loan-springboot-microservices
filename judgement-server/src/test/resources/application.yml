@@ -2,6 +2,11 @@ spring:
   cloud:
     config:
       enabled: false
+
+eureka:
+  client:
+    enabled: false
+
 client:
   application:
     url: http://localhost:${wiremock.server.port}

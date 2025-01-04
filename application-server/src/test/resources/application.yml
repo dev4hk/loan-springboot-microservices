@@ -3,6 +3,10 @@ spring:
     config:
       enabled: false
 
+eureka:
+  client:
+    enabled: false
+
 client:
   judgement:
     url: http://localhost:${wiremock.server.port}
@@ -12,3 +16,5 @@ client:
     url: http://localhost:${wiremock.server.port}
   terms:
     url: http://localhost:${wiremock.server.port}
+
+
