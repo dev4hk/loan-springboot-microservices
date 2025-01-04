@@ -1,23 +1,7 @@
-server:
-  port: 8087
 spring:
   application:
     name: balance-server
-  datasource:
-    url: ${DATASOURCE_URL}
-    driverClassName: org.h2.Driver
-    username: ${DATASOURCE_USERNAME}
-    password: ${DATASOURCE_PASSWORD}
-  h2:
-    console:
-      enabled: true
-  jpa:
-    database-platform: org.hibernate.dialect.H2Dialect
-    hibernate:
-      ddl-auto: update
-    show-sql: true
-  servlet:
-    multipart:
-      enabled: true
-      max-file-size: 10MB
-      max-request-size: 10MB
+  profiles:
+    active: default
+  config:
+    import: "optional:configserver:http://localhost:8071/"

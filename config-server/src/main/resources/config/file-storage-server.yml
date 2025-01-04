@@ -1,0 +1,16 @@
+server:
+  port: 8084
+spring:
+  servlet:
+    multipart:
+      enabled: true
+      location: ./file-storage-server/upload
+      max-file-size: 10MB
+      max-request-size: 10MB
+      file-size-threshold: 0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
