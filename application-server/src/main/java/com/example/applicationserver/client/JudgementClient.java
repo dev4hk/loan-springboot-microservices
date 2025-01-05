@@ -1,12 +1,13 @@
 package com.example.applicationserver.client;
 
 import com.example.applicationserver.client.dto.JudgementResponseDto;
+import com.example.applicationserver.client.fallback.JudgementFallback;
 import com.example.applicationserver.dto.ResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(name = "judgement-server")
+@FeignClient(name = "judgement-server", fallback = JudgementFallback.class)
 public interface JudgementClient {
 
     @GetMapping("/api/applications/{applicationId}")
