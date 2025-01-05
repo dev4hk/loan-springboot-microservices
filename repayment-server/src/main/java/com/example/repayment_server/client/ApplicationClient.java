@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 @FeignClient(value = "application-server", url = "${client.application.url}")
 public interface ApplicationClient {
 
-    @GetMapping("/applications/{applicationId}")
+    @GetMapping("/api/{applicationId}")
     ResponseDTO<ApplicationResponseDto> get(@PathVariable Long applicationId);
 
 }

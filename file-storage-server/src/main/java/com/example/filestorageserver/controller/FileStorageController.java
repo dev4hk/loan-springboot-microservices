@@ -27,7 +27,7 @@ import static com.example.filestorageserver.dto.ResponseDTO.ok;
         description = "REST APIs to upload, download, fetch file info, delete files"
 )
 @RequiredArgsConstructor
-@RequestMapping("/files")
+@RequestMapping("/api")
 @RestController
 public class FileStorageController {
 

@@ -31,7 +31,7 @@ public class AcceptTermsStub {
                 + "\"termsIds\": [1]"
                 + "}";
 
-        WireMock.stubFor(WireMock.post(WireMock.urlEqualTo("/accept-terms"))
+        WireMock.stubFor(WireMock.post(WireMock.urlEqualTo("/api"))
                 .withRequestBody(WireMock.equalToJson(requestJson))
                 .willReturn(WireMock.aResponse()
                         .withStatus(200)

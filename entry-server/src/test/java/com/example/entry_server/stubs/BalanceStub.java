@@ -26,7 +26,7 @@ public class BalanceStub {
                 + "\"entryAmount\": " + balanceRequestDto.getEntryAmount()
                 + "}";
 
-        WireMock.stubFor(WireMock.post(WireMock.urlEqualTo("/balances/" + applicationId))
+        WireMock.stubFor(WireMock.post(WireMock.urlEqualTo("/api/" + applicationId))
                 .withRequestBody(WireMock.equalToJson(requestJson))
                 .willReturn(WireMock.aResponse()
                         .withStatus(200)
@@ -54,7 +54,7 @@ public class BalanceStub {
                 + "\"afterEntryAmount\": " + balanceUpdateRequestDto.getAfterEntryAmount()
                 + "}";
 
-        WireMock.stubFor(WireMock.put(WireMock.urlEqualTo("/balances/" + applicationId))
+        WireMock.stubFor(WireMock.put(WireMock.urlEqualTo("/api/" + applicationId))
                 .withRequestBody(WireMock.equalToJson(requestJson))
                 .willReturn(WireMock.aResponse()
                         .withStatus(200)

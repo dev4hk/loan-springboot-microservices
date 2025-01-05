@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 )
 @Validated
 @RestController
-@RequestMapping("/entries")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class EntryController {
 

@@ -34,7 +34,7 @@ public class ApplicationStub {
                 + "}"
                 + "}";
 
-        stubFor(get(urlEqualTo("/applications/" + applicationId))
+        stubFor(get(urlEqualTo("/api/" + applicationId))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -66,7 +66,7 @@ public class ApplicationStub {
                 + "}"
                 + "}";
 
-        stubFor(get(urlEqualTo("/applications/" + applicationId))
+        stubFor(get(urlEqualTo("/api/" + applicationId))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -74,7 +74,7 @@ public class ApplicationStub {
     }
 
     public void stubApplicationGetCallNonExistent(Long applicationId) {
-        stubFor(get(urlEqualTo("/applications/" + applicationId))
+        stubFor(get(urlEqualTo("/api/" + applicationId))
                 .willReturn(aResponse()
                         .withStatus(404)
                         .withHeader("Content-Type", "application/json")

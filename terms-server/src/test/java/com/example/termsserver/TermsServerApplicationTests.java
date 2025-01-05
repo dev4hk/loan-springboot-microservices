@@ -37,7 +37,7 @@ class TermsServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .post("/terms")
+                .post("/api")
                 .then()
                 .statusCode(200)
                 .body("data.name", equalTo("name"));
@@ -56,7 +56,7 @@ class TermsServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .post("/terms")
+                .post("/api")
                 .then()
                 .statusCode(400)
                 .body("data.name", equalTo("Name cannot be empty"));
@@ -66,7 +66,7 @@ class TermsServerApplicationTests {
     @Test
     void should_get_terms_list() {
         RestAssured.given()
-                .get("/terms")
+                .get("/api")
                 .then()
                 .statusCode(200)
                 .body("data[0].name", equalTo("name"))
@@ -77,7 +77,7 @@ class TermsServerApplicationTests {
     @Test
     void should_get_terms() {
         RestAssured.given()
-                .get("/terms/1")
+                .get("/api/1")
                 .then()
                 .statusCode(200)
                 .body("data.name", equalTo("name"));
@@ -87,7 +87,7 @@ class TermsServerApplicationTests {
     @Test
     void should_throw_exception_when_request_non_exist_terms_id() {
         RestAssured.given()
-                .get("/terms/2")
+                .get("/api/2")
                 .then()
                 .statusCode(404);
     }
@@ -105,7 +105,7 @@ class TermsServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .put("/terms/1")
+                .put("/api/1")
                 .then()
                 .statusCode(200)
                 .body("data.name", equalTo("update"));
@@ -124,7 +124,7 @@ class TermsServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .put("/terms/2")
+                .put("/api/2")
                 .then()
                 .statusCode(404);
     }
@@ -142,7 +142,7 @@ class TermsServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(invalidRequestDto)
-                .put("/terms/1")
+                .put("/api/1")
                 .then()
                 .statusCode(400)
                 .body("data.name", equalTo("Name cannot be empty"));
@@ -152,7 +152,7 @@ class TermsServerApplicationTests {
     @Test
     void should_delete_terms() {
         RestAssured.given()
-                .delete("/terms/1")
+                .delete("/api/1")
                 .then()
                 .statusCode(200);
     }
@@ -161,7 +161,7 @@ class TermsServerApplicationTests {
     @Test
     void should_throw_exception_when_request_delete_non_exist_terms() {
         RestAssured.given()
-                .delete("/terms/2")
+                .delete("/api/2")
                 .then()
                 .statusCode(404);
     }

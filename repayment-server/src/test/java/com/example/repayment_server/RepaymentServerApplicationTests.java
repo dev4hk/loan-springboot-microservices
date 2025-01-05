@@ -1,18 +1,26 @@
 package com.example.repayment_server;
 
+import com.example.repayment_server.client.EntryClient;
 import com.example.repayment_server.client.dto.BalanceRepaymentRequestDto;
+import com.example.repayment_server.client.dto.EntryResponseDto;
 import com.example.repayment_server.dto.RepaymentRequestDto;
+import com.example.repayment_server.dto.ResponseDTO;
 import com.example.repayment_server.stubs.ApplicationStub;
 import com.example.repayment_server.stubs.BalanceStub;
-import com.example.repayment_server.stubs.EntryStub;
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
+import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.equalTo;
 
@@ -23,6 +31,9 @@ class RepaymentServerApplicationTests {
 
 	@LocalServerPort
 	private Integer port;
+
+	@MockitoBean
+	private EntryClient entryClient;
 
 	@BeforeEach
 	void setup() {
@@ -47,12 +58,22 @@ class RepaymentServerApplicationTests {
 						.type(BalanceRepaymentRequestDto.RepaymentType.REMOVE)
 						.build()
 		);
-		EntryStub.stubGetEntry(applicationId);
+
+		Mockito.when(entryClient.getEntry(applicationId))
+						.thenReturn(new ResponseDTO<>(new EntryResponseDto(
+								1L,
+								applicationId,
+								BigDecimal.valueOf(1000),
+								LocalDateTime.now(),
+								"ENTRY_MS",
+								LocalDateTime.now(),
+								"ENTRY_MS"
+						)));
 
 		RestAssured.given()
 				.contentType("application/json")
 				.body(request)
-				.post("/repayments/" + applicationId)
+				.post("/api/" + applicationId)
 				.then()
 				.log().all()
 				.statusCode(200)
@@ -68,7 +89,7 @@ class RepaymentServerApplicationTests {
 
 		RestAssured.given()
 				.contentType("application/json")
-				.get("/repayments/" + applicationId)
+				.get("/api/" + applicationId)
 				.then()
 				.log().all()
 				.statusCode(200)
@@ -104,7 +125,7 @@ class RepaymentServerApplicationTests {
 		RestAssured.given()
 				.contentType("application/json")
 				.body(request)
-				.put("/repayments/" + repaymentId)
+				.put("/api/" + repaymentId)
 				.then()
 				.log().all()
 				.statusCode(200)
@@ -128,7 +149,7 @@ class RepaymentServerApplicationTests {
 
 		RestAssured.given()
 				.contentType("application/json")
-				.delete("/repayments/" + repaymentId)
+				.delete("/api/" + repaymentId)
 				.then()
 				.log().all()
 				.statusCode(200);
@@ -146,7 +167,7 @@ class RepaymentServerApplicationTests {
 		RestAssured.given()
 				.contentType("application/json")
 				.body(request)
-				.post("/repayments/" + applicationId)
+				.post("/api/" + applicationId)
 				.then()
 				.log().all()
 				.statusCode(400);
@@ -173,7 +194,7 @@ class RepaymentServerApplicationTests {
 		RestAssured.given()
 				.contentType("application/json")
 				.body(request)
-				.put("/repayments/" + repaymentId)
+				.put("/api/" + repaymentId)
 				.then()
 				.log().all()
 				.statusCode(400);
@@ -195,7 +216,7 @@ class RepaymentServerApplicationTests {
 
 		RestAssured.given()
 				.contentType("application/json")
-				.delete("/repayments/" + repaymentId)
+				.delete("/api/" + repaymentId)
 				.then()
 				.log().all()
 				.statusCode(404);

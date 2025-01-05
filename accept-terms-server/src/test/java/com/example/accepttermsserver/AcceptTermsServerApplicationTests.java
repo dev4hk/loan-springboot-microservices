@@ -35,7 +35,7 @@ class AcceptTermsServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .post("/accept-terms")
+                .post("/api")
                 .then()
                 .statusCode(200);
     }
@@ -53,7 +53,7 @@ class AcceptTermsServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .post("/accept-terms")
+                .post("/api")
                 .then()
                 .statusCode(400);
     }
@@ -71,7 +71,7 @@ class AcceptTermsServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .post("/accept-terms")
+                .post("/api")
                 .then()
                 .statusCode(400);
     }

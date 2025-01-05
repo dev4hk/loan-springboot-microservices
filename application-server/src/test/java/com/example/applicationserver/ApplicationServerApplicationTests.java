@@ -53,7 +53,7 @@ class ApplicationServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .post("/applications")
+                .post("/api")
                 .then()
                 .statusCode(200)
                 .body("data.firstname", equalTo("firstname"));
@@ -63,7 +63,7 @@ class ApplicationServerApplicationTests {
     @Test
     void should_get_application() {
         RestAssured.given()
-                .get("/applications/1")
+                .get("/api/1")
                 .then()
                 .statusCode(200)
                 .body("data.firstname", equalTo("firstname"));
@@ -73,7 +73,7 @@ class ApplicationServerApplicationTests {
     @Test
     void should_throw_exception_when_request_non_exist_application_id() {
         RestAssured.given()
-                .get("/applications/2")
+                .get("/api/2")
                 .then()
                 .statusCode(404);
     }
@@ -94,7 +94,7 @@ class ApplicationServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(invalidRequestDto)
-                .put("/applications/1")
+                .put("/api/1")
                 .then()
                 .statusCode(400)
                 .body("data.firstname", equalTo("First name must contain only letters"));
@@ -116,13 +116,13 @@ class ApplicationServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .put("/applications/1")
+                .put("/api/1")
                 .then()
                 .statusCode(200);
 
         RestAssured.given()
                 .accept("application/json")
-                .get("/applications/1")
+                .get("/api/1")
                 .then()
                 .statusCode(200)
                 .body("data.firstname", equalTo("update"));
@@ -145,7 +145,7 @@ class ApplicationServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .put("/applications/2")
+                .put("/api/2")
                 .then()
                 .statusCode(404);
     }
@@ -171,7 +171,7 @@ class ApplicationServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .post("/applications/" + applicationId + "/terms")
+                .post("/api/" + applicationId + "/terms")
                 .then()
                 .log().all()
                 .statusCode(200);
@@ -193,7 +193,7 @@ class ApplicationServerApplicationTests {
         RestAssured.given()
                 .multiPart("file", file.getOriginalFilename(), file.getBytes(), MediaType.TEXT_PLAIN_VALUE)
                 .contentType("multipart/form-data")
-                .post("/applications/" + applicationId + "/files")
+                .post("/api/" + applicationId + "/files")
                 .then()
                 .log().all()
                 .statusCode(200);
@@ -210,7 +210,7 @@ class ApplicationServerApplicationTests {
 
         RestAssured.given()
                 .queryParam("fileName", fileName)
-                .get("/applications/1/files")
+                .get("/api/1/files")
                 .then()
                 .log().all()
                 .statusCode(200);
@@ -224,7 +224,7 @@ class ApplicationServerApplicationTests {
         FileStorageStub.stubGetFilesInfo(applicationId);
 
         RestAssured.given()
-                .get("/applications/" + applicationId + "/files/info")
+                .get("/api/" + applicationId + "/files/info")
                 .then()
                 .log().all()
                 .statusCode(200);
@@ -238,7 +238,7 @@ class ApplicationServerApplicationTests {
         FileStorageStub.stubDeleteAllFiles(applicationId);
 
         RestAssured.given()
-                .delete("/applications/" + applicationId + "/files")
+                .delete("/api/" + applicationId + "/files")
                 .then()
                 .log().all()
                 .statusCode(200);
@@ -261,7 +261,7 @@ class ApplicationServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestJson)
-                .put("/applications/" + applicationId + "/grant")
+                .put("/api/" + applicationId + "/grant")
                 .then()
                 .log().all()
                 .statusCode(200)
@@ -277,7 +277,7 @@ class ApplicationServerApplicationTests {
 
         RestAssured.given()
                 .contentType("application/json")
-                .put("/applications/" + applicationId + "/contract")
+                .put("/api/" + applicationId + "/contract")
                 .then()
                 .log().all()
                 .statusCode(200);
@@ -287,7 +287,7 @@ class ApplicationServerApplicationTests {
     @Test
     void should_delete_application() {
         RestAssured.given()
-                .delete("/applications/1")
+                .delete("/api/1")
                 .then()
                 .statusCode(200);
     }
@@ -296,7 +296,7 @@ class ApplicationServerApplicationTests {
     @Test
     void should_throw_exception_when_request_delete_non_exist_application() {
         RestAssured.given()
-                .delete("/applications/2")
+                .delete("/api/2")
                 .then()
                 .statusCode(404);
     }
@@ -316,7 +316,7 @@ class ApplicationServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .post("/applications")
+                .post("/api")
                 .then()
                 .statusCode(400)
                 .body("data.firstname", equalTo("First name must contain only letters"));

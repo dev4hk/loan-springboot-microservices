@@ -23,7 +23,7 @@ import static com.example.repayment_server.dto.ResponseDTO.ok;
 )
 @Validated
 @RestController
-@RequestMapping("/repayments")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class RepaymentController {
 

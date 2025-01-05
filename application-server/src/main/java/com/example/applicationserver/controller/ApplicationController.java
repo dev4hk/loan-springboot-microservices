@@ -32,7 +32,7 @@ import static com.example.applicationserver.dto.ResponseDTO.ok;
 )
 @Validated
 @RequiredArgsConstructor
-@RequestMapping("/applications")
+@RequestMapping("/api")
 @RestController
 public class ApplicationController {
 

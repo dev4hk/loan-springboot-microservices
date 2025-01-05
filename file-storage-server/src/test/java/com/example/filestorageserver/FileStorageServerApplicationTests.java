@@ -45,7 +45,7 @@ public class FileStorageServerApplicationTests {
     @Test
     void testUploadFile() throws IOException {
         // Arrange
-        String url = "/files/1";
+        String url = "/api/1";
         MockMultipartFile multipartFile = new MockMultipartFile(
                 "file", "test.txt", MediaType.TEXT_PLAIN_VALUE, "Hello, World!".getBytes()
         );
@@ -72,7 +72,7 @@ public class FileStorageServerApplicationTests {
         Files.createDirectories(dirPath);
         Files.writeString(dirPath.resolve("test.txt"), "Hello, World!");
 
-        String url = "/files/1?fileName=test.txt";
+        String url = "/api/1?fileName=test.txt";
 
         // Act & Assert
         given()
@@ -92,7 +92,7 @@ public class FileStorageServerApplicationTests {
         Files.createFile(dirPath.resolve("test1.txt"));
         Files.createFile(dirPath.resolve("test2.txt"));
 
-        String url = "/files/1/info";
+        String url = "/api/1/info";
 
         // Act & Assert
         given()
@@ -113,7 +113,7 @@ public class FileStorageServerApplicationTests {
         Files.createFile(dirPath.resolve("test1.txt"));
         Files.createFile(dirPath.resolve("test2.txt"));
 
-        String url = "/files/1";
+        String url = "/api/1";
 
         // Act
         given()

@@ -10,7 +10,7 @@ import java.util.List;
 @FeignClient(value = "terms-server", url = "${client.terms.url}")
 public interface TermsClient {
 
-    @GetMapping(value = "/terms")
+    @GetMapping(value = "/api")
     ResponseDTO<List<TermsResponseDto>> getAll();
 
 }
