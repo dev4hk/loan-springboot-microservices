@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.List;
 
-@FeignClient(value = "terms-server", url = "${client.terms.url}")
+@FeignClient(name = "terms-server")
 public interface TermsClient {
 
     @GetMapping(value = "/api")

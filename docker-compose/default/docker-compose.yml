@@ -1,7 +1,7 @@
 services:
 
   config-server:
-    image: "config-server:2.0"
+    image: "config-server:3.0"
     container_name: "config-server-ms"
     ports:
       - "8071:8071"
@@ -14,14 +14,16 @@ services:
     extends:
       file: common-config.yml
       service: microservice-base-config
+    environment:
+      SPRING_APPLICATION_NAME: "config-server"
 
   eureka-server:
-    image: "eureka-server:2.0"
+    image: "eureka-server:3.0"
     container_name: "eureka-server-ms"
     ports:
       - "8070:8070"
     depends_on:
-      configserver:
+      config-server:
         condition: service_healthy
     healthcheck:
       test: "curl --fail --silent localhost:8070/actuator/health/readiness | grep UP || exit 1"
@@ -32,9 +34,11 @@ services:
     extends:
       file: common-config.yml
       service: microservice-config-server-config
+    environment:
+      SPRING_APPLICATION_NAME: "eureka-server"
 
   counsel-server:
-    image: "counsel-server:2.0"
+    image: "counsel-server:3.0"
     container_name: "counsel-server-ms"
     depends_on:
       config-server:
@@ -43,14 +47,22 @@ services:
         condition: service_healthy
     ports:
       - "8080:8080"
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     env_file:
       - "../../counsel-server/.env"
+    environment:
+      SPRING_APPLICATION_NAME: "counsel-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   application-server:
-    image: "application-server:2.0"
+    image: "application-server:3.0"
     container_name: "application-server-ms"
     depends_on:
       config-server:
@@ -59,14 +71,22 @@ services:
         condition: service_healthy
     ports:
       - "8081:8081"
+    healthcheck:
+      test: "curl --fail --silent localhost:8081/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     env_file:
       - "../../application-server/.env"
+    environment:
+      SPRING_APPLICATION_NAME: "application-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   terms-server:
-    image: "terms-server:2.0"
+    image: "terms-server:3.0"
     container_name: "terms-server-ms"
     depends_on:
       config-server:
@@ -75,14 +95,22 @@ services:
         condition: service_healthy
     ports:
       - "8082:8082"
+    healthcheck:
+      test: "curl --fail --silent localhost:8082/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     env_file:
       - "../../terms-server/.env"
+    environment:
+      SPRING_APPLICATION_NAME: "terms-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   accept-terms-server:
-    image: "accept-terms-server:2.0"
+    image: "accept-terms-server:3.0"
     container_name: "accept-terms-server-ms"
     depends_on:
       config-server:
@@ -91,14 +119,22 @@ services:
         condition: service_healthy
     ports:
       - "8083:8083"
+    healthcheck:
+      test: "curl --fail --silent localhost:8083/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     env_file:
       - "../../accept-terms-server/.env"
+    environment:
+      SPRING_APPLICATION_NAME: "accept-terms-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   file-storage-server:
-    image: "file-storage-server:2.0"
+    image: "file-storage-server:3.0"
     container_name: "file-storage-server-ms"
     depends_on:
       config-server:
@@ -107,12 +143,20 @@ services:
         condition: service_healthy
     ports:
       - "8084:8084"
+    healthcheck:
+      test: "curl --fail --silent localhost:8084/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    environment:
+      SPRING_APPLICATION_NAME: "file-storage-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   judgement-server:
-    image: "judgement-server:2.0"
+    image: "judgement-server:3.0"
     container_name: "judgement-server-ms"
     depends_on:
       config-server:
@@ -121,14 +165,22 @@ services:
         condition: service_healthy
     ports:
       - "8085:8085"
+    healthcheck:
+      test: "curl --fail --silent localhost:8085/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     env_file:
       - "../../judgement-server/.env"
+    environment:
+      SPRING_APPLICATION_NAME: "judgement-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   entry-server:
-    image: "entry-server:2.0"
+    image: "entry-server:3.0"
     container_name: "entry-server-ms"
     depends_on:
       config-server:
@@ -137,14 +189,22 @@ services:
         condition: service_healthy
     ports:
       - "8086:8086"
+    healthcheck:
+      test: "curl --fail --silent localhost:8086/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     env_file:
       - "../../entry-server/.env"
+    environment:
+      SPRING_APPLICATION_NAME: "entry-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   balance-server:
-    image: "balance-server:2.0"
+    image: "balance-server:3.0"
     container_name: "balance-server-ms"
     depends_on:
       config-server:
@@ -153,14 +213,22 @@ services:
         condition: service_healthy
     ports:
       - "8087:8087"
+    healthcheck:
+      test: "curl --fail --silent localhost:8087/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     env_file:
       - "../../balance-server/.env"
+    environment:
+      SPRING_APPLICATION_NAME: "balance-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   repayment-server:
-    image: "repayment-server:2.0"
+    image: "repayment-server:3.0"
     container_name: "repayment-server-ms"
     depends_on:
       config-server:
@@ -169,8 +237,46 @@ services:
         condition: service_healthy
     ports:
       - "8088:8088"
+    healthcheck:
+      test: "curl --fail --silent localhost:8088/actuator/health/readiness | grep UP || exit 1"
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
     env_file:
       - "../../repayment-server/.env"
+    environment:
+      SPRING_APPLICATION_NAME: "repayment-server"
+    extends:
+      file: common-config.yml
+      service: microservice-eureka-config
+
+  gateway-server:
+    image: "gateway-server:3.0"
+    container_name: gateway-server-ms
+    ports:
+      - "8072:8072"
+    depends_on:
+      accept-terms-server:
+        condition: service_healthy
+      application-server:
+        condition: service_healthy
+      balance-server:
+        condition: service_healthy
+      counsel-server:
+        condition: service_healthy
+      entry-server:
+        condition: service_healthy
+      file-storage-server:
+        condition: service_healthy
+      judgement-server:
+        condition: service_healthy
+      repayment-server:
+        condition: service_healthy
+      terms-server:
+        condition: service_healthy
+    environment:
+      SPRING_APPLICATION_NAME: "gateway-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
