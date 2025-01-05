@@ -22,16 +22,6 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
 
-client:
-  judgement:
-    url: http://localhost:8085
-  file-storage:
-    url: http://localhost:8084
-  accept-terms:
-    url: http://localhost:8083
-  terms:
-    url: http://localhost:8082
-
 management:
   endpoints:
     web:

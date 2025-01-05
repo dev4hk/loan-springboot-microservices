@@ -6,15 +6,3 @@ spring:
 eureka:
   client:
     enabled: false
-
-client:
-  judgement:
-    url: http://localhost:${wiremock.server.port}
-  file-storage:
-    url: http://localhost:${wiremock.server.port}
-  accept-terms:
-    url: http://localhost:${wiremock.server.port}
-  terms:
-    url: http://localhost:${wiremock.server.port}
-
-

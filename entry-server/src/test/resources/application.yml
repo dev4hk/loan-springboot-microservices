@@ -6,9 +6,3 @@ spring:
 eureka:
   client:
     enabled: false
-
-client:
-  application:
-    url: http://localhost:${wiremock.server.port}
-  balance:
-    url: http://localhost:${wiremock.server.port}

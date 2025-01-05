@@ -1,29 +1,37 @@
 package com.example.applicationserver;
 
 import com.example.applicationserver.client.AcceptTermsClient;
-import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.client.FileStorageClient;
+import com.example.applicationserver.client.JudgementClient;
+import com.example.applicationserver.client.TermsClient;
+import com.example.applicationserver.client.dto.*;
 import com.example.applicationserver.dto.GrantAmountDto;
-import com.example.applicationserver.stubs.AcceptTermsStub;
-import com.example.applicationserver.stubs.FileStorageStub;
-import com.example.applicationserver.stubs.JudgementStub;
-import com.example.applicationserver.stubs.TermsStub;
+import com.example.applicationserver.dto.ResponseDTO;
+import com.example.applicationserver.entity.Application;
+import com.example.applicationserver.repository.ApplicationRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.when;
 
-@AutoConfigureWireMock(port = 0)
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ApplicationServerApplicationTests {
@@ -31,10 +39,81 @@ class ApplicationServerApplicationTests {
     @LocalServerPort
     private int port;
 
+    @MockitoBean
+    private ApplicationRepository applicationRepository;
+
+    @MockitoBean
+    private TermsClient termsClient;
+
+    @MockitoBean
+    private AcceptTermsClient acceptTermsClient;
+
+    @MockitoBean
+    private FileStorageClient fileStorageClient;
+
+    @MockitoBean
+    private JudgementClient judgementClient;
+
+    private Application application;
+
+    private TermsResponseDto termsResponseDto;
+
+    private AcceptTermsResponseDto acceptTermsResponseDto;
+
+    private FileResponseDto fileResponseDto;
+
+    private JudgementResponseDto judgementResponseDto;
+
     @BeforeEach
     public void setup() {
         RestAssured.port = port;
         RestAssured.baseURI = "http://localhost";
+
+        application = Application.builder()
+                .applicationId(1L)
+                .firstname("firstname")
+                .lastname("lastname")
+                .hopeAmount(BigDecimal.valueOf(5000))
+                .build();
+
+        termsResponseDto = TermsResponseDto.builder()
+                .name("term1")
+                .termsId(1L)
+                .termsDetailUrl("http://someurl")
+                .build();
+
+        acceptTermsResponseDto = AcceptTermsResponseDto.builder()
+                .applicationId(1L)
+                .acceptTermsId(1L)
+                .termsId(1L)
+                .build();
+
+        fileResponseDto = FileResponseDto.builder()
+                .name("filename")
+                .url("url")
+                .build();
+
+        judgementResponseDto = JudgementResponseDto.builder()
+                .applicationId(1L)
+                .judgementId(1L)
+                .approvalAmount(BigDecimal.valueOf(5000))
+                .build();
+
+
+        when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
+        when(applicationRepository.save(any(Application.class))).thenReturn(application);
+        when(applicationRepository.existsById(anyLong())).thenReturn(Boolean.TRUE);
+        when(termsClient.getAll()).thenReturn(new ResponseDTO<>(List.of(termsResponseDto)));
+        when(acceptTermsClient.create(any(AcceptTermsRequestDto.class))).thenReturn(new ResponseDTO<>(List.of(acceptTermsResponseDto)));
+        when(fileStorageClient.upload(anyLong(), any(MultipartFile.class))).thenReturn(new ResponseDTO<>());
+        when(fileStorageClient.getFilesInfo(anyLong())).thenReturn(new ResponseDTO<>(List.of(fileResponseDto)));
+        when(fileStorageClient.deleteAll(anyLong())).thenReturn(new ResponseDTO<>());
+
+        byte[] fileContent = "This is a test file".getBytes();
+        Resource resource = new ByteArrayResource(fileContent);
+        when(fileStorageClient.download(anyLong(), anyString())).thenReturn(ResponseEntity.ok(resource));
+
+        when(judgementClient.getJudgmentOfApplication(anyLong())).thenReturn(new ResponseDTO<>(judgementResponseDto));
     }
 
     @Order(1)
@@ -65,6 +144,7 @@ class ApplicationServerApplicationTests {
         RestAssured.given()
                 .get("/api/1")
                 .then()
+                .log().all()
                 .statusCode(200)
                 .body("data.firstname", equalTo("firstname"));
     }
@@ -72,6 +152,7 @@ class ApplicationServerApplicationTests {
     @Order(3)
     @Test
     void should_throw_exception_when_request_non_exist_application_id() {
+        when(applicationRepository.findById(anyLong())).thenReturn(Optional.empty());
         RestAssured.given()
                 .get("/api/2")
                 .then()
@@ -118,6 +199,7 @@ class ApplicationServerApplicationTests {
                 .body(requestDto)
                 .put("/api/1")
                 .then()
+                .log().all()
                 .statusCode(200);
 
         RestAssured.given()
@@ -141,7 +223,7 @@ class ApplicationServerApplicationTests {
                         "hopeAmount": 1000.00
                 }
                 """;
-
+        when(applicationRepository.findById(anyLong())).thenReturn(Optional.empty());
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
@@ -164,10 +246,6 @@ class ApplicationServerApplicationTests {
         ObjectMapper objectMapper = new ObjectMapper();
         AcceptTermsRequestDto acceptTermsRequestDto = objectMapper.readValue(requestDto, AcceptTermsRequestDto.class);
 
-        TermsStub.stubGetAllTerms();
-        AcceptTermsStub.stubCreateAcceptTerms(acceptTermsRequestDto);
-
-
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
@@ -188,8 +266,6 @@ class ApplicationServerApplicationTests {
                 "This is a test file".getBytes()
         );
 
-        FileStorageStub.stubUploadFile(applicationId, file);
-
         RestAssured.given()
                 .multiPart("file", file.getOriginalFilename(), file.getBytes(), MediaType.TEXT_PLAIN_VALUE)
                 .contentType("multipart/form-data")
@@ -206,8 +282,6 @@ class ApplicationServerApplicationTests {
         String fileName = "test.txt";
         String fileContent = "This is a test file";
 
-        FileStorageStub.stubDownloadFile(1L, fileName);
-
         RestAssured.given()
                 .queryParam("fileName", fileName)
                 .get("/api/1/files")
@@ -221,8 +295,6 @@ class ApplicationServerApplicationTests {
     void should_get_files_info() {
         Long applicationId = 1L;
 
-        FileStorageStub.stubGetFilesInfo(applicationId);
-
         RestAssured.given()
                 .get("/api/" + applicationId + "/files/info")
                 .then()
@@ -234,8 +306,6 @@ class ApplicationServerApplicationTests {
     @Test
     void should_delete_all_files() {
         Long applicationId = 1L;
-
-        FileStorageStub.stubDeleteAllFiles(applicationId);
 
         RestAssured.given()
                 .delete("/api/" + applicationId + "/files")
@@ -272,9 +342,14 @@ class ApplicationServerApplicationTests {
     @Test
     void should_contract_application() {
         Long applicationId = 1L;
-
-        JudgementStub.stubGetJudgmentOfApplication(applicationId);
-
+        application = Application.builder()
+                .applicationId(1L)
+                .firstname("firstname")
+                .lastname("lastname")
+                .hopeAmount(BigDecimal.valueOf(5000))
+                .approvalAmount(BigDecimal.valueOf(5000))
+                .build();
+        when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
         RestAssured.given()
                 .contentType("application/json")
                 .put("/api/" + applicationId + "/contract")
@@ -289,12 +364,14 @@ class ApplicationServerApplicationTests {
         RestAssured.given()
                 .delete("/api/1")
                 .then()
+                .log().all()
                 .statusCode(200);
     }
 
     @Order(15)
     @Test
     void should_throw_exception_when_request_delete_non_exist_application() {
+        when(applicationRepository.findById(anyLong())).thenReturn(Optional.empty());
         RestAssured.given()
                 .delete("/api/2")
                 .then()
