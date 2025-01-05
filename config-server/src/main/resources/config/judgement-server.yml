@@ -14,9 +14,6 @@ spring:
       hibernate:
         ddl-auto: update
       show-sql: true
-client:
-  application:
-    url: http://localhost:8081
 
 management:
   endpoints:

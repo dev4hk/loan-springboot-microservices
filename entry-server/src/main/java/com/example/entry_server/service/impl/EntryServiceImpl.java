@@ -41,7 +41,7 @@ public class EntryServiceImpl implements IEntryService {
         Entry entry = EntryMapper.mapToEntry(request);
         entry.setApplicationId(applicationId);
 
-        entryRepository.save(entry);
+        Entry created = entryRepository.save(entry);
         balanceClient.create(applicationId,
                 BalanceRequestDto.builder()
                         .applicationId(applicationId)
@@ -49,7 +49,7 @@ public class EntryServiceImpl implements IEntryService {
                         .build()
         );
 
-        return EntryMapper.mapToEntryResponseDto(entry);
+        return EntryMapper.mapToEntryResponseDto(created);
 
     }
 

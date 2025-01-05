@@ -1,10 +1,12 @@
 package com.example.judgement_server;
 
+import com.example.judgement_server.client.ApplicationClient;
+import com.example.judgement_server.client.dto.ApplicationResponseDto;
 import com.example.judgement_server.dto.GrantAmountDto;
 import com.example.judgement_server.dto.JudgementRequestDto;
+import com.example.judgement_server.dto.ResponseDTO;
 import com.example.judgement_server.entity.Judgement;
 import com.example.judgement_server.repository.JudgementRepository;
-import com.example.judgement_server.stubs.ApplicationStub;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
 import lombok.extern.slf4j.Slf4j;
@@ -14,25 +16,26 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.Optional;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
 @Slf4j
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@AutoConfigureWireMock(port = 0)
 public class JudgementServerApplicationTests {
 
     @LocalServerPort
     private Integer port;
+
+    @MockitoBean
+    private ApplicationClient applicationClient;
 
     @MockitoBean
     private JudgementRepository judgementRepository;
@@ -62,6 +65,11 @@ public class JudgementServerApplicationTests {
         when(judgementRepository.findByApplicationId(anyLong())).thenReturn(Optional.of(judgement));
         when(judgementRepository.findById(anyLong())).thenReturn(Optional.of(judgement));
         when(judgementRepository.save(Mockito.any(Judgement.class))).thenReturn(judgement);
+        ApplicationResponseDto applicationResponseDto = new ApplicationResponseDto();
+        applicationResponseDto.setApplicationId(1L);
+        ResponseDTO<ApplicationResponseDto> responseDTO = new ResponseDTO<>(applicationResponseDto);
+        when(applicationClient.get(anyLong())).thenReturn(responseDTO);
+        when(applicationClient.updateGrant(anyLong(), Mockito.any(GrantAmountDto.class))).thenReturn(new ResponseDTO<>());
     }
 
     @AfterEach
@@ -70,7 +78,6 @@ public class JudgementServerApplicationTests {
 
     @Test
     void should_create_judgement() {
-        ApplicationStub.stubApplicationGetCall(1L);
         String responseBody = RestAssured.given()
                 .contentType("application/json")
                 .body(this.judgementRequestDto)
@@ -95,7 +102,6 @@ public class JudgementServerApplicationTests {
 
     @Test
     void should_get_judgement() {
-        ApplicationStub.stubApplicationGetCall(1L);
         String createResponse = RestAssured.given()
                 .contentType("application/json")
                 .body(this.judgementRequestDto)
@@ -134,7 +140,6 @@ public class JudgementServerApplicationTests {
 
     @Test
     void should_get_judgment_of_application() {
-        ApplicationStub.stubApplicationGetCall(1L);
         String createResponse = RestAssured.given()
                 .contentType("application/json")
                 .body(this.judgementRequestDto)
@@ -170,7 +175,6 @@ public class JudgementServerApplicationTests {
 
     @Test
     void should_update_judgement() {
-        ApplicationStub.stubApplicationGetCall(1L);
         String createResponse = RestAssured.given()
                 .contentType("application/json")
                 .body(this.judgementRequestDto)
@@ -219,7 +223,6 @@ public class JudgementServerApplicationTests {
 
     @Test
     void should_delete_judgement() {
-        ApplicationStub.stubApplicationGetCall(1L);
         String responseBody = RestAssured.given()
                 .contentType("application/json")
                 .body(this.judgementRequestDto)
@@ -246,7 +249,6 @@ public class JudgementServerApplicationTests {
 
     @Test
     void should_grant_judgement() {
-        ApplicationStub.stubApplicationGetCall(1L);
         String createResponse = RestAssured.given()
                 .contentType("application/json")
                 .body(this.judgementRequestDto)
@@ -265,7 +267,6 @@ public class JudgementServerApplicationTests {
                 .applicationId(1L)
                 .approvalAmount(BigDecimal.TEN)
                 .build();
-        ApplicationStub.stubUpdateGrantCall(1L, grantAmountDto);
 
         String grantResponse = RestAssured.given()
                 .when()

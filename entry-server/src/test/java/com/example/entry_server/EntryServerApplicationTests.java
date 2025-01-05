@@ -1,33 +1,84 @@
 package com.example.entry_server;
 
+import com.example.entry_server.client.ApplicationClient;
+import com.example.entry_server.client.BalanceClient;
+import com.example.entry_server.client.dto.ApplicationResponseDto;
 import com.example.entry_server.client.dto.BalanceRequestDto;
+import com.example.entry_server.client.dto.BalanceResponseDto;
 import com.example.entry_server.client.dto.BalanceUpdateRequestDto;
 import com.example.entry_server.dto.EntryRequestDto;
-import com.example.entry_server.stubs.ApplicationStub;
-import com.example.entry_server.stubs.BalanceStub;
+import com.example.entry_server.dto.ResponseDTO;
+import com.example.entry_server.entity.Entry;
+import com.example.entry_server.repository.EntryRepository;
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.cloud.contract.wiremock.AutoConfigureWireMock;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.Optional;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 
 @TestMethodOrder(OrderAnnotation.class)
-@AutoConfigureWireMock(port = 0)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class EntryServerApplicationTests {
 
     @LocalServerPort
     private Integer port;
 
+    @MockitoBean
+    private EntryRepository entryRepository;
+
+    @MockitoBean
+    private ApplicationClient applicationClient;
+
+    @MockitoBean
+    private BalanceClient balanceClient;
+
+    private ApplicationResponseDto applicationResponseContractedDto;
+    private BalanceResponseDto balanceResponseDto;
+
     @BeforeEach
     void setup() {
         RestAssured.port = port;
         RestAssured.baseURI = "http://localhost";
+
+        applicationResponseContractedDto = ApplicationResponseDto.builder()
+                .applicationId(1L)
+                .hopeAmount(BigDecimal.valueOf(5000))
+                .approvalAmount(BigDecimal.valueOf(5000))
+                .appliedAt(LocalDateTime.now())
+                .contractedAt(LocalDateTime.now())
+                .build();
+
+        balanceResponseDto = BalanceResponseDto.builder()
+                .applicationId(1L)
+                .balanceId(1L)
+                .balance(BigDecimal.valueOf(4000))
+                .build();
+
+        Entry entry = Entry.builder()
+                .entryId(1L)
+                .applicationId(1L)
+                .entryAmount(BigDecimal.valueOf(1000))
+                .build();
+
+        when(entryRepository.save(any(Entry.class))).thenReturn(entry);
+        when(entryRepository.findByApplicationId(anyLong())).thenReturn(Optional.of(entry));
+        when(entryRepository.findById(anyLong())).thenReturn(Optional.of(entry));
+        when(applicationClient.get(anyLong())).thenReturn(new ResponseDTO<>(applicationResponseContractedDto));
+        when(balanceClient.create(anyLong(), any(BalanceRequestDto.class))).thenReturn(new ResponseDTO<>(balanceResponseDto));
+        when(balanceClient.update(anyLong(), any(BalanceUpdateRequestDto.class))).thenReturn(new ResponseDTO<>(balanceResponseDto));
     }
 
     @Order(1)
@@ -39,16 +90,6 @@ class EntryServerApplicationTests {
                 .entryAmount(BigDecimal.valueOf(1000.00))
                 .build();
 
-
-        ApplicationStub.stubApplicationGetCallContracted(applicationId);
-        BalanceStub.stubCreateBalance(
-                applicationId,
-                BalanceRequestDto.builder()
-                        .applicationId(1L)
-                        .entryAmount(BigDecimal.valueOf(1000.00))
-                        .build()
-        );
-
         RestAssured.given()
                 .contentType("application/json")
                 .body(request)
@@ -57,7 +98,7 @@ class EntryServerApplicationTests {
                 .log().all()
                 .statusCode(200)
                 .body("data.entryId", equalTo(1))
-                .body("data.entryAmount", equalTo(1000.00F));
+                .body("data.entryAmount", equalTo(1000));
 
     }
 
@@ -66,8 +107,6 @@ class EntryServerApplicationTests {
     void should_get_entry() {
         Long applicationId = 1L;
 
-        ApplicationStub.stubApplicationGetCallContracted(applicationId);
-
         RestAssured.given()
                 .contentType("application/json")
                 .get("/api/" + applicationId)
@@ -75,7 +114,7 @@ class EntryServerApplicationTests {
                 .log().all()
                 .statusCode(200)
                 .body("data.applicationId", equalTo(1))
-                .body("data.entryAmount", equalTo(1000.00F));
+                .body("data.entryAmount", equalTo(1000));
     }
 
     @Order(3)
@@ -87,15 +126,6 @@ class EntryServerApplicationTests {
         EntryRequestDto request = EntryRequestDto.builder()
                 .entryAmount(BigDecimal.valueOf(2000.00))
                 .build();
-
-        BalanceStub.stubUpdateBalance(
-                applicationId,
-                BalanceUpdateRequestDto.builder()
-                        .applicationId(applicationId)
-                        .beforeEntryAmount(BigDecimal.valueOf(1000.00))
-                        .afterEntryAmount(BigDecimal.valueOf(2000.00))
-                        .build()
-        );
 
         RestAssured.given()
                 .contentType("application/json")
@@ -114,15 +144,6 @@ class EntryServerApplicationTests {
         Long entryId = 1L;
         Long applicationId = 1L;
 
-        BalanceStub.stubUpdateBalance(
-                applicationId,
-                BalanceUpdateRequestDto.builder()
-                        .applicationId(applicationId)
-                        .beforeEntryAmount(BigDecimal.valueOf(2000.00))
-                        .afterEntryAmount(BigDecimal.ZERO)
-                        .build()
-        );
-
         RestAssured.given()
                 .contentType("application/json")
                 .delete("/api/" + entryId)
@@ -130,14 +151,13 @@ class EntryServerApplicationTests {
                 .log().all()
                 .statusCode(200);
     }
+
     @Order(5)
     @Test
     void should_fail_to_create_entry_with_missing_entryAmount() {
         Long applicationId = 1L;
 
         EntryRequestDto request = EntryRequestDto.builder().build();
-
-        ApplicationStub.stubApplicationGetCallContracted(applicationId);
 
         RestAssured.given()
                 .contentType("application/json")
@@ -157,15 +177,6 @@ class EntryServerApplicationTests {
                 .entryAmount(BigDecimal.valueOf(-2000.003))
                 .build();
 
-        BalanceStub.stubUpdateBalance(
-                applicationId,
-                BalanceUpdateRequestDto.builder()
-                        .applicationId(applicationId)
-                        .beforeEntryAmount(BigDecimal.valueOf(1000.00))
-                        .afterEntryAmount(BigDecimal.valueOf(-2000.003))
-                        .build()
-        );
-
         RestAssured.given()
                 .contentType("application/json")
                 .body(request)
@@ -180,14 +191,7 @@ class EntryServerApplicationTests {
         Long entryId = 999L;
         Long applicationId = 1L;
 
-        BalanceStub.stubUpdateBalance(
-                applicationId,
-                BalanceUpdateRequestDto.builder()
-                        .applicationId(applicationId)
-                        .beforeEntryAmount(BigDecimal.valueOf(2000.00))
-                        .afterEntryAmount(BigDecimal.ZERO)
-                        .build()
-        );
+        when(entryRepository.findById(entryId)).thenReturn(Optional.empty());
 
         RestAssured.given()
                 .contentType("application/json")
