@@ -18,7 +18,7 @@ public class FileStorageStub {
                 + "\"data\":null"
                 + "}";
 
-        WireMock.stubFor(WireMock.post(WireMock.urlEqualTo("/files/" + applicationId))
+        WireMock.stubFor(WireMock.post(WireMock.urlEqualTo("/api/" + applicationId))
                 .willReturn(WireMock.aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -28,7 +28,7 @@ public class FileStorageStub {
     public void stubDownloadFile(Long applicationId, String fileName) {
         String fileContent = "Sample file content";
 
-        WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/files/" + applicationId + "?fileName=" + fileName))
+        WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/api/" + applicationId + "?fileName=" + fileName))
                 .willReturn(WireMock.aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/octet-stream")
@@ -47,7 +47,7 @@ public class FileStorageStub {
                 + "}]"
                 + "}";
 
-        WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/files/" + applicationId + "/info"))
+        WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/api/" + applicationId + "/info"))
                 .willReturn(WireMock.aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -63,7 +63,7 @@ public class FileStorageStub {
                 + "\"data\":null"
                 + "}";
 
-        WireMock.stubFor(WireMock.delete(WireMock.urlEqualTo("/files/" + applicationId))
+        WireMock.stubFor(WireMock.delete(WireMock.urlEqualTo("/api/" + applicationId))
                 .willReturn(WireMock.aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")

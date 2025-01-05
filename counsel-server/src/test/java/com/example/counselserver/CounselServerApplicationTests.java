@@ -40,7 +40,7 @@ class CounselServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .post("/counsels")
+                .post("/api")
                 .then()
                 .statusCode(200)
                 .body("data.firstname", equalTo("firstname"));
@@ -50,7 +50,7 @@ class CounselServerApplicationTests {
     @Test
     void should_get_counsel() {
         RestAssured.given()
-                .get("/counsels/1")
+                .get("/api/1")
                 .then()
                 .statusCode(200)
                 .body("data.firstname", equalTo("firstname"));
@@ -60,7 +60,7 @@ class CounselServerApplicationTests {
     @Test
     void should_throw_exception_when_request_non_exist_counsel_id() {
         RestAssured.given()
-                .get("/counsels/2")
+                .get("/api/2")
                 .then()
                 .statusCode(404);
     }
@@ -84,7 +84,7 @@ class CounselServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(invalidRequestDto)
-                .put("/counsels/1")
+                .put("/api/1")
                 .then()
                 .statusCode(400)
                 .body("data.firstname", equalTo("First name must contain only letters"));
@@ -109,13 +109,13 @@ class CounselServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .put("/counsels/1")
+                .put("/api/1")
                 .then()
                 .statusCode(200);
 
         RestAssured.given()
                 .accept("application/json")
-                .get("/counsels/1")
+                .get("/api/1")
                 .then()
                 .statusCode(200)
                 .body("data.firstname", equalTo("update"));
@@ -141,7 +141,7 @@ class CounselServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .put("/counsels/2")
+                .put("/api/2")
                 .then()
                 .statusCode(404);
     }
@@ -150,7 +150,7 @@ class CounselServerApplicationTests {
     @Test
     void should_delete_counsel() {
         RestAssured.given()
-                .delete("/counsels/1")
+                .delete("/api/1")
                 .then()
                 .statusCode(200);
     }
@@ -159,7 +159,7 @@ class CounselServerApplicationTests {
     @Test
     void should_throw_exception_when_request_delete_non_exist_counsel() {
         RestAssured.given()
-                .delete("/counsels/2")
+                .delete("/api/2")
                 .then()
                 .statusCode(404);
     }
@@ -182,7 +182,7 @@ class CounselServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
-                .post("/counsels")
+                .post("/api")
                 .then()
                 .statusCode(400)
                 .body("data.firstname", equalTo("First name must contain only letters"));

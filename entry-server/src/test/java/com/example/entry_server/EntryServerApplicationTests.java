@@ -52,7 +52,7 @@ class EntryServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(request)
-                .post("/entries/" + applicationId)
+                .post("/api/" + applicationId)
                 .then()
                 .log().all()
                 .statusCode(200)
@@ -70,7 +70,7 @@ class EntryServerApplicationTests {
 
         RestAssured.given()
                 .contentType("application/json")
-                .get("/entries/" + applicationId)
+                .get("/api/" + applicationId)
                 .then()
                 .log().all()
                 .statusCode(200)
@@ -100,7 +100,7 @@ class EntryServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(request)
-                .put("/entries/" + entryId)
+                .put("/api/" + entryId)
                 .then()
                 .log().all()
                 .statusCode(200)
@@ -125,7 +125,7 @@ class EntryServerApplicationTests {
 
         RestAssured.given()
                 .contentType("application/json")
-                .delete("/entries/" + entryId)
+                .delete("/api/" + entryId)
                 .then()
                 .log().all()
                 .statusCode(200);
@@ -142,7 +142,7 @@ class EntryServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(request)
-                .post("/entries/" + applicationId)
+                .post("/api/" + applicationId)
                 .then()
                 .statusCode(400);
     }
@@ -169,7 +169,7 @@ class EntryServerApplicationTests {
         RestAssured.given()
                 .contentType("application/json")
                 .body(request)
-                .put("/entries/" + entryId)
+                .put("/api/" + entryId)
                 .then()
                 .statusCode(400);
     }
@@ -191,7 +191,7 @@ class EntryServerApplicationTests {
 
         RestAssured.given()
                 .contentType("application/json")
-                .delete("/entries/" + entryId)
+                .delete("/api/" + entryId)
                 .then()
                 .statusCode(404);
     }

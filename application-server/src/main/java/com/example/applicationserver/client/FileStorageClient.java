@@ -14,15 +14,15 @@ import java.util.List;
 @FeignClient(value = "file-storage-server", url = "${client.file-storage.url}")
 public interface FileStorageClient {
 
-    @PostMapping(value = "/files/{applicationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    @PostMapping(value = "/api/{applicationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     ResponseDTO<Void> upload(@PathVariable Long applicationId, MultipartFile file);
 
-    @GetMapping("/files/{applicationId}")
+    @GetMapping("/api/{applicationId}")
     ResponseEntity<Resource> download(@PathVariable Long applicationId, @RequestParam(value = "fileName") String fileName);
 
-    @GetMapping("/files/{applicationId}/info")
+    @GetMapping("/api/{applicationId}/info")
     ResponseDTO<List<FileResponseDto>> getFilesInfo(@PathVariable Long applicationId);
 
-    @DeleteMapping("/files/{applicationId}")
+    @DeleteMapping("/api/{applicationId}")
     ResponseDTO<Void> deleteAll(@PathVariable Long applicationId);
 }

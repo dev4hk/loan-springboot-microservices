@@ -26,7 +26,7 @@ public class JudgementStub {
                 + "}"
                 + "}";
 
-        WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/judgements/applications/" + applicationId))
+        WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/api/applications/" + applicationId))
                 .willReturn(WireMock.aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")

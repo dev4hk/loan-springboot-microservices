@@ -25,7 +25,7 @@ public class BalanceStub {
                 + "\"repaymentAmount\": " + balanceRepaymentRequestDto.getRepaymentAmount()
                 + "}";
 
-        WireMock.stubFor(WireMock.put(WireMock.urlEqualTo("/balances/" + applicationId + "/repayment"))
+        WireMock.stubFor(WireMock.put(WireMock.urlEqualTo("/api/" + applicationId + "/repayment"))
                 .withRequestBody(WireMock.equalToJson(requestJson))
                 .willReturn(WireMock.aResponse()
                         .withStatus(200)

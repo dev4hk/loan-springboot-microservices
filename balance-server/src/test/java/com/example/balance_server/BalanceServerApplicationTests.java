@@ -38,7 +38,7 @@ class BalanceServerApplicationTests {
 		RestAssured.given()
 				.contentType("application/json")
 				.body(requestDto)
-				.post("/balances/1")
+				.post("/api/1")
 				.then()
 				.log().all()
 				.statusCode(200)
@@ -49,7 +49,7 @@ class BalanceServerApplicationTests {
 	@Test
 	void should_get_balance() {
 		RestAssured.given()
-				.get("/balances/1")
+				.get("/api/1")
 				.then()
 				.log().all()
 				.statusCode(200)
@@ -60,7 +60,7 @@ class BalanceServerApplicationTests {
 	@Test
 	void should_throw_exception_when_request_non_exist_balance_id() {
 		RestAssured.given()
-				.get("/balances/2")
+				.get("/api/2")
 				.then()
 				.log().all()
 				.statusCode(404);
@@ -80,7 +80,7 @@ class BalanceServerApplicationTests {
 		RestAssured.given()
 				.contentType("application/json")
 				.body(invalidRequestDto)
-				.put("/balances/1")
+				.put("/api/1")
 				.then()
 				.log().all()
 				.statusCode(400)
@@ -101,7 +101,7 @@ class BalanceServerApplicationTests {
 		RestAssured.given()
 				.contentType("application/json")
 				.body(requestDto)
-				.put("/balances/1")
+				.put("/api/1")
 				.then()
 				.log().all()
 				.statusCode(200);
@@ -122,7 +122,7 @@ class BalanceServerApplicationTests {
 		RestAssured.given()
 				.contentType("application/json")
 				.body(requestDto)
-				.put("/balances/2")
+				.put("/api/2")
 				.then()
 				.log().all()
 				.statusCode(404);
@@ -141,7 +141,7 @@ class BalanceServerApplicationTests {
 		RestAssured.given()
 				.contentType("application/json")
 				.body(requestDto)
-				.post("/balances/1")
+				.post("/api/1")
 				.then()
 				.log().all()
 				.statusCode(400);
@@ -160,7 +160,7 @@ class BalanceServerApplicationTests {
 		RestAssured.given()
 				.contentType("application/json")
 				.body(requestDto)
-				.put("/balances/1/repayment")
+				.put("/api/1/repayment")
 				.then()
 				.log().all()
 				.statusCode(200)
@@ -180,7 +180,7 @@ class BalanceServerApplicationTests {
 		RestAssured.given()
 				.contentType("application/json")
 				.body(requestDto)
-				.put("/balances/1/repayment")
+				.put("/api/1/repayment")
 				.then()
 				.log().all()
 				.statusCode(400);
@@ -190,7 +190,7 @@ class BalanceServerApplicationTests {
 	@Test
 	void should_delete_balance() {
 		RestAssured.given()
-				.delete("/balances/1")
+				.delete("/api/1")
 				.then()
 				.log().all()
 				.statusCode(200);
@@ -200,7 +200,7 @@ class BalanceServerApplicationTests {
 	@Test
 	void should_throw_exception_when_request_delete_non_exist_balance() {
 		RestAssured.given()
-				.delete("/balances/2")
+				.delete("/api/2")
 				.then()
 				.log().all()
 				.statusCode(404);

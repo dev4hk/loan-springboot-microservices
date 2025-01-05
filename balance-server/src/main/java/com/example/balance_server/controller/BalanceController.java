@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 )
 @Validated
 @RestController
-@RequestMapping("/balances")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class BalanceController {
 

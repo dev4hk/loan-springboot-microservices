@@ -24,7 +24,7 @@ import static com.example.judgement_server.dto.ResponseDTO.ok;
 )
 @Validated
 @RequiredArgsConstructor
-@RequestMapping("/judgements")
+@RequestMapping("/api")
 @RestController
 public class JudgementController {
 

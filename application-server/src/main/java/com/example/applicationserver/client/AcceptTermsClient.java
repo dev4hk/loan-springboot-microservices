@@ -11,6 +11,6 @@ import java.util.List;
 
 @FeignClient(value = "accept-terms-server", url = "${client.accept-terms.url}")
 public interface AcceptTermsClient {
-    @PostMapping(value = "/accept-terms")
+    @PostMapping(value = "/api")
     ResponseDTO<List<AcceptTermsResponseDto>> create(@RequestBody AcceptTermsRequestDto acceptTermsRequestDto);
 }

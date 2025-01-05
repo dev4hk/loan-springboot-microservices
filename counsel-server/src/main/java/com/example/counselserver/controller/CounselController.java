@@ -23,7 +23,7 @@ import static com.example.counselserver.dto.ResponseDTO.ok;
 )
 @Validated
 @RequiredArgsConstructor
-@RequestMapping("/counsels")
+@RequestMapping("/api")
 @RestController
 public class CounselController {
 

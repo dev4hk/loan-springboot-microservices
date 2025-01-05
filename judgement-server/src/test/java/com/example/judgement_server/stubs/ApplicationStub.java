@@ -34,7 +34,7 @@ public class ApplicationStub {
                 + "}"
                 + "}";
 
-        stubFor(get(urlEqualTo("/applications/" + applicationId))
+        stubFor(get(urlEqualTo("/api/" + applicationId))
                 .willReturn(aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
@@ -48,7 +48,7 @@ public class ApplicationStub {
                 + "\"approvalAmount\":" + grantAmountDto.getApprovalAmount()
                 + "}";
 
-        stubFor(put(urlEqualTo("/applications/" + applicationId + "/grant"))
+        stubFor(put(urlEqualTo("/api/" + applicationId + "/grant"))
                 .withRequestBody(equalToJson(jsonRequest))
                 .willReturn(aResponse()
                         .withStatus(200)

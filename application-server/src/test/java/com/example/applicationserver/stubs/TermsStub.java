@@ -24,7 +24,7 @@ public class TermsStub {
                 + "}]"
                 + "}";
 
-        WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/terms"))
+        WireMock.stubFor(WireMock.get(WireMock.urlEqualTo("/api"))
                 .willReturn(WireMock.aResponse()
                         .withStatus(200)
                         .withHeader("Content-Type", "application/json")
