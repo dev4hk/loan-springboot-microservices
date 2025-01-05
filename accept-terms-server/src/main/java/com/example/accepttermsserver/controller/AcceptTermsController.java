@@ -26,7 +26,7 @@ import java.util.List;
 )
 @Validated
 @RequiredArgsConstructor
-@RequestMapping("/accept-terms")
+@RequestMapping("/api")
 @RestController
 public class AcceptTermsController {
 

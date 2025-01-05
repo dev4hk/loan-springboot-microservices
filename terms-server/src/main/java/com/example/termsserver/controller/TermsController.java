@@ -25,7 +25,7 @@ import static com.example.termsserver.dto.ResponseDTO.ok;
 )
 @Validated
 @RequiredArgsConstructor
-@RequestMapping("/terms")
+@RequestMapping("/api")
 @RestController
 public class TermsController {
 
