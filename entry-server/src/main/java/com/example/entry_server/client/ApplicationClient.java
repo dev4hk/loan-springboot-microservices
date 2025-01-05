@@ -6,7 +6,7 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-@FeignClient(value = "application-server", url = "${client.application.url}")
+@FeignClient(name = "application-server")
 public interface ApplicationClient {
 
     @GetMapping("/api/{applicationId}")

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
-@FeignClient(value = "accept-terms-server", url = "${client.accept-terms.url}")
+@FeignClient(name = "accept-terms-server")
 public interface AcceptTermsClient {
     @PostMapping(value = "/api")
     ResponseDTO<List<AcceptTermsResponseDto>> create(@RequestBody AcceptTermsRequestDto acceptTermsRequestDto);
