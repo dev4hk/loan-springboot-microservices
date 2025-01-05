@@ -6,6 +6,8 @@ import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 
+import java.time.LocalDateTime;
+
 @SpringBootApplication
 public class GatewayServerApplication {
 
@@ -18,39 +20,49 @@ public class GatewayServerApplication {
 		return routeLocatorBuilder.routes()
 				.route(p -> p
 						.path("/loan/accept-terms/**")
-						.filters( f -> f.rewritePath("/loan/accept-terms/(?<segment>.*)","/${segment}"))
+						.filters( f -> f.rewritePath("/loan/accept-terms/(?<segment>.*)","/${segment}")
+								.addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
+						)
 						.uri("lb://ACCEPT-TERMS-SERVER"))
 				.route(p -> p
 						.path("/loan/application/**")
-						.filters( f -> f.rewritePath("/loan/application/(?<segment>.*)","/${segment}"))
+						.filters( f -> f.rewritePath("/loan/application/(?<segment>.*)","/${segment}")
+								.addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
 						.uri("lb://APPLICATION-SERVER"))
 				.route(p -> p
 						.path("/loan/balance/**")
-						.filters( f -> f.rewritePath("/loan/balance/(?<segment>.*)","/${segment}"))
+						.filters( f -> f.rewritePath("/loan/balance/(?<segment>.*)","/${segment}")
+								.addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
 						.uri("lb://BALANCE-SERVER"))
 				.route(p -> p
 						.path("/loan/counsel/**")
-						.filters( f -> f.rewritePath("/loan/counsel/(?<segment>.*)","/${segment}"))
+						.filters( f -> f.rewritePath("/loan/counsel/(?<segment>.*)","/${segment}")
+								.addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
 						.uri("lb://COUNSEL-SERVER"))
 				.route(p -> p
 						.path("/loan/entry/**")
-						.filters( f -> f.rewritePath("/loan/entry/(?<segment>.*)","/${segment}"))
+						.filters( f -> f.rewritePath("/loan/entry/(?<segment>.*)","/${segment}")
+								.addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
 						.uri("lb://ENTRY-SERVER"))
 				.route(p -> p
 						.path("/loan/file-storage/**")
-						.filters( f -> f.rewritePath("/loan/file-storage/(?<segment>.*)","/${segment}"))
+						.filters( f -> f.rewritePath("/loan/file-storage/(?<segment>.*)","/${segment}")
+								.addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
 						.uri("lb://FILE-STORAGE-SERVER"))
 				.route(p -> p
 						.path("/loan/judgement/**")
-						.filters( f -> f.rewritePath("/loan/judgement/(?<segment>.*)","/${segment}"))
+						.filters( f -> f.rewritePath("/loan/judgement/(?<segment>.*)","/${segment}")
+								.addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
 						.uri("lb://JUDGEMENT-SERVER"))
 				.route(p -> p
 						.path("/loan/repayment/**")
-						.filters( f -> f.rewritePath("/loan/repayment/(?<segment>.*)","/${segment}"))
+						.filters( f -> f.rewritePath("/loan/repayment/(?<segment>.*)","/${segment}")
+								.addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
 						.uri("lb://REPAYMENT-SERVER"))
 				.route(p -> p
 						.path("/loan/terms/**")
-						.filters( f -> f.rewritePath("/loan/terms/(?<segment>.*)","/${segment}"))
+						.filters( f -> f.rewritePath("/loan/terms/(?<segment>.*)","/${segment}")
+								.addResponseHeader("X-Response-Time", LocalDateTime.now().toString()))
 						.uri("lb://TERMS-SERVER"))
 				.build();
 	}
