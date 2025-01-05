@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(value = "balance-server", url = "${client.balance.url}")
 public interface BalanceClient {
 
-    @PutMapping("/balances/{applicationId}/repayment")
+    @PutMapping("/api/{applicationId}/repayment")
     ResponseDTO<BalanceResponseDto> repaymentUpdate(@PathVariable Long applicationId, @RequestBody BalanceRepaymentRequestDto request);
 
 }

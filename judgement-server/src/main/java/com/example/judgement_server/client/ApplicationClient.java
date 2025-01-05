@@ -12,10 +12,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(value = "application-server", url = "${client.application.url}")
 public interface ApplicationClient {
 
-    @GetMapping("/applications/{applicationId}")
+    @GetMapping("/api/{applicationId}")
     ResponseDTO<ApplicationResponseDto> get(@PathVariable Long applicationId);
 
-    @PutMapping("/applications/{applicationId}/grant")
+    @PutMapping("/api/{applicationId}/grant")
     ResponseDTO<Void> updateGrant(@PathVariable Long applicationId, @RequestBody GrantAmountDto grantAmountDto);
 
 }
