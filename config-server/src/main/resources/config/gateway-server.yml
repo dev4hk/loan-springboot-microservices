@@ -28,3 +28,8 @@ eureka:
     fetchRegistry: true
     serviceUrl:
       defaultZone: "http://localhost:8070/eureka/"
+logging:
+  level:
+    com:
+      example:
+        gatewayserver: DEBUG
