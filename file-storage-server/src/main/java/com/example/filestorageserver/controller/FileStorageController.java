@@ -1,7 +1,9 @@
 package com.example.filestorageserver.controller;
 
+import com.example.filestorageserver.constants.ResultType;
 import com.example.filestorageserver.dto.FileResponseDto;
 import com.example.filestorageserver.dto.ResponseDTO;
+import com.example.filestorageserver.exception.BaseException;
 import com.example.filestorageserver.service.IFileStorageService;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +15,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -84,7 +87,7 @@ public class FileStorageController {
             )
     }
     )
-    @Retry(name = "download")
+    @Retry(name = "download", fallbackMethod = "downloadFallback")
     @GetMapping("/{applicationId}")
     public ResponseEntity<Resource> download(@PathVariable Long applicationId, @RequestParam(value = "fileName") String fileName) {
         Resource file = fileStorageService.load(applicationId, fileName);
@@ -93,6 +96,10 @@ public class FileStorageController {
                         HttpHeaders.CONTENT_DISPOSITION,
                         "attachment; filename=\"" + file.getFilename() + "\"")
                 .body(file);
+    }
+
+    public ResponseEntity<Resource> downloadFallback(Long applicationId, String fileName, Throwable throwable) {
+       throw new BaseException(ResultType.SYSTEM_ERROR, "File storage server timeout", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Operation(
@@ -117,7 +124,7 @@ public class FileStorageController {
             )
     }
     )
-    @Retry(name = "getFilesInfo")
+    @Retry(name = "getFilesInfo", fallbackMethod = "getFilesInfoFallback")
     @GetMapping("/{applicationId}/info")
     public ResponseDTO<List<FileResponseDto>> getFilesInfo(@PathVariable Long applicationId) {
         List<FileResponseDto> filesInfo = fileStorageService.loadAll(applicationId).map(path -> {
@@ -128,6 +135,10 @@ public class FileStorageController {
                     .build();
         }).toList();
         return ok(filesInfo);
+    }
+
+    public ResponseDTO<List<FileResponseDto>> getFilesInfoFallback(Long applicationId, Throwable throwable) {
+        throw new BaseException(ResultType.SYSTEM_ERROR, "File storage server timeout", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Operation(

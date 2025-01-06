@@ -2,10 +2,12 @@ package com.example.applicationserver.controller;
 
 import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
 import com.example.applicationserver.client.dto.FileResponseDto;
+import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.GrantAmountDto;
 import com.example.applicationserver.dto.ResponseDTO;
+import com.example.applicationserver.exception.BaseException;
 import com.example.applicationserver.service.IApplicationService;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +19,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
 import static com.example.applicationserver.dto.ResponseDTO.ok;
 
@@ -88,10 +92,15 @@ public class ApplicationController {
             )
     }
     )
-    @Retry(name = "get")
+    @Retry(name = "get", fallbackMethod = "getFallback")
     @GetMapping("/{applicationId}")
     public ResponseDTO<ApplicationResponseDto> get(@PathVariable Long applicationId) {
         return ok(applicationService.get(applicationId));
+    }
+
+
+    public ResponseDTO<ApplicationResponseDto> getFallback(Throwable throwable) {
+        throw new BaseException(ResultType.SYSTEM_ERROR, "Application server timeout", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Operation(

@@ -11,6 +11,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.concurrent.TimeoutException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -46,7 +48,7 @@ public class ApplicationControllerTest {
     }
 
     @Test
-    public void getApplication() {
+    public void getApplication() throws TimeoutException {
         when(applicationService.get(applicationId)).thenReturn(response);
 
         ResponseDTO<ApplicationResponseDto> result = applicationController.get(applicationId);

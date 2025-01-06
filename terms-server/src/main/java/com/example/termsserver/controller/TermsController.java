@@ -1,8 +1,10 @@
 package com.example.termsserver.controller;
 
+import com.example.termsserver.constants.ResultType;
 import com.example.termsserver.dto.ResponseDTO;
 import com.example.termsserver.dto.TermsRequestDto;
 import com.example.termsserver.dto.TermsResponseDto;
+import com.example.termsserver.exception.BaseException;
 import com.example.termsserver.service.ITermsService;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +15,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -74,10 +77,14 @@ public class TermsController {
             )
     }
     )
-    @Retry(name = "getAll")
+    @Retry(name = "getAll", fallbackMethod = "getAllFallback")
     @GetMapping
     public ResponseDTO<List<TermsResponseDto>> getAll() {
         return ok(termsService.getAll());
+    }
+
+    public ResponseDTO<List<TermsResponseDto>> getAllFallback(Throwable throwable) {
+        throw new BaseException(ResultType.SYSTEM_ERROR, "Terms server timeout", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Operation(
@@ -102,12 +109,15 @@ public class TermsController {
             )
     }
     )
-    @Retry(name = "get")
+    @Retry(name = "get", fallbackMethod = "getFallback")
     @GetMapping("/{termsId}")
     public ResponseDTO<TermsResponseDto> get(@PathVariable Long termsId) {
         return ok(termsService.get(termsId));
     }
 
+    public ResponseDTO<TermsResponseDto> getFallback(Long termsId, Throwable throwable) {
+        throw new BaseException(ResultType.SYSTEM_ERROR, "Terms server timeout", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
 
     @Operation(
             summary = "Update Terms REST API",

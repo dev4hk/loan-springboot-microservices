@@ -1,9 +1,11 @@
 package com.example.entry_server.controller;
 
+import com.example.entry_server.constants.ResultType;
 import com.example.entry_server.dto.EntryRequestDto;
 import com.example.entry_server.dto.EntryResponseDto;
 import com.example.entry_server.dto.EntryUpdateResponseDto;
 import com.example.entry_server.dto.ResponseDTO;
+import com.example.entry_server.exception.BaseException;
 import com.example.entry_server.service.IEntryService;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,11 +82,15 @@ public class EntryController {
             )
     }
     )
-    @Retry(name = "getEntry")
+    @Retry(name = "getEntry", fallbackMethod = "getEntryFallback")
     @GetMapping("/{applicationId}")
     public ResponseDTO<EntryResponseDto> getEntry(@PathVariable Long applicationId) {
         EntryResponseDto response = entryService.get(applicationId);
         return ResponseDTO.ok(response);
+    }
+
+    public ResponseDTO<EntryResponseDto> getEntryFallback(Long applicationId, Throwable throwable) {
+        throw new BaseException(ResultType.SYSTEM_ERROR, "Entry server timeout", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Operation(

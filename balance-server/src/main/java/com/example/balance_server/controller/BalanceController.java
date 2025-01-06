@@ -1,6 +1,8 @@
 package com.example.balance_server.controller;
 
+import com.example.balance_server.constants.ResultType;
 import com.example.balance_server.dto.*;
+import com.example.balance_server.exception.BaseException;
 import com.example.balance_server.service.IBalanceService;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
@@ -11,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -76,11 +79,15 @@ public class BalanceController {
             )
     }
     )
-    @Retry(name = "get")
+    @Retry(name = "get", fallbackMethod = "getFallback")
     @GetMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> get(@PathVariable Long applicationId) {
         BalanceResponseDto response = balanceService.get(applicationId);
         return ResponseDTO.ok(response);
+    }
+
+    public ResponseDTO<BalanceResponseDto> getFallback(Long applicationId, Throwable throwable) {
+        throw new BaseException(ResultType.SYSTEM_ERROR, "Balance server timeout", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Operation(

@@ -1,9 +1,11 @@
 package com.example.judgement_server.controller;
 
+import com.example.judgement_server.constants.ResultType;
 import com.example.judgement_server.dto.GrantAmountDto;
 import com.example.judgement_server.dto.JudgementRequestDto;
 import com.example.judgement_server.dto.JudgementResponseDto;
 import com.example.judgement_server.dto.ResponseDTO;
+import com.example.judgement_server.exception.BaseException;
 import com.example.judgement_server.service.IJudgementService;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -94,10 +97,14 @@ public class JudgementController {
             )
     }
     )
-    @Retry(name = "get")
+    @Retry(name = "get", fallbackMethod = "getFallback")
     @GetMapping("/{judgementId}")
     public ResponseDTO<JudgementResponseDto> get(@PathVariable Long judgementId) {
         return ok(judgementService.get(judgementId));
+    }
+
+    public ResponseDTO<JudgementResponseDto> getFallback(Long judgementId, Throwable throwable) {
+        throw new BaseException(ResultType.SYSTEM_ERROR, "Judgement server timeout", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Operation(
@@ -129,10 +136,14 @@ public class JudgementController {
             )
     }
     )
-    @Retry(name = "getJudgmentOfApplication")
+    @Retry(name = "getJudgmentOfApplication", fallbackMethod = "getJudgmentOfApplicationFallback")
     @GetMapping("/applications/{applicationId}")
     public ResponseDTO<JudgementResponseDto> getJudgmentOfApplication(@PathVariable Long applicationId) {
         return ok(judgementService.getJudgementOfApplication(applicationId));
+    }
+
+    public ResponseDTO<JudgementResponseDto> getJudgmentOfApplicationFallback(Long applicationId, Throwable throwable) {
+        throw new BaseException(ResultType.SYSTEM_ERROR, "Judgement server timeout", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Operation(
