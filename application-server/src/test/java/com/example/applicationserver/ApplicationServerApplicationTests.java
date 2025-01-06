@@ -5,8 +5,10 @@ import com.example.applicationserver.client.FileStorageClient;
 import com.example.applicationserver.client.JudgementClient;
 import com.example.applicationserver.client.TermsClient;
 import com.example.applicationserver.client.dto.*;
+import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.GrantAmountDto;
 import com.example.applicationserver.dto.ResponseDTO;
+import com.example.applicationserver.dto.ResultObject;
 import com.example.applicationserver.entity.Application;
 import com.example.applicationserver.repository.ApplicationRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -103,17 +105,17 @@ class ApplicationServerApplicationTests {
         when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
         when(applicationRepository.save(any(Application.class))).thenReturn(application);
         when(applicationRepository.existsById(anyLong())).thenReturn(Boolean.TRUE);
-        when(termsClient.getAll()).thenReturn(new ResponseDTO<>(List.of(termsResponseDto)));
-        when(acceptTermsClient.create(any(AcceptTermsRequestDto.class))).thenReturn(new ResponseDTO<>(List.of(acceptTermsResponseDto)));
-        when(fileStorageClient.upload(anyLong(), any(MultipartFile.class))).thenReturn(new ResponseDTO<>());
-        when(fileStorageClient.getFilesInfo(anyLong())).thenReturn(new ResponseDTO<>(List.of(fileResponseDto)));
-        when(fileStorageClient.deleteAll(anyLong())).thenReturn(new ResponseDTO<>());
+        when(termsClient.getAll()).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), List.of(termsResponseDto)));
+        when(acceptTermsClient.create(any(AcceptTermsRequestDto.class))).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), List.of(acceptTermsResponseDto)));
+        when(fileStorageClient.upload(anyLong(), any(MultipartFile.class))).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), null));
+        when(fileStorageClient.getFilesInfo(anyLong())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), List.of(fileResponseDto)));
+        when(fileStorageClient.deleteAll(anyLong())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), null));
 
         byte[] fileContent = "This is a test file".getBytes();
         Resource resource = new ByteArrayResource(fileContent);
         when(fileStorageClient.download(anyLong(), anyString())).thenReturn(ResponseEntity.ok(resource));
 
-        when(judgementClient.getJudgmentOfApplication(anyLong())).thenReturn(new ResponseDTO<>(judgementResponseDto));
+        when(judgementClient.getJudgmentOfApplication(anyLong())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), judgementResponseDto));
     }
 
     @Order(1)
