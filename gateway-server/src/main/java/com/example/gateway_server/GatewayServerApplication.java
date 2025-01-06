@@ -5,7 +5,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @SpringBootApplication
@@ -25,15 +27,21 @@ public class GatewayServerApplication {
                                 .circuitBreaker(config -> config.setName("acceptTermsCircuitBreaker")
                                         .setFallbackUri("forward:/error")
                                 )
+                                .retry(retryConfig -> retryConfig.setRetries(3).setMethods(HttpMethod.GET)
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true)
+                                )
                         )
                         .uri("lb://ACCEPT-TERMS-SERVER"))
                 .route(p -> p
                         .path("/loan/application/**")
                         .filters(f -> f.rewritePath("/loan/application/(?<segment>.*)", "/${segment}")
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
-//                                .circuitBreaker(config -> config.setName("applicationCircuitBreaker")
-//                                        .setFallbackUri("forward:/error")
-//                                )
+                                .circuitBreaker(config -> config.setName("applicationCircuitBreaker")
+                                        .setFallbackUri("forward:/error")
+                                )
+                                .retry(retryConfig -> retryConfig.setRetries(3).setMethods(HttpMethod.GET)
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true)
+                                )
                         )
                         .uri("lb://APPLICATION-SERVER"))
                 .route(p -> p
@@ -42,7 +50,11 @@ public class GatewayServerApplication {
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                 .circuitBreaker(config -> config.setName("balanceCircuitBreaker")
                                         .setFallbackUri("forward:/error")
-                                ))
+                                )
+                                .retry(retryConfig -> retryConfig.setRetries(3).setMethods(HttpMethod.GET)
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true)
+                                )
+                        )
                         .uri("lb://BALANCE-SERVER"))
                 .route(p -> p
                         .path("/loan/counsel/**")
@@ -50,7 +62,11 @@ public class GatewayServerApplication {
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                 .circuitBreaker(config -> config.setName("counselCircuitBreaker")
                                         .setFallbackUri("forward:/error")
-                                ))
+                                )
+                                .retry(retryConfig -> retryConfig.setRetries(3).setMethods(HttpMethod.GET)
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true)
+                                )
+                        )
                         .uri("lb://COUNSEL-SERVER"))
                 .route(p -> p
                         .path("/loan/entry/**")
@@ -58,7 +74,11 @@ public class GatewayServerApplication {
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                 .circuitBreaker(config -> config.setName("entryCircuitBreaker")
                                         .setFallbackUri("forward:/error")
-                                ))
+                                )
+                                .retry(retryConfig -> retryConfig.setRetries(3).setMethods(HttpMethod.GET)
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true)
+                                )
+                        )
                         .uri("lb://ENTRY-SERVER"))
                 .route(p -> p
                         .path("/loan/file-storage/**")
@@ -66,15 +86,19 @@ public class GatewayServerApplication {
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                 .circuitBreaker(config -> config.setName("fileStorageCircuitBreaker")
                                         .setFallbackUri("forward:/error")
-                                ))
+                                )
+                        .retry(retryConfig -> retryConfig.setRetries(3).setMethods(HttpMethod.GET)
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true)
+                                )
+                        )
                         .uri("lb://FILE-STORAGE-SERVER"))
                 .route(p -> p
                         .path("/loan/judgement/**")
                         .filters(f -> f.rewritePath("/loan/judgement/(?<segment>.*)", "/${segment}")
-//                                .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
-//                                .circuitBreaker(config -> config.setName("judgementCircuitBreaker")
-//                                        .setFallbackUri("forward:/error")
-//                                )
+                                .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
+                                .circuitBreaker(config -> config.setName("judgementCircuitBreaker")
+                                        .setFallbackUri("forward:/error")
+                                )
                         )
                         .uri("lb://JUDGEMENT-SERVER"))
                 .route(p -> p
@@ -83,7 +107,11 @@ public class GatewayServerApplication {
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                 .circuitBreaker(config -> config.setName("repaymentCircuitBreaker")
                                         .setFallbackUri("forward:/error")
-                                ))
+                                )
+                        .retry(retryConfig -> retryConfig.setRetries(3).setMethods(HttpMethod.GET)
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true)
+                                )
+                        )
                         .uri("lb://REPAYMENT-SERVER"))
                 .route(p -> p
                         .path("/loan/terms/**")
@@ -91,7 +119,11 @@ public class GatewayServerApplication {
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
                                 .circuitBreaker(config -> config.setName("termsCircuitBreaker")
                                         .setFallbackUri("forward:/error")
-                                ))
+                                )
+                        .retry(retryConfig -> retryConfig.setRetries(3).setMethods(HttpMethod.GET)
+                                        .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true)
+                                )
+                        )
                         .uri("lb://TERMS-SERVER"))
                 .build();
     }

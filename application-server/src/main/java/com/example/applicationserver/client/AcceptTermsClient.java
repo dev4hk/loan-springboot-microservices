@@ -16,3 +16,4 @@ public interface AcceptTermsClient {
     @PostMapping(value = "/api")
     ResponseDTO<List<AcceptTermsResponseDto>> create(@RequestBody AcceptTermsRequestDto acceptTermsRequestDto);
 }
+
