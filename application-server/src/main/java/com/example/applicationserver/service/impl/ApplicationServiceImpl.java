@@ -4,10 +4,7 @@ import com.example.applicationserver.client.AcceptTermsClient;
 import com.example.applicationserver.client.FileStorageClient;
 import com.example.applicationserver.client.JudgementClient;
 import com.example.applicationserver.client.TermsClient;
-import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
-import com.example.applicationserver.client.dto.FileResponseDto;
-import com.example.applicationserver.client.dto.JudgementResponseDto;
-import com.example.applicationserver.client.dto.TermsResponseDto;
+import com.example.applicationserver.client.dto.*;
 import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
@@ -21,6 +18,8 @@ import com.example.applicationserver.service.IApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -79,7 +78,13 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public void acceptTerms(Long applicationId, AcceptTermsRequestDto request) {
         get(applicationId);
-        List<TermsResponseDto> terms = termClient.getAll().getData();
+        ResponseDTO<List<TermsResponseDto>> termsResponse = termClient.getAll();
+        if (termsResponse.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, termsResponse.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        List<TermsResponseDto> terms = termsResponse.getData();
+
         if (terms.isEmpty()) {
             throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Terms server error", HttpStatus.NOT_FOUND);
         }
@@ -101,7 +106,10 @@ public class ApplicationServiceImpl implements IApplicationService {
                 .applicationId(applicationId)
                 .build();
 
-        acceptTermsClient.create(request);
+        ResponseDTO<List<AcceptTermsResponseDto>> acceptTermsResponse = acceptTermsClient.create(request);
+        if (acceptTermsResponse.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, acceptTermsResponse.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
@@ -109,26 +117,36 @@ public class ApplicationServiceImpl implements IApplicationService {
         if (!isPresentApplication(applicationId)) {
             throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exists", HttpStatus.NOT_FOUND);
         }
-        try{
-            fileStorageClient.upload(applicationId, file);
-        } catch (Exception e) {
-            throw new BaseException(ResultType.SYSTEM_ERROR, "File Storager server error", HttpStatus.INTERNAL_SERVER_ERROR);
+        ResponseDTO<Void> fileStorageResponse = fileStorageClient.upload(applicationId, file);
+        if (fileStorageResponse.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, fileStorageResponse.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @Override
     public Resource downloadFile(Long applicationId, String fileName) {
-        return fileStorageClient.download(applicationId, fileName).getBody();
+        ResponseEntity<Resource> fileStorageResponse = fileStorageClient.download(applicationId, fileName);
+        if (fileStorageResponse.getStatusCode().is5xxServerError()) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, "Error downloading file", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return fileStorageResponse.getBody();
     }
 
     @Override
     public List<FileResponseDto> loadAllFiles(Long applicationId) {
-        return fileStorageClient.getFilesInfo(applicationId).getData();
+        ResponseDTO<List<FileResponseDto>> fileStorageResponse = fileStorageClient.getFilesInfo(applicationId);
+        if (fileStorageResponse.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, fileStorageResponse.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        return fileStorageResponse.getData();
     }
 
     @Override
     public void deleteAllFiles(Long applicationId) {
-        fileStorageClient.deleteAll(applicationId);
+        ResponseDTO<Void> fileStorageResponse = fileStorageClient.deleteAll(applicationId);
+        if (fileStorageResponse.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, fileStorageResponse.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @Override
@@ -142,8 +160,13 @@ public class ApplicationServiceImpl implements IApplicationService {
     public ApplicationResponseDto contract(Long applicationId) {
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exists", HttpStatus.NOT_FOUND));
+
         ResponseDTO<JudgementResponseDto> judgementResponse = judgementClient.getJudgmentOfApplication(applicationId);
-        if (judgementResponse == null || judgementResponse.getData() == null) {
+        if (judgementResponse.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, judgementResponse.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (judgementResponse.getData() == null) {
             throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND);
         }
 

@@ -84,13 +84,19 @@ public class JudgementServiceImpl implements IJudgementService {
                 .approvalAmount(approvalAmount)
                 .applicationId(applicationId)
                 .build();
-        applicationClient.updateGrant(applicationId, grantAmountDto);
+        ResponseDTO<Void> applicationResponseDto = applicationClient.updateGrant(applicationId, grantAmountDto);
+        if(applicationResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, applicationResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return grantAmountDto;
     }
 
     private void ensureApplicationExists(Long applicationId) {
         ResponseDTO<ApplicationResponseDto> response = applicationClient.get(applicationId);
-        if (response == null || response.getData() == null) {
+        if (response.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, response.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (response.getData() == null) {
             throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application server error", HttpStatus.NOT_FOUND);
         }
     }
