@@ -7,10 +7,7 @@ import com.example.entry_server.client.dto.BalanceRequestDto;
 import com.example.entry_server.client.dto.BalanceResponseDto;
 import com.example.entry_server.client.dto.BalanceUpdateRequestDto;
 import com.example.entry_server.constants.ResultType;
-import com.example.entry_server.dto.EntryRequestDto;
-import com.example.entry_server.dto.EntryResponseDto;
-import com.example.entry_server.dto.EntryUpdateResponseDto;
-import com.example.entry_server.dto.ResponseDTO;
+import com.example.entry_server.dto.*;
 import com.example.entry_server.entity.Entry;
 import com.example.entry_server.exception.BaseException;
 import com.example.entry_server.repository.EntryRepository;
@@ -79,10 +76,20 @@ class EntryServiceImplTest {
     @Test
     void should_create_entry() {
         Long applicationId = 1L;
-        when(applicationClient.get(applicationId)).thenReturn(new ResponseDTO<>(applicationResponseDto));
+        when(applicationClient.get(applicationId)).thenReturn(new ResponseDTO<>(
+                ResultObject.builder()
+                        .code(ResultType.SUCCESS.getCode())
+                        .desc(ResultType.SUCCESS.getDesc())
+                        .build(),
+                applicationResponseDto));
         when(entryRepository.save(any(Entry.class))).thenReturn(entry);
         when(balanceClient.create(eq(applicationId), any(BalanceRequestDto.class))).thenReturn(
-                new ResponseDTO<>(new BalanceResponseDto())
+                new ResponseDTO<>(
+                        ResultObject.builder()
+                                .code(ResultType.SUCCESS.getCode())
+                                .desc(ResultType.SUCCESS.getDesc())
+                                .build(),
+                        new BalanceResponseDto())
         );
 
 
@@ -131,7 +138,12 @@ class EntryServiceImplTest {
 
         when(entryRepository.findById(entryId)).thenReturn(Optional.of(entry));
         when(balanceClient.update(eq(1L), any(BalanceUpdateRequestDto.class))).thenReturn(
-                new ResponseDTO<>(BalanceResponseDto.builder()
+                new ResponseDTO<>(
+                        ResultObject.builder()
+                                .code(ResultType.SUCCESS.getCode())
+                                .desc(ResultType.SUCCESS.getDesc())
+                                .build(),
+                        BalanceResponseDto.builder()
                         .balanceId(1L)
                         .applicationId(1L)
                         .balance(BigDecimal.valueOf(1000))

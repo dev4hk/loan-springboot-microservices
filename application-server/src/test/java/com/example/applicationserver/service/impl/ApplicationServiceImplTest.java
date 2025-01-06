@@ -11,6 +11,7 @@ import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.ResponseDTO;
+import com.example.applicationserver.dto.ResultObject;
 import com.example.applicationserver.entity.Application;
 import com.example.applicationserver.exception.BaseException;
 import com.example.applicationserver.repository.ApplicationRepository;
@@ -155,12 +156,16 @@ class ApplicationServiceImplTest {
                 .applicationId(1L)
                 .build();
         AcceptTermsRequestDto request = AcceptTermsRequestDto.builder()
-                        .applicationId(applicationId)
-                        .termsIds(List.of(1L, 2L))
-                        .build();
+                .applicationId(applicationId)
+                .termsIds(List.of(1L, 2L))
+                .build();
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(entity));
         when(termsClient.getAll()).thenReturn(
                 new ResponseDTO<>(
+                        ResultObject.builder()
+                                .code(ResultType.SUCCESS.getCode())
+                                .desc(ResultType.SUCCESS.getDesc())
+                                .build(),
                         List.of(
                                 TermsResponseDto
                                         .builder()
@@ -173,8 +178,13 @@ class ApplicationServiceImplTest {
                                         .termsId(2L)
                                         .build()
                         )
-                        ));
-        when(acceptTermsClient.create(request)).thenReturn(new ResponseDTO<>(List.of(
+                ));
+        when(acceptTermsClient.create(request)).thenReturn(new ResponseDTO<>(
+                ResultObject.builder()
+                        .code(ResultType.SUCCESS.getCode())
+                        .desc(ResultType.SUCCESS.getDesc())
+                        .build(),
+                List.of(
                 AcceptTermsResponseDto
                         .builder()
                         .applicationId(applicationId)
@@ -264,7 +274,7 @@ class ApplicationServiceImplTest {
                                         .termsId(2L)
                                         .build()
                         )
-                        ));
+                ));
         assertThrows(BaseException.class, () -> applicationService.acceptTerms(applicationId, request));
     }
 
@@ -284,6 +294,10 @@ class ApplicationServiceImplTest {
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(entity));
         when(judgementClient.getJudgmentOfApplication(applicationId)).thenReturn(
                 new ResponseDTO<>(
+                        ResultObject.builder()
+                                .code(ResultType.SUCCESS.getCode())
+                                .desc(ResultType.SUCCESS.getDesc())
+                                .build(),
                         JudgementResponseDto.builder()
                                 .judgementId(1L)
                                 .applicationId(1L)
@@ -322,8 +336,12 @@ class ApplicationServiceImplTest {
                 .build();
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(entity));
         when(judgementClient.getJudgmentOfApplication(applicationId)).thenReturn(
-                new ResponseDTO<>()
-        );
+                new ResponseDTO<>(
+                        ResultObject.builder()
+                                .code(ResultType.SUCCESS.getCode())
+                                .desc(ResultType.SUCCESS.getDesc())
+                                .build(),
+                        null));
 
         assertThrows(BaseException.class, () -> applicationService.contract(applicationId));
     }
@@ -343,6 +361,10 @@ class ApplicationServiceImplTest {
         when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(entity));
         when(judgementClient.getJudgmentOfApplication(applicationId)).thenReturn(
                 new ResponseDTO<>(
+                        ResultObject.builder()
+                                .code(ResultType.SUCCESS.getCode())
+                                .desc(ResultType.SUCCESS.getDesc())
+                                .build(),
                         JudgementResponseDto.builder()
                                 .judgementId(1L)
                                 .applicationId(1L)
