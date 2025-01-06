@@ -5,6 +5,7 @@ import com.example.entry_server.dto.EntryResponseDto;
 import com.example.entry_server.dto.EntryUpdateResponseDto;
 import com.example.entry_server.dto.ResponseDTO;
 import com.example.entry_server.service.IEntryService;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -78,6 +79,7 @@ public class EntryController {
             )
     }
     )
+    @Retry(name = "getEntry")
     @GetMapping("/{applicationId}")
     public ResponseDTO<EntryResponseDto> getEntry(@PathVariable Long applicationId) {
         EntryResponseDto response = entryService.get(applicationId);

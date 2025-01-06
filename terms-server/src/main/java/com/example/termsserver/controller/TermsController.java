@@ -4,6 +4,7 @@ import com.example.termsserver.dto.ResponseDTO;
 import com.example.termsserver.dto.TermsRequestDto;
 import com.example.termsserver.dto.TermsResponseDto;
 import com.example.termsserver.service.ITermsService;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -73,6 +74,7 @@ public class TermsController {
             )
     }
     )
+    @Retry(name = "getAll")
     @GetMapping
     public ResponseDTO<List<TermsResponseDto>> getAll() {
         return ok(termsService.getAll());
@@ -100,6 +102,7 @@ public class TermsController {
             )
     }
     )
+    @Retry(name = "get")
     @GetMapping("/{termsId}")
     public ResponseDTO<TermsResponseDto> get(@PathVariable Long termsId) {
         return ok(termsService.get(termsId));

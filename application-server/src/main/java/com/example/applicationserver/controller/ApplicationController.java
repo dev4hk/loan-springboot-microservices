@@ -7,6 +7,7 @@ import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.GrantAmountDto;
 import com.example.applicationserver.dto.ResponseDTO;
 import com.example.applicationserver.service.IApplicationService;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -87,6 +88,7 @@ public class ApplicationController {
             )
     }
     )
+    @Retry(name = "get")
     @GetMapping("/{applicationId}")
     public ResponseDTO<ApplicationResponseDto> get(@PathVariable Long applicationId) {
         return ok(applicationService.get(applicationId));

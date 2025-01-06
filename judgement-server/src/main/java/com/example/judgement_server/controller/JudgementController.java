@@ -5,6 +5,7 @@ import com.example.judgement_server.dto.JudgementRequestDto;
 import com.example.judgement_server.dto.JudgementResponseDto;
 import com.example.judgement_server.dto.ResponseDTO;
 import com.example.judgement_server.service.IJudgementService;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -93,6 +94,7 @@ public class JudgementController {
             )
     }
     )
+    @Retry(name = "get")
     @GetMapping("/{judgementId}")
     public ResponseDTO<JudgementResponseDto> get(@PathVariable Long judgementId) {
         return ok(judgementService.get(judgementId));
@@ -127,6 +129,7 @@ public class JudgementController {
             )
     }
     )
+    @Retry(name = "getJudgmentOfApplication")
     @GetMapping("/applications/{applicationId}")
     public ResponseDTO<JudgementResponseDto> getJudgmentOfApplication(@PathVariable Long applicationId) {
         return ok(judgementService.getJudgementOfApplication(applicationId));

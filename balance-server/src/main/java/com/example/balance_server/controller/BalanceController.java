@@ -2,6 +2,7 @@ package com.example.balance_server.controller;
 
 import com.example.balance_server.dto.*;
 import com.example.balance_server.service.IBalanceService;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -75,6 +76,7 @@ public class BalanceController {
             )
     }
     )
+    @Retry(name = "get")
     @GetMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> get(@PathVariable Long applicationId) {
         BalanceResponseDto response = balanceService.get(applicationId);
