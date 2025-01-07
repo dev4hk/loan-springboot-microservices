@@ -2,6 +2,7 @@ package com.example.repayment_server.controller;
 
 import com.example.repayment_server.dto.*;
 import com.example.repayment_server.service.IRepaymentService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -51,6 +52,7 @@ public class RepaymentController {
             )
     }
     )
+    @RateLimiter(name = "createRepaymentRateLimiter")
     @PostMapping("/{applicationId}")
     public ResponseDTO<RepaymentResponseDto> createRepayment(
             @PathVariable Long applicationId,
@@ -81,6 +83,7 @@ public class RepaymentController {
             )
     }
     )
+    @RateLimiter(name = "getRepaymentsRateLimiter")
     @GetMapping("/{applicationId}")
     public ResponseDTO<List<RepaymentListResponseDto>> getRepayments(
             @PathVariable Long applicationId) {
@@ -110,6 +113,7 @@ public class RepaymentController {
             )
     }
     )
+    @RateLimiter(name = "updateRepaymentRateLimiter")
     @PutMapping("/{repaymentId}")
     public ResponseDTO<RepaymentUpdateResponseDto> updateRepayment(
             @PathVariable Long repaymentId,
@@ -140,6 +144,7 @@ public class RepaymentController {
             )
     }
     )
+    @RateLimiter(name = "deleteRepaymentRateLimiter")
     @DeleteMapping("/{repaymentId}")
     public ResponseDTO<Void> deleteRepayment(
             @PathVariable Long repaymentId) {

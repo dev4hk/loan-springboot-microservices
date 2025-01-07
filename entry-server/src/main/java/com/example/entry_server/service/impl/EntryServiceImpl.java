@@ -4,6 +4,7 @@ import com.example.entry_server.client.ApplicationClient;
 import com.example.entry_server.client.BalanceClient;
 import com.example.entry_server.client.dto.ApplicationResponseDto;
 import com.example.entry_server.client.dto.BalanceRequestDto;
+import com.example.entry_server.client.dto.BalanceResponseDto;
 import com.example.entry_server.client.dto.BalanceUpdateRequestDto;
 import com.example.entry_server.constants.ResultType;
 import com.example.entry_server.dto.EntryRequestDto;
@@ -42,12 +43,15 @@ public class EntryServiceImpl implements IEntryService {
         entry.setApplicationId(applicationId);
 
         Entry created = entryRepository.save(entry);
-        balanceClient.create(applicationId,
+        ResponseDTO<BalanceResponseDto> balanceResponseDto = balanceClient.create(applicationId,
                 BalanceRequestDto.builder()
                         .applicationId(applicationId)
                         .entryAmount(request.getEntryAmount())
                         .build()
         );
+        if (balanceResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, balanceResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         return EntryMapper.mapToEntryResponseDto(created);
 
@@ -55,7 +59,10 @@ public class EntryServiceImpl implements IEntryService {
 
     private boolean isContractedApplication(Long applicationId) {
         ResponseDTO<ApplicationResponseDto> responseDto = applicationClient.get(applicationId);
-        if (responseDto == null || responseDto.getData() == null) {
+        if (responseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, responseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (responseDto.getData() == null) {
             throw new BaseException(ResultType.BAD_REQUEST, "Application does not exist", HttpStatus.BAD_REQUEST);
         }
         return responseDto.getData().getContractedAt() != null;
@@ -77,13 +84,18 @@ public class EntryServiceImpl implements IEntryService {
         entry.setEntryAmount(request.getEntryAmount());
         Long applicationId = entry.getApplicationId();
 
-        balanceClient.update(applicationId,
+        ResponseDTO<BalanceResponseDto> balanceResponseDto = balanceClient.update(applicationId,
                 BalanceUpdateRequestDto.builder()
                         .applicationId(applicationId)
                         .beforeEntryAmount(beforeEntryAmount)
                         .afterEntryAmount(request.getEntryAmount())
                         .build()
         );
+
+        if (balanceResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, balanceResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         return EntryUpdateResponseDto.builder()
                 .entryId(entryId)
                 .applicationId(applicationId)
@@ -96,10 +108,9 @@ public class EntryServiceImpl implements IEntryService {
     public void delete(Long entryId) {
         Entry entry = entryRepository.findById(entryId)
                 .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "entry does not exist", HttpStatus.NOT_FOUND));
-        entry.setIsDeleted(true);
         BigDecimal beforeEntryAMount = entry.getEntryAmount();
         Long applicationId = entry.getApplicationId();
-        balanceClient.update(
+        ResponseDTO<BalanceResponseDto> balanceResponseDto = balanceClient.update(
                 applicationId,
                 BalanceUpdateRequestDto.builder()
                         .applicationId(applicationId)
@@ -107,5 +118,9 @@ public class EntryServiceImpl implements IEntryService {
                         .afterEntryAmount(BigDecimal.ZERO)
                         .build()
         );
+        if (balanceResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, balanceResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        entry.setIsDeleted(true);
     }
 }

@@ -6,8 +6,10 @@ import com.example.entry_server.client.dto.ApplicationResponseDto;
 import com.example.entry_server.client.dto.BalanceRequestDto;
 import com.example.entry_server.client.dto.BalanceResponseDto;
 import com.example.entry_server.client.dto.BalanceUpdateRequestDto;
+import com.example.entry_server.constants.ResultType;
 import com.example.entry_server.dto.EntryRequestDto;
 import com.example.entry_server.dto.ResponseDTO;
+import com.example.entry_server.dto.ResultObject;
 import com.example.entry_server.entity.Entry;
 import com.example.entry_server.repository.EntryRepository;
 import io.restassured.RestAssured;
@@ -76,9 +78,9 @@ class EntryServerApplicationTests {
         when(entryRepository.save(any(Entry.class))).thenReturn(entry);
         when(entryRepository.findByApplicationId(anyLong())).thenReturn(Optional.of(entry));
         when(entryRepository.findById(anyLong())).thenReturn(Optional.of(entry));
-        when(applicationClient.get(anyLong())).thenReturn(new ResponseDTO<>(applicationResponseContractedDto));
-        when(balanceClient.create(anyLong(), any(BalanceRequestDto.class))).thenReturn(new ResponseDTO<>(balanceResponseDto));
-        when(balanceClient.update(anyLong(), any(BalanceUpdateRequestDto.class))).thenReturn(new ResponseDTO<>(balanceResponseDto));
+        when(applicationClient.get(anyLong())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), applicationResponseContractedDto));
+        when(balanceClient.create(anyLong(), any(BalanceRequestDto.class))).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), balanceResponseDto));
+        when(balanceClient.update(anyLong(), any(BalanceUpdateRequestDto.class))).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), balanceResponseDto));
     }
 
     @Order(1)

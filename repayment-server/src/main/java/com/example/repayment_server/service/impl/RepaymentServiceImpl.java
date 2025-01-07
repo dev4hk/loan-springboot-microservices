@@ -52,6 +52,10 @@ public class RepaymentServiceImpl implements IRepaymentService {
                         .build()
         );
 
+        if (balanceResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, balanceResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
         RepaymentResponseDto repaymentResponseDto = RepaymentMapper.mapToRepaymentResponseDto(repayment);
         repaymentResponseDto.setBalance(balanceResponseDto.getData().getBalance());
 
@@ -60,17 +64,21 @@ public class RepaymentServiceImpl implements IRepaymentService {
 
     private boolean isRepayableApplication(Long applicationId) {
         ResponseDTO<ApplicationResponseDto> applicationResponseDto = applicationClient.get(applicationId);
-        if (
-                applicationResponseDto == null
-                        || applicationResponseDto.getData() == null
-                        || applicationResponseDto.getData().getContractedAt() == null
+        if (applicationResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, applicationResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+        if (applicationResponseDto.getData() == null
+                || applicationResponseDto.getData().getContractedAt() == null
         ) {
             return false;
         }
 
         ResponseDTO<EntryResponseDto> entryResponseDto = entryClient.getEntry(applicationId);
+        if (entryResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, entryResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
-        return entryResponseDto != null && entryResponseDto.getData() != null;
+        return entryResponseDto.getData() != null;
 
     }
 
@@ -88,23 +96,36 @@ public class RepaymentServiceImpl implements IRepaymentService {
         );
         Long applicationId = repayment.getApplicationId();
         BigDecimal beforeRepaymentAmount = repayment.getRepaymentAmount();
-        balanceClient.repaymentUpdate(
+        ResponseDTO<BalanceResponseDto> balanceResponseDto = balanceClient.repaymentUpdate(
                 applicationId,
                 BalanceRepaymentRequestDto.builder()
                         .repaymentAmount(beforeRepaymentAmount)
                         .type(BalanceRepaymentRequestDto.RepaymentType.ADD)
                         .build()
         );
+
+        if (balanceResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, balanceResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         repayment.setRepaymentAmount(repaymentRequestDto.getRepaymentAmount());
 
-        ResponseDTO<BalanceResponseDto> balanceResponseDto = balanceClient.repaymentUpdate(
+        balanceResponseDto = balanceClient.repaymentUpdate(
                 applicationId,
                 BalanceRepaymentRequestDto.builder()
                         .repaymentAmount(repaymentRequestDto.getRepaymentAmount())
                         .type(BalanceRepaymentRequestDto.RepaymentType.REMOVE)
                         .build()
         );
-
+        if (balanceResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            balanceClient.repaymentUpdate(
+                    applicationId,
+                    BalanceRepaymentRequestDto.builder()
+                            .repaymentAmount(beforeRepaymentAmount)
+                            .type(BalanceRepaymentRequestDto.RepaymentType.REMOVE)
+                            .build()
+            );
+            throw new BaseException(ResultType.SYSTEM_ERROR, balanceResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return RepaymentUpdateResponseDto.builder()
                 .applicationId(applicationId)
                 .beforeRepaymentAmount(beforeRepaymentAmount)
@@ -126,13 +147,17 @@ public class RepaymentServiceImpl implements IRepaymentService {
         Long applicationid = repayment.getApplicationId();
         BigDecimal removeRepaymentAmount = repayment.getRepaymentAmount();
 
-        balanceClient.repaymentUpdate(
+        ResponseDTO<BalanceResponseDto> balanceResponseDto = balanceClient.repaymentUpdate(
                 applicationid,
                 BalanceRepaymentRequestDto.builder()
                         .repaymentAmount(removeRepaymentAmount)
                         .type(BalanceRepaymentRequestDto.RepaymentType.ADD)
                         .build()
         );
+
+        if (balanceResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
+            throw new BaseException(ResultType.SYSTEM_ERROR, balanceResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
 
         repayment.setIsDeleted(true);
     }

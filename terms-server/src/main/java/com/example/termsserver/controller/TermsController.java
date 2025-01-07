@@ -1,9 +1,13 @@
 package com.example.termsserver.controller;
 
+import com.example.termsserver.constants.ResultType;
 import com.example.termsserver.dto.ResponseDTO;
 import com.example.termsserver.dto.TermsRequestDto;
 import com.example.termsserver.dto.TermsResponseDto;
+import com.example.termsserver.exception.BaseException;
 import com.example.termsserver.service.ITermsService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -12,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -53,6 +58,7 @@ public class TermsController {
             )
     }
     )
+    @RateLimiter(name = "createRateLimiter")
     @PostMapping
     public ResponseDTO<TermsResponseDto> create(@Valid @RequestBody TermsRequestDto request) {
         return ok(termsService.create(request));
@@ -73,6 +79,8 @@ public class TermsController {
             )
     }
     )
+    @RateLimiter(name = "getAllRateLimiter")
+    @Retry(name = "getAllRetry")
     @GetMapping
     public ResponseDTO<List<TermsResponseDto>> getAll() {
         return ok(termsService.getAll());
@@ -100,11 +108,12 @@ public class TermsController {
             )
     }
     )
+    @RateLimiter(name = "getRateLimiter")
+    @Retry(name = "getRetry")
     @GetMapping("/{termsId}")
     public ResponseDTO<TermsResponseDto> get(@PathVariable Long termsId) {
         return ok(termsService.get(termsId));
     }
-
 
     @Operation(
             summary = "Update Terms REST API",
@@ -128,6 +137,7 @@ public class TermsController {
             )
     }
     )
+    @RateLimiter(name = "updateRateLimiter")
     @PutMapping("/{termsId}")
     public ResponseDTO<TermsResponseDto> update(@PathVariable Long termsId, @Valid @RequestBody TermsRequestDto request) {
         return ok(termsService.update(termsId, request));
@@ -155,6 +165,7 @@ public class TermsController {
             )
     }
     )
+    @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{termsId}")
     public ResponseDTO<TermsResponseDto> delete(@PathVariable Long termsId) {
         termsService.delete(termsId);

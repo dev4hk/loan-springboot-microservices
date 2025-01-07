@@ -7,8 +7,10 @@ import com.example.repayment_server.client.dto.ApplicationResponseDto;
 import com.example.repayment_server.client.dto.BalanceRepaymentRequestDto;
 import com.example.repayment_server.client.dto.BalanceResponseDto;
 import com.example.repayment_server.client.dto.EntryResponseDto;
+import com.example.repayment_server.constants.ResultType;
 import com.example.repayment_server.dto.RepaymentRequestDto;
 import com.example.repayment_server.dto.ResponseDTO;
+import com.example.repayment_server.dto.ResultObject;
 import com.example.repayment_server.entity.Repayment;
 import com.example.repayment_server.repository.RepaymentRepository;
 import io.restassured.RestAssured;
@@ -91,9 +93,15 @@ class RepaymentServerApplicationTests {
         when(repaymentRepository.save(any(Repayment.class))).thenReturn(repayment);
         when(repaymentRepository.findAllByApplicationId(anyLong())).thenReturn(List.of(repayment));
         when(repaymentRepository.findById(anyLong())).thenReturn(Optional.of(repayment));
-        when(balanceClient.repaymentUpdate(anyLong(), any(BalanceRepaymentRequestDto.class))).thenReturn(new ResponseDTO<>(balanceResponseDto));
+        when(balanceClient.repaymentUpdate(anyLong(), any(BalanceRepaymentRequestDto.class))).thenReturn(
+                new ResponseDTO<>(
+                        new ResultObject(ResultType.SUCCESS, "success"),
+                        balanceResponseDto)
+        );
 
-        when(entryClient.getEntry(1L)).thenReturn(new ResponseDTO<>(new EntryResponseDto(
+        when(entryClient.getEntry(1L)).thenReturn(new ResponseDTO<>(
+                new ResultObject(ResultType.SUCCESS, "success"),
+                new EntryResponseDto(
                 1L,
                 1L,
                 BigDecimal.valueOf(1000),
@@ -113,7 +121,10 @@ class RepaymentServerApplicationTests {
                 .repaymentAmount(BigDecimal.valueOf(1000.00))
                 .build();
 
-        when(applicationclient.get(anyLong())).thenReturn(new ResponseDTO<>(applicationResponseContractedDto));
+        when(applicationclient.get(anyLong())).thenReturn(new ResponseDTO<>(
+                new ResultObject(ResultType.SUCCESS, "success"),
+                applicationResponseContractedDto)
+        );
 
         RestAssured.given()
                 .contentType("application/json")

@@ -4,6 +4,7 @@ import com.example.accepttermsserver.dto.AcceptTermsRequestDto;
 import com.example.accepttermsserver.dto.AcceptTermsResponseDto;
 import com.example.accepttermsserver.dto.ResponseDTO;
 import com.example.accepttermsserver.service.IAcceptTermsService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -54,6 +55,7 @@ public class AcceptTermsController {
             )
     }
     )
+    @RateLimiter(name = "createRateLimiter")
     @PostMapping
     public ResponseDTO<List<AcceptTermsResponseDto>> create(@Valid @RequestBody AcceptTermsRequestDto acceptTermsRequestDto) {
         return ResponseDTO.ok(acceptTermsService.create(acceptTermsRequestDto));

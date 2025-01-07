@@ -2,6 +2,8 @@ package com.example.balance_server.controller;
 
 import com.example.balance_server.dto.*;
 import com.example.balance_server.service.IBalanceService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -47,6 +49,7 @@ public class BalanceController {
             )
     }
     )
+    @RateLimiter(name = "createRateLimiter")
     @PostMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> create(@PathVariable Long applicationId, @Valid @RequestBody BalanceRequestDto request) {
         BalanceResponseDto response = balanceService.create(applicationId, request);
@@ -75,6 +78,8 @@ public class BalanceController {
             )
     }
     )
+    @Retry(name = "getRetry")
+    @RateLimiter(name = "getRateLimiter")
     @GetMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> get(@PathVariable Long applicationId) {
         BalanceResponseDto response = balanceService.get(applicationId);
@@ -103,6 +108,7 @@ public class BalanceController {
             )
     }
     )
+    @RateLimiter(name = "updateRateLimiter")
     @PutMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> update(@PathVariable Long applicationId, @Valid @RequestBody BalanceUpdateRequestDto request) {
         BalanceResponseDto response = balanceService.update(applicationId, request);
@@ -131,6 +137,7 @@ public class BalanceController {
             )
     }
     )
+    @RateLimiter(name = "repaymentUpdateRateLimiter")
     @PutMapping("/{applicationId}/repayment")
     public ResponseDTO<BalanceResponseDto> repaymentUpdate(@PathVariable Long applicationId, @Valid @RequestBody BalanceRepaymentRequestDto request) {
         BalanceResponseDto response = balanceService.repaymentUpdate(applicationId, request);
@@ -159,6 +166,7 @@ public class BalanceController {
             )
     }
     )
+    @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{applicationId}")
     public ResponseDTO<Void> delete(@PathVariable Long applicationId) {
         balanceService.delete(applicationId);

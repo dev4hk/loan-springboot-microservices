@@ -21,6 +21,10 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 10MB
+  cloud:
+    openfeign:
+      circuitbreaker:
+        enabled: true
 
 management:
   endpoints:
@@ -57,3 +61,25 @@ logging:
     com:
       example:
         applicationserver: DEBUG
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      slidingWindowSize: 10
+      permittedNumberOfCallsInHalfOpenState: 2
+      failureRateThreshold: 50
+      waitDurationInOpenState: 10000
+resilience4j.retry:
+  configs:
+    default:
+      maxRetryAttempts: 3
+      waitDuration: 500
+      enableExponentialBackoff: true
+      exponentialBackoffMultiplier: 2
+      retryExceptions:
+        - java.util.concurrent.TimeoutException
+resilience4j.ratelimiter:
+  configs:
+    default:
+      timeoutDuration: 1000
+      limitRefreshPeriod: 5000
+      limitForPeriod: 1

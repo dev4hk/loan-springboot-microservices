@@ -164,7 +164,11 @@ public class JudgementServiceImplTest {
     @Test
     void testGrantApplicationNotFound() {
         when(judgementRepository.findById(1L)).thenReturn(Optional.of(judgement));
-        when(applicationClient.get(1L)).thenReturn(null);
+        when(applicationClient.get(1L)).thenReturn(
+                new ResponseDTO<>(
+
+                )
+        );
 
         BaseException exception = assertThrows(BaseException.class, () -> {
             judgementService.grant(1L);

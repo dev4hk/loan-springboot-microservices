@@ -3,6 +3,7 @@ package com.example.entry_server.client;
 import com.example.entry_server.client.dto.BalanceRequestDto;
 import com.example.entry_server.client.dto.BalanceResponseDto;
 import com.example.entry_server.client.dto.BalanceUpdateRequestDto;
+import com.example.entry_server.client.fallback.BalanceFallback;
 import com.example.entry_server.dto.ResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-@FeignClient(name = "balance-server")
+@FeignClient(name = "balance-server", fallback = BalanceFallback.class)
 public interface BalanceClient {
 
     @PostMapping("/api/{applicationId}")

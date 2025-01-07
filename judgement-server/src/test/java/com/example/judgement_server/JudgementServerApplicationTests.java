@@ -2,9 +2,11 @@ package com.example.judgement_server;
 
 import com.example.judgement_server.client.ApplicationClient;
 import com.example.judgement_server.client.dto.ApplicationResponseDto;
+import com.example.judgement_server.constants.ResultType;
 import com.example.judgement_server.dto.GrantAmountDto;
 import com.example.judgement_server.dto.JudgementRequestDto;
 import com.example.judgement_server.dto.ResponseDTO;
+import com.example.judgement_server.dto.ResultObject;
 import com.example.judgement_server.entity.Judgement;
 import com.example.judgement_server.repository.JudgementRepository;
 import io.restassured.RestAssured;
@@ -67,9 +69,9 @@ public class JudgementServerApplicationTests {
         when(judgementRepository.save(Mockito.any(Judgement.class))).thenReturn(judgement);
         ApplicationResponseDto applicationResponseDto = new ApplicationResponseDto();
         applicationResponseDto.setApplicationId(1L);
-        ResponseDTO<ApplicationResponseDto> responseDTO = new ResponseDTO<>(applicationResponseDto);
+        ResponseDTO<ApplicationResponseDto> responseDTO = new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), applicationResponseDto);
         when(applicationClient.get(anyLong())).thenReturn(responseDTO);
-        when(applicationClient.updateGrant(anyLong(), Mockito.any(GrantAmountDto.class))).thenReturn(new ResponseDTO<>());
+        when(applicationClient.updateGrant(anyLong(), Mockito.any(GrantAmountDto.class))).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), null));
     }
 
     @AfterEach
@@ -272,6 +274,7 @@ public class JudgementServerApplicationTests {
                 .when()
                 .patch("/api/" + judgmentId + "/grants")
                 .then()
+                .log().all()
                 .statusCode(200)
                 .extract()
                 .body()

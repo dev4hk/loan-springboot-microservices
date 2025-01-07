@@ -1,10 +1,14 @@
 package com.example.entry_server.controller;
 
+import com.example.entry_server.constants.ResultType;
 import com.example.entry_server.dto.EntryRequestDto;
 import com.example.entry_server.dto.EntryResponseDto;
 import com.example.entry_server.dto.EntryUpdateResponseDto;
 import com.example.entry_server.dto.ResponseDTO;
+import com.example.entry_server.exception.BaseException;
 import com.example.entry_server.service.IEntryService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -13,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +55,7 @@ public class EntryController {
             )
     }
     )
+    @RateLimiter(name = "createEntryRateLimiter")
     @PostMapping("/{applicationId}")
     public ResponseDTO<EntryResponseDto> createEntry(@PathVariable Long applicationId, @Valid @RequestBody EntryRequestDto request) {
         EntryResponseDto response = entryService.create(applicationId, request);
@@ -78,6 +84,8 @@ public class EntryController {
             )
     }
     )
+    @RateLimiter(name = "getEntryRateLimiter")
+    @Retry(name = "getEntry")
     @GetMapping("/{applicationId}")
     public ResponseDTO<EntryResponseDto> getEntry(@PathVariable Long applicationId) {
         EntryResponseDto response = entryService.get(applicationId);
@@ -106,6 +114,7 @@ public class EntryController {
             )
     }
     )
+    @RateLimiter(name = "updateEntryRateLimiter")
     @PutMapping("/{entryId}")
     public ResponseDTO<EntryUpdateResponseDto> updateEntry(@PathVariable Long entryId, @Valid @RequestBody EntryRequestDto request) {
         EntryUpdateResponseDto response = entryService.update(entryId, request);
@@ -134,6 +143,7 @@ public class EntryController {
             )
     }
     )
+    @RateLimiter(name = "deleteEntryRateLimiter")
     @DeleteMapping("/{entryId}")
     public ResponseDTO<Void> deleteEntry(@PathVariable Long entryId) {
         entryService.delete(entryId);

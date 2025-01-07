@@ -3,6 +3,8 @@ package com.example.filestorageserver.controller;
 import com.example.filestorageserver.dto.FileResponseDto;
 import com.example.filestorageserver.dto.ResponseDTO;
 import com.example.filestorageserver.service.IFileStorageService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
+import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -55,6 +57,7 @@ public class FileStorageController {
             )
     }
     )
+    @RateLimiter(name = "uploadRateLimiter")
     @PostMapping(value = "/{applicationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseDTO<Void> upload(@PathVariable Long applicationId, MultipartFile file) {
         fileStorageService.save(applicationId, file);
@@ -83,6 +86,8 @@ public class FileStorageController {
             )
     }
     )
+    @RateLimiter(name = "downloadRateLimiter")
+    @Retry(name = "download")
     @GetMapping("/{applicationId}")
     public ResponseEntity<Resource> download(@PathVariable Long applicationId, @RequestParam(value = "fileName") String fileName) {
         Resource file = fileStorageService.load(applicationId, fileName);
@@ -115,6 +120,8 @@ public class FileStorageController {
             )
     }
     )
+    @RateLimiter(name = "getFilesInfoRateLimiter")
+    @Retry(name = "getFilesInfo")
     @GetMapping("/{applicationId}/info")
     public ResponseDTO<List<FileResponseDto>> getFilesInfo(@PathVariable Long applicationId) {
         List<FileResponseDto> filesInfo = fileStorageService.loadAll(applicationId).map(path -> {
@@ -149,6 +156,7 @@ public class FileStorageController {
             )
     }
     )
+    @RateLimiter(name = "deleteAllRateLimiter")
     @DeleteMapping("/{applicationId}")
     public ResponseDTO<Void> deleteAll(@PathVariable Long applicationId) {
         fileStorageService.deleteAll(applicationId);

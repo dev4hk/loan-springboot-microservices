@@ -4,6 +4,7 @@ import com.example.counselserver.dto.CounselRequestDto;
 import com.example.counselserver.dto.CounselResponseDto;
 import com.example.counselserver.dto.ResponseDTO;
 import com.example.counselserver.service.ICounselService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -51,6 +52,7 @@ public class CounselController {
             )
     }
     )
+    @RateLimiter(name = "createRateLimiter")
     @PostMapping
     public ResponseDTO<CounselResponseDto> create(@Valid @RequestBody CounselRequestDto request) {
         return ok(counselService.create(request));
@@ -78,6 +80,7 @@ public class CounselController {
             )
     }
     )
+    @RateLimiter(name = "getRateLimiter")
     @GetMapping("/{counselId}")
     public ResponseDTO<CounselResponseDto> get(@PathVariable Long counselId) {
         return ok(counselService.get(counselId));
@@ -105,6 +108,7 @@ public class CounselController {
             )
     }
     )
+    @RateLimiter(name = "updateRateLimiter")
     @PutMapping("/{counselId}")
     public ResponseDTO<CounselResponseDto> update(@PathVariable Long counselId, @Valid @RequestBody CounselRequestDto request) {
         return ok(counselService.update(counselId, request));
@@ -132,6 +136,7 @@ public class CounselController {
             )
     }
     )
+    @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{counselId}")
     public ResponseDTO<CounselResponseDto> delete(@PathVariable Long counselId) {
         counselService.delete(counselId);
