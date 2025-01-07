@@ -1,7 +1,7 @@
 services:
 
   config-server:
-    image: "config-server:4.0"
+    image: "config-server:5.0"
     container_name: "config-server-ms"
     ports:
       - "8071:8071"
@@ -18,7 +18,7 @@ services:
       SPRING_APPLICATION_NAME: "config-server"
 
   eureka-server:
-    image: "eureka-server:4.0"
+    image: "eureka-server:5.0"
     container_name: "eureka-server-ms"
     ports:
       - "8070:8070"
@@ -38,7 +38,7 @@ services:
       SPRING_APPLICATION_NAME: "eureka-server"
 
   counsel-server:
-    image: "counsel-server:4.0"
+    image: "counsel-server:5.0"
     container_name: "counsel-server-ms"
     depends_on:
       config-server:
@@ -62,7 +62,7 @@ services:
       service: microservice-eureka-config
 
   application-server:
-    image: "application-server:4.0"
+    image: "application-server:5.0"
     container_name: "application-server-ms"
     depends_on:
       config-server:
@@ -86,7 +86,7 @@ services:
       service: microservice-eureka-config
 
   terms-server:
-    image: "terms-server:4.0"
+    image: "terms-server:5.0"
     container_name: "terms-server-ms"
     depends_on:
       config-server:
@@ -110,7 +110,7 @@ services:
       service: microservice-eureka-config
 
   accept-terms-server:
-    image: "accept-terms-server:4.0"
+    image: "accept-terms-server:5.0"
     container_name: "accept-terms-server-ms"
     depends_on:
       config-server:
@@ -134,7 +134,7 @@ services:
       service: microservice-eureka-config
 
   file-storage-server:
-    image: "file-storage-server:4.0"
+    image: "file-storage-server:5.0"
     container_name: "file-storage-server-ms"
     depends_on:
       config-server:
@@ -156,7 +156,7 @@ services:
       service: microservice-eureka-config
 
   judgement-server:
-    image: "judgement-server:4.0"
+    image: "judgement-server:5.0"
     container_name: "judgement-server-ms"
     depends_on:
       config-server:
@@ -180,7 +180,7 @@ services:
       service: microservice-eureka-config
 
   entry-server:
-    image: "entry-server:4.0"
+    image: "entry-server:5.0"
     container_name: "entry-server-ms"
     depends_on:
       config-server:
@@ -204,7 +204,7 @@ services:
       service: microservice-eureka-config
 
   balance-server:
-    image: "balance-server:4.0"
+    image: "balance-server:5.0"
     container_name: "balance-server-ms"
     depends_on:
       config-server:
@@ -228,7 +228,7 @@ services:
       service: microservice-eureka-config
 
   repayment-server:
-    image: "repayment-server:4.0"
+    image: "repayment-server:5.0"
     container_name: "repayment-server-ms"
     depends_on:
       config-server:
@@ -252,7 +252,7 @@ services:
       service: microservice-eureka-config
 
   gateway-server:
-    image: "gateway-server:4.0"
+    image: "gateway-server:5.0"
     container_name: gateway-server-ms
     ports:
       - "8072:8072"
