@@ -9,6 +9,7 @@ import com.example.applicationserver.dto.GrantAmountDto;
 import com.example.applicationserver.dto.ResponseDTO;
 import com.example.applicationserver.exception.BaseException;
 import com.example.applicationserver.service.IApplicationService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -27,7 +28,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 
 import static com.example.applicationserver.dto.ResponseDTO.ok;
 
@@ -65,6 +65,7 @@ public class ApplicationController {
             )
     }
     )
+    @RateLimiter(name = "createRateLimiter")
     @PostMapping
     public ResponseDTO<ApplicationResponseDto> create(@Valid @RequestBody ApplicationRequestDto request) {
         return ok(applicationService.create(request));
@@ -92,15 +93,11 @@ public class ApplicationController {
             )
     }
     )
-    @Retry(name = "get", fallbackMethod = "getFallback")
+    @RateLimiter(name = "getRateLimiter")
+    @Retry(name = "getRetry")
     @GetMapping("/{applicationId}")
     public ResponseDTO<ApplicationResponseDto> get(@PathVariable Long applicationId) {
         return ok(applicationService.get(applicationId));
-    }
-
-
-    public ResponseDTO<ApplicationResponseDto> getFallback(Throwable throwable) {
-        throw new BaseException(ResultType.SYSTEM_ERROR, "Application server timeout", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Operation(
@@ -125,6 +122,7 @@ public class ApplicationController {
             )
     }
     )
+    @RateLimiter(name = "updateRateLimiter")
     @PutMapping("/{applicationId}")
     public ResponseDTO<ApplicationResponseDto> update(@PathVariable Long applicationId, @Valid @RequestBody ApplicationRequestDto request) {
         return ok(applicationService.update(applicationId, request));
@@ -152,6 +150,7 @@ public class ApplicationController {
             )
     }
     )
+    @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{applicationId}")
     public ResponseDTO<ApplicationResponseDto> delete(@PathVariable Long applicationId) {
         applicationService.delete(applicationId);
@@ -187,6 +186,7 @@ public class ApplicationController {
             )
     }
     )
+    @RateLimiter(name = "acceptTermsRateLimiter")
     @PostMapping("/{applicationId}/terms")
     public ResponseDTO<Void> acceptTerms(@PathVariable Long applicationId, @Valid @RequestBody AcceptTermsRequestDto request) {
         applicationService.acceptTerms(applicationId, request);
@@ -222,6 +222,7 @@ public class ApplicationController {
             )
     }
     )
+    @RateLimiter(name = "uploadRateLimiter")
     @PostMapping(value = "/{applicationId}/files", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseDTO<Void> upload(@PathVariable Long applicationId, MultipartFile file) {
         applicationService.uploadFile(applicationId, file);
@@ -257,6 +258,7 @@ public class ApplicationController {
             )
     }
     )
+    @RateLimiter(name = "downloadRateLimiter")
     @GetMapping("/{applicationId}/files")
     public ResponseEntity<Resource> download(@PathVariable Long applicationId, @RequestParam(value = "fileName") String fileName) {
         return ResponseEntity.ok(applicationService.downloadFile(applicationId, fileName));
@@ -291,6 +293,7 @@ public class ApplicationController {
             )
     }
     )
+    @RateLimiter(name = "getFilesInfoRateLimiter")
     @GetMapping("/{applicationId}/files/info")
     public ResponseDTO<List<FileResponseDto>> getFilesInfo(@PathVariable Long applicationId) {
         return ok(applicationService.loadAllFiles(applicationId));
@@ -325,18 +328,79 @@ public class ApplicationController {
             )
     }
     )
+    @RateLimiter(name = "deleteAllFilesRateLimiter")
     @DeleteMapping("/{applicationId}/files")
     public ResponseDTO<Void> deleteAllFiles(@PathVariable Long applicationId) {
         applicationService.deleteAllFiles(applicationId);
         return ok();
     }
 
+    @Operation(
+            summary = "Update grant REST API",
+            description = "REST API to update grant"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status Bad Request",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "HTTP Not Found",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @RateLimiter(name = "updateGrantRateLimiter")
     @PutMapping("/{applicationId}/grant")
     public ResponseDTO<Void> updateGrant(@PathVariable Long applicationId, @Valid @RequestBody GrantAmountDto grantAmountDto) {
         applicationService.updateGrant(applicationId, grantAmountDto);
         return ok();
     }
 
+    @Operation(
+            summary = "Contract REST API",
+            description = "REST API to contract"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status Bad Request",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "HTTP Not Found",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @RateLimiter(name = "contractRateLimiter")
     @PutMapping("/{applicationId}/contract")
     public ResponseDTO<ApplicationResponseDto> contract(@PathVariable Long applicationId) {
         return ok(applicationService.contract(applicationId));

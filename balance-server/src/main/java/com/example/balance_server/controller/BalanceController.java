@@ -1,9 +1,8 @@
 package com.example.balance_server.controller;
 
-import com.example.balance_server.constants.ResultType;
 import com.example.balance_server.dto.*;
-import com.example.balance_server.exception.BaseException;
 import com.example.balance_server.service.IBalanceService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,7 +12,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +49,7 @@ public class BalanceController {
             )
     }
     )
+    @RateLimiter(name = "createRateLimiter")
     @PostMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> create(@PathVariable Long applicationId, @Valid @RequestBody BalanceRequestDto request) {
         BalanceResponseDto response = balanceService.create(applicationId, request);
@@ -79,15 +78,12 @@ public class BalanceController {
             )
     }
     )
-    @Retry(name = "get", fallbackMethod = "getFallback")
+    @Retry(name = "getRetry")
+    @RateLimiter(name = "getRateLimiter")
     @GetMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> get(@PathVariable Long applicationId) {
         BalanceResponseDto response = balanceService.get(applicationId);
         return ResponseDTO.ok(response);
-    }
-
-    public ResponseDTO<BalanceResponseDto> getFallback(Long applicationId, Throwable throwable) {
-        throw new BaseException(ResultType.SYSTEM_ERROR, "Balance server timeout", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Operation(
@@ -112,6 +108,7 @@ public class BalanceController {
             )
     }
     )
+    @RateLimiter(name = "updateRateLimiter")
     @PutMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> update(@PathVariable Long applicationId, @Valid @RequestBody BalanceUpdateRequestDto request) {
         BalanceResponseDto response = balanceService.update(applicationId, request);
@@ -140,6 +137,7 @@ public class BalanceController {
             )
     }
     )
+    @RateLimiter(name = "repaymentUpdateRateLimiter")
     @PutMapping("/{applicationId}/repayment")
     public ResponseDTO<BalanceResponseDto> repaymentUpdate(@PathVariable Long applicationId, @Valid @RequestBody BalanceRepaymentRequestDto request) {
         BalanceResponseDto response = balanceService.repaymentUpdate(applicationId, request);
@@ -168,6 +166,7 @@ public class BalanceController {
             )
     }
     )
+    @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{applicationId}")
     public ResponseDTO<Void> delete(@PathVariable Long applicationId) {
         balanceService.delete(applicationId);

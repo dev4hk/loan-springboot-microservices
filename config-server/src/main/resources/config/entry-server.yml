@@ -70,3 +70,10 @@ resilience4j.retry:
       exponentialBackoffMultiplier: 2
       retryExceptions:
         - java.util.concurrent.TimeoutException
+resilience4j.ratelimiter:
+  configs:
+    default:
+      limitForPeriod: 1
+      limitRefreshPeriod: 1s
+      timeoutDuration: 1s
+

@@ -7,6 +7,7 @@ import com.example.judgement_server.dto.JudgementResponseDto;
 import com.example.judgement_server.dto.ResponseDTO;
 import com.example.judgement_server.exception.BaseException;
 import com.example.judgement_server.service.IJudgementService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -63,6 +64,7 @@ public class JudgementController {
             )
     }
     )
+    @RateLimiter(name = "createRateLimiter")
     @PostMapping
     public ResponseDTO<JudgementResponseDto> create(@Valid @RequestBody JudgementRequestDto request) {
         return ok(judgementService.create(request));
@@ -97,14 +99,11 @@ public class JudgementController {
             )
     }
     )
-    @Retry(name = "get", fallbackMethod = "getFallback")
+    @RateLimiter(name = "getRateLimiter")
+    @Retry(name = "getRetry")
     @GetMapping("/{judgementId}")
     public ResponseDTO<JudgementResponseDto> get(@PathVariable Long judgementId) {
         return ok(judgementService.get(judgementId));
-    }
-
-    public ResponseDTO<JudgementResponseDto> getFallback(Long judgementId, Throwable throwable) {
-        throw new BaseException(ResultType.SYSTEM_ERROR, "Judgement server timeout", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Operation(
@@ -136,14 +135,11 @@ public class JudgementController {
             )
     }
     )
-    @Retry(name = "getJudgmentOfApplication", fallbackMethod = "getJudgmentOfApplicationFallback")
+    @RateLimiter(name = "getJudgmentOfApplicationRateLimiter")
+    @Retry(name = "getJudgmentOfApplicationRetry")
     @GetMapping("/applications/{applicationId}")
     public ResponseDTO<JudgementResponseDto> getJudgmentOfApplication(@PathVariable Long applicationId) {
         return ok(judgementService.getJudgementOfApplication(applicationId));
-    }
-
-    public ResponseDTO<JudgementResponseDto> getJudgmentOfApplicationFallback(Long applicationId, Throwable throwable) {
-        throw new BaseException(ResultType.SYSTEM_ERROR, "Judgement server timeout", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Operation(
@@ -175,6 +171,7 @@ public class JudgementController {
             )
     }
     )
+    @RateLimiter(name = "updateRateLimiter")
     @PutMapping("/{judgementId}")
     public ResponseDTO<JudgementResponseDto> update(@PathVariable Long judgementId, @Valid @RequestBody JudgementRequestDto request) {
         return ok(judgementService.update(judgementId, request));
@@ -209,6 +206,7 @@ public class JudgementController {
             )
     }
     )
+    @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{judgementId}")
     public ResponseDTO<Void> delete(@PathVariable Long judgementId) {
         judgementService.delete(judgementId);
@@ -244,6 +242,7 @@ public class JudgementController {
             )
     }
     )
+    @RateLimiter(name = "grantRateLimiter")
     @PatchMapping("/{judgementId}/grants")
     public ResponseDTO<GrantAmountDto> grant(@PathVariable Long judgementId) {
         return ok(judgementService.grant(judgementId));
