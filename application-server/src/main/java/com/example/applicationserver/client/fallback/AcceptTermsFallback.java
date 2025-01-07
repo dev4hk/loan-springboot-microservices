@@ -22,7 +22,7 @@ public class AcceptTermsFallback implements AcceptTermsClient {
         logger.error("AcceptTermsFallback create() invoked");
         ResultObject resultObject = ResultObject.builder()
                 .code(ResultType.SYSTEM_ERROR.getCode())
-                .desc("Error fetching application")
+                .desc("Error creating accept terms")
                 .build();
 
         return new ResponseDTO<>(resultObject, null);

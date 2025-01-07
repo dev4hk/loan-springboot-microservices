@@ -48,11 +48,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
-    @ExceptionHandler(FeignValidationException.class)
-    public ResponseEntity<?> handleFeignValidationException(FeignValidationException ex) {
-        return new ResponseEntity<>(ex.getErrorResponse(), HttpStatus.BAD_REQUEST);
-    }
-
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<?> handleBaseException(BaseException exception, WebRequest request) {
         ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
