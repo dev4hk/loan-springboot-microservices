@@ -4,6 +4,8 @@ import com.example.accepttermsserver.constants.ResultType;
 import com.example.accepttermsserver.dto.ErrorResponseDto;
 import com.example.accepttermsserver.dto.ResponseDTO;
 import com.example.accepttermsserver.dto.ResultObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -24,6 +26,8 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(
             MethodArgumentNotValidException ex,
@@ -31,6 +35,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
             HttpStatusCode status,
             WebRequest request
     ) {
+        logger.info("GlobalExceptionHandler - handleMethodArgumentNotValid invoked");
         Map<String, String> validationErrors = new HashMap<>();
         List<ObjectError> validationErrorList = ex.getBindingResult().getAllErrors();
 
@@ -50,6 +55,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<?> handleBaseException(BaseException exception, WebRequest request) {
+        logger.info("GlobalExceptionHandler - handleBaseException invoked");
         ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
                 .apiPath(request.getDescription(false))
                 .errorCode(exception.getHttpStatus())
@@ -64,6 +70,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<?> handleGlobalException(Exception exception, WebRequest request) {
+        logger.info("GlobalExceptionHandler - handleGlobalException invoked");
         ErrorResponseDto errorResponseDto = ErrorResponseDto.builder()
                 .apiPath(request.getDescription(false))
                 .errorCode(HttpStatus.INTERNAL_SERVER_ERROR)

@@ -18,7 +18,7 @@ public class TermsFallback implements TermsClient {
 
     @Override
     public ResponseDTO<List<TermsResponseDto>> getAll() {
-        logger.error("TermsFallback getAll() invoked");
+        logger.error("TermsFallback - getAll invoked");
 
         ResultObject resultObject = ResultObject.builder()
                 .code(ResultType.SYSTEM_ERROR.getCode())

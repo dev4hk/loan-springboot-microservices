@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 @FeignClient(name = "balance-server", fallback = BalanceFallback.class)
 public interface BalanceClient {
 
     @PutMapping("/api/{applicationId}/repayment")
-    ResponseDTO<BalanceResponseDto> repaymentUpdate(@PathVariable Long applicationId, @RequestBody BalanceRepaymentRequestDto request);
+    ResponseDTO<List<BalanceResponseDto>> repaymentUpdate(@PathVariable Long applicationId, @RequestBody List<BalanceRepaymentRequestDto> request);
 
 }

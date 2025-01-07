@@ -25,12 +25,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
 @TestMethodOrder(OrderAnnotation.class)
@@ -93,10 +91,10 @@ class RepaymentServerApplicationTests {
         when(repaymentRepository.save(any(Repayment.class))).thenReturn(repayment);
         when(repaymentRepository.findAllByApplicationId(anyLong())).thenReturn(List.of(repayment));
         when(repaymentRepository.findById(anyLong())).thenReturn(Optional.of(repayment));
-        when(balanceClient.repaymentUpdate(anyLong(), any(BalanceRepaymentRequestDto.class))).thenReturn(
+        when(balanceClient.repaymentUpdate(anyLong(), anyList())).thenReturn(
                 new ResponseDTO<>(
                         new ResultObject(ResultType.SUCCESS, "success"),
-                        balanceResponseDto)
+                        new ArrayList<>(Collections.singletonList(balanceResponseDto)))
         );
 
         when(entryClient.getEntry(1L)).thenReturn(new ResponseDTO<>(

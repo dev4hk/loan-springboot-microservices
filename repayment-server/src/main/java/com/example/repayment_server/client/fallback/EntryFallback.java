@@ -15,7 +15,7 @@ public class EntryFallback implements EntryClient {
 
     @Override
     public ResponseDTO<EntryResponseDto> getEntry(Long applicationId) {
-        logger.error("EntryFallback getEntry() invoked for applicationId: {}", applicationId);
+        logger.error("EntryFallback - getEntry invoked for applicationId: {}", applicationId);
 
         EntryResponseDto fallbackResponseDto = EntryResponseDto.builder()
                 .applicationId(applicationId)

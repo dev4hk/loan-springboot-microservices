@@ -22,7 +22,7 @@ public class FileStorageFallback implements FileStorageClient {
 
     @Override
     public ResponseDTO<Void> upload(Long applicationId, MultipartFile file) {
-        logger.error("FileStorageFallback upload() invoked for applicationId: {}", applicationId);
+        logger.error("FileStorageFallback - upload invoked for applicationId: {}", applicationId);
 
         ResultObject resultObject = ResultObject.builder()
                 .code(ResultType.SYSTEM_ERROR.getCode())
@@ -34,14 +34,14 @@ public class FileStorageFallback implements FileStorageClient {
 
     @Override
     public ResponseEntity<Resource> download(Long applicationId, String fileName) {
-        logger.error("FileStorageFallback download() invoked for applicationId: {}", applicationId);
+        logger.error("FileStorageFallback - download invoked for applicationId: {}", applicationId);
 
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @Override
     public ResponseDTO<List<FileResponseDto>> getFilesInfo(Long applicationId) {
-        logger.error("FileStorageFallback getFilesInfo() invoked for applicationId: {}", applicationId);
+        logger.error("FileStorageFallback - getFilesInfo invoked for applicationId: {}", applicationId);
 
         ResultObject resultObject = ResultObject.builder()
                 .code(ResultType.SYSTEM_ERROR.getCode())
@@ -53,7 +53,7 @@ public class FileStorageFallback implements FileStorageClient {
 
     @Override
     public ResponseDTO<Void> deleteAll(Long applicationId) {
-        logger.error("FileStorageFallback deleteAll() invoked for applicationId: {}", applicationId);
+        logger.error("FileStorageFallback - deleteAll invoked for applicationId: {}", applicationId);
 
         ResultObject resultObject = ResultObject.builder()
                 .code(ResultType.SYSTEM_ERROR.getCode())

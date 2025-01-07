@@ -11,9 +11,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Tag(
         name = "CRUD REST APIs for Balance",
@@ -24,6 +29,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api")
 @RequiredArgsConstructor
 public class BalanceController {
+
+    private static final Logger logger = LoggerFactory.getLogger(BalanceController.class);
 
     private final IBalanceService balanceService;
 
@@ -52,6 +59,9 @@ public class BalanceController {
     @RateLimiter(name = "createRateLimiter")
     @PostMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> create(@PathVariable Long applicationId, @Valid @RequestBody BalanceRequestDto request) {
+        logger.info("BalanceController - create invoked");
+        logger.debug("BalanceController - applicationId: {}", applicationId);
+        logger.debug("BalanceController - request: {}", request);
         BalanceResponseDto response = balanceService.create(applicationId, request);
         return ResponseDTO.ok(response);
     }
@@ -82,6 +92,8 @@ public class BalanceController {
     @RateLimiter(name = "getRateLimiter")
     @GetMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> get(@PathVariable Long applicationId) {
+        logger.info("BalanceController - get invoked");
+        logger.debug("BalanceController - applicationId: {}", applicationId);
         BalanceResponseDto response = balanceService.get(applicationId);
         return ResponseDTO.ok(response);
     }
@@ -111,6 +123,9 @@ public class BalanceController {
     @RateLimiter(name = "updateRateLimiter")
     @PutMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> update(@PathVariable Long applicationId, @Valid @RequestBody BalanceUpdateRequestDto request) {
+        logger.info("BalanceController - update invoked");
+        logger.debug("BalanceController - applicationId: {}", applicationId);
+        logger.debug("BalanceController - request: {}", request);
         BalanceResponseDto response = balanceService.update(applicationId, request);
         return ResponseDTO.ok(response);
     }
@@ -139,8 +154,11 @@ public class BalanceController {
     )
     @RateLimiter(name = "repaymentUpdateRateLimiter")
     @PutMapping("/{applicationId}/repayment")
-    public ResponseDTO<BalanceResponseDto> repaymentUpdate(@PathVariable Long applicationId, @Valid @RequestBody BalanceRepaymentRequestDto request) {
-        BalanceResponseDto response = balanceService.repaymentUpdate(applicationId, request);
+    public ResponseDTO<List<BalanceResponseDto>> repaymentUpdate(@PathVariable Long applicationId, @RequestBody @NotEmpty List<@Valid BalanceRepaymentRequestDto> request) {
+        logger.info("BalanceController - repaymentUpdate invoked");
+        logger.debug("BalanceController - applicationId: {}", applicationId);
+        logger.debug("BalanceController - request: {}", request);
+        List<BalanceResponseDto> response = balanceService.repaymentUpdate(applicationId, request);
         return ResponseDTO.ok(response);
     }
 
@@ -169,6 +187,8 @@ public class BalanceController {
     @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{applicationId}")
     public ResponseDTO<Void> delete(@PathVariable Long applicationId) {
+        logger.info("BalanceController - delete invoked");
+        logger.debug("BalanceController - applicationId: {}", applicationId);
         balanceService.delete(applicationId);
         return ResponseDTO.ok();
     }

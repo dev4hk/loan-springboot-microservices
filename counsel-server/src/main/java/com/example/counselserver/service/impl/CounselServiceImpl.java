@@ -9,6 +9,8 @@ import com.example.counselserver.mapper.CounselMapper;
 import com.example.counselserver.repository.CounselRepository;
 import com.example.counselserver.service.ICounselService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,10 +22,13 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class CounselServiceImpl implements ICounselService {
 
+    private static final Logger logger = LoggerFactory.getLogger(CounselServiceImpl.class);
     private final CounselRepository counselRepository;
 
     @Override
     public CounselResponseDto create(CounselRequestDto request) {
+        logger.info("CounselServiceImpl - create invoked");
+        logger.debug("CounselServiceImpl - request: {}", request);
         Counsel counsel = CounselMapper.mapToCounsel(request);
         counsel.setAppliedAt(LocalDateTime.now());
         counsel.setIsDeleted(false);
@@ -34,15 +39,29 @@ public class CounselServiceImpl implements ICounselService {
     @Transactional(readOnly = true)
     @Override
     public CounselResponseDto get(Long counselId) {
+        logger.info("CounselServiceImpl - get invoked");
+        logger.debug("CounselServiceImpl - counselId: {}", counselId);
         Counsel counsel = counselRepository.findById(counselId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Counsel does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() ->
+                        {
+                            logger.error("CounselServiceImpl - Counsel does not exist");
+                            return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Counsel does not exist", HttpStatus.NOT_FOUND);
+                        }
+                );
         return CounselMapper.mapToCounselResponseDto(counsel);
     }
 
     @Override
     public CounselResponseDto update(Long counselId, CounselRequestDto request) {
+        logger.info("CounselServiceImpl - update invoked");
+        logger.debug("CounselServiceImpl - counselId: {}", counselId);
+        logger.debug("CounselServiceImpl - request: {}", request);
         Counsel counsel = counselRepository.findById(counselId).orElseThrow(() ->
-                new BaseException(ResultType.RESOURCE_NOT_FOUND, "Counsel does not exist", HttpStatus.NOT_FOUND));
+                {
+                    logger.error("CounselServiceImpl - Counsel does not exist");
+                    return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Counsel does not exist", HttpStatus.NOT_FOUND);
+                }
+        );
         counsel.setFirstname(request.getFirstname());
         counsel.setLastname(request.getLastname());
         counsel.setCellPhone(request.getCellPhone());
@@ -56,8 +75,14 @@ public class CounselServiceImpl implements ICounselService {
 
     @Override
     public void delete(Long counselId) {
+        logger.info("CounselServiceImpl - delete invoked");
+        logger.debug("CounselServiceImpl - counselId: {}", counselId);
         Counsel counsel = counselRepository.findById(counselId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Counsel does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() ->
+                {
+                    logger.error("CounselServiceImpl - Counsel does not exist");
+                    return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Counsel does not exist", HttpStatus.NOT_FOUND);
+                });
         counsel.setIsDeleted(true);
     }
 }

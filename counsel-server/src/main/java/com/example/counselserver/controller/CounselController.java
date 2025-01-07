@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +30,7 @@ import static com.example.counselserver.dto.ResponseDTO.ok;
 @RestController
 public class CounselController {
 
+    private static final Logger logger = LoggerFactory.getLogger(CounselController.class);
     private final ICounselService counselService;
 
     @Operation(
@@ -55,6 +58,8 @@ public class CounselController {
     @RateLimiter(name = "createRateLimiter")
     @PostMapping
     public ResponseDTO<CounselResponseDto> create(@Valid @RequestBody CounselRequestDto request) {
+        logger.info("CounselController - create invoked");
+        logger.debug("CounselController - request: {}", request);
         return ok(counselService.create(request));
     }
 
@@ -83,6 +88,8 @@ public class CounselController {
     @RateLimiter(name = "getRateLimiter")
     @GetMapping("/{counselId}")
     public ResponseDTO<CounselResponseDto> get(@PathVariable Long counselId) {
+        logger.info("CounselController - get invoked");
+        logger.debug("CounselController - counselId: {}", counselId);
         return ok(counselService.get(counselId));
     }
 
@@ -111,6 +118,9 @@ public class CounselController {
     @RateLimiter(name = "updateRateLimiter")
     @PutMapping("/{counselId}")
     public ResponseDTO<CounselResponseDto> update(@PathVariable Long counselId, @Valid @RequestBody CounselRequestDto request) {
+        logger.info("CounselController - update invoked");
+        logger.debug("CounselController - counselId: {}", counselId);
+        logger.debug("CounselController - request: {}", request);
         return ok(counselService.update(counselId, request));
     }
 
@@ -139,6 +149,8 @@ public class CounselController {
     @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{counselId}")
     public ResponseDTO<CounselResponseDto> delete(@PathVariable Long counselId) {
+        logger.info("CounselController - delete invoked");
+        logger.debug("CounselController - counselId: {}", counselId);
         counselService.delete(counselId);
         return ok();
     }

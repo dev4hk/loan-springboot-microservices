@@ -17,6 +17,8 @@ import com.example.entry_server.mapper.EntryMapper;
 import com.example.entry_server.repository.EntryRepository;
 import com.example.entry_server.service.IEntryService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,14 +30,20 @@ import java.math.BigDecimal;
 @Service
 public class EntryServiceImpl implements IEntryService {
 
+    private static final Logger logger = LoggerFactory.getLogger(EntryServiceImpl.class);
+
     private final EntryRepository entryRepository;
     private final ApplicationClient applicationClient;
     private final BalanceClient balanceClient;
 
     @Override
     public EntryResponseDto create(Long applicationId, EntryRequestDto request) {
+        logger.info("EntryServiceImpl - create invoked");
+        logger.debug("EntryServiceImpl - applicationId: {}", applicationId);
+        logger.debug("EntryServiceImpl - request: {}", request);
 
         if (!isContractedApplication(applicationId)) {
+            logger.error("EntryServiceImpl - Application is not contracted");
             throw new BaseException(ResultType.BAD_REQUEST, "Application is not contracted", HttpStatus.BAD_REQUEST);
         }
 
@@ -43,26 +51,23 @@ public class EntryServiceImpl implements IEntryService {
         entry.setApplicationId(applicationId);
 
         Entry created = entryRepository.save(entry);
-        ResponseDTO<BalanceResponseDto> balanceResponseDto = balanceClient.create(applicationId,
+        balanceClient.create(applicationId,
                 BalanceRequestDto.builder()
                         .applicationId(applicationId)
                         .entryAmount(request.getEntryAmount())
                         .build()
         );
-        if (balanceResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
-            throw new BaseException(ResultType.SYSTEM_ERROR, balanceResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
 
         return EntryMapper.mapToEntryResponseDto(created);
 
     }
 
     private boolean isContractedApplication(Long applicationId) {
+        logger.info("EntryServiceImpl - isContractedApplication invoked");
+        logger.debug("EntryServiceImpl - applicationId: {}", applicationId);
         ResponseDTO<ApplicationResponseDto> responseDto = applicationClient.get(applicationId);
-        if (responseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
-            throw new BaseException(ResultType.SYSTEM_ERROR, responseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
         if (responseDto.getData() == null) {
+            logger.error("EntryServiceImpl - Application does not exist");
             throw new BaseException(ResultType.BAD_REQUEST, "Application does not exist", HttpStatus.BAD_REQUEST);
         }
         return responseDto.getData().getContractedAt() != null;
@@ -71,30 +76,41 @@ public class EntryServiceImpl implements IEntryService {
     @Transactional(readOnly = true)
     @Override
     public EntryResponseDto get(Long applicationId) {
+        logger.info("EntryServiceImpl - get invoked");
+        logger.debug("EntryServiceImpl - applicationId: {}", applicationId);
         Entry entry = entryRepository.findByApplicationId(applicationId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Entry does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() ->
+                        {
+                            logger.error("EntryServiceImpl - Entry does not exist");
+                            return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Entry does not exist", HttpStatus.NOT_FOUND);
+                        }
+                );
         return EntryMapper.mapToEntryResponseDto(entry);
     }
 
     @Override
     public EntryUpdateResponseDto update(Long entryId, EntryRequestDto request) {
+        logger.info("EntryServiceImpl - update invoked");
+        logger.debug("EntryServiceImpl - entryId: {}", entryId);
+        logger.debug("EntryServiceImpl - request: {}", request);
         Entry entry = entryRepository.findById(entryId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Entry does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() ->
+                        {
+                            logger.error("EntryServiceImpl - Entry does not exist");
+                            return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Entry does not exist", HttpStatus.NOT_FOUND);
+                        }
+                );
         BigDecimal beforeEntryAmount = entry.getEntryAmount();
         entry.setEntryAmount(request.getEntryAmount());
         Long applicationId = entry.getApplicationId();
 
-        ResponseDTO<BalanceResponseDto> balanceResponseDto = balanceClient.update(applicationId,
+        balanceClient.update(applicationId,
                 BalanceUpdateRequestDto.builder()
                         .applicationId(applicationId)
                         .beforeEntryAmount(beforeEntryAmount)
                         .afterEntryAmount(request.getEntryAmount())
                         .build()
         );
-
-        if (balanceResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
-            throw new BaseException(ResultType.SYSTEM_ERROR, balanceResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
 
         return EntryUpdateResponseDto.builder()
                 .entryId(entryId)
@@ -106,11 +122,18 @@ public class EntryServiceImpl implements IEntryService {
 
     @Override
     public void delete(Long entryId) {
+        logger.info("EntryServiceImpl - delete invoked");
+        logger.debug("EntryServiceImpl - entryId: {}", entryId);
         Entry entry = entryRepository.findById(entryId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "entry does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() ->
+                        {
+                            logger.error("EntryServiceImpl - Entry does not exist");
+                            return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Entry does not exist", HttpStatus.NOT_FOUND);
+                        }
+                );
         BigDecimal beforeEntryAMount = entry.getEntryAmount();
         Long applicationId = entry.getApplicationId();
-        ResponseDTO<BalanceResponseDto> balanceResponseDto = balanceClient.update(
+        balanceClient.update(
                 applicationId,
                 BalanceUpdateRequestDto.builder()
                         .applicationId(applicationId)
@@ -118,9 +141,6 @@ public class EntryServiceImpl implements IEntryService {
                         .afterEntryAmount(BigDecimal.ZERO)
                         .build()
         );
-        if (balanceResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
-            throw new BaseException(ResultType.SYSTEM_ERROR, balanceResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
         entry.setIsDeleted(true);
     }
 }
