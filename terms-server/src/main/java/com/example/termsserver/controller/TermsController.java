@@ -64,9 +64,11 @@ public class TermsController {
     @RateLimiter(name = "createRateLimiter")
     @PostMapping
     public ResponseDTO<TermsResponseDto> create(@Valid @RequestBody TermsRequestDto request) {
-        logger.info("TermsController - create invoked");
+        logger.info("TermsController - create started");
         logger.debug("TermsController - request: {}", request.toString());
-        return ok(termsService.create(request));
+        TermsResponseDto termsResponseDto = termsService.create(request);
+        logger.info("TermsController - create finished");
+        return ok(termsResponseDto);
     }
 
     @Operation(
@@ -88,8 +90,10 @@ public class TermsController {
     @Retry(name = "getAllRetry")
     @GetMapping
     public ResponseDTO<List<TermsResponseDto>> getAll() {
-        logger.info("TermsController - getAll invoked");
-        return ok(termsService.getAll());
+        logger.info("TermsController - getAll started");
+        List<TermsResponseDto> responseDtos = termsService.getAll();
+        logger.info("TermsController - getAll finished");
+        return ok(responseDtos);
     }
 
     @Operation(
@@ -118,9 +122,11 @@ public class TermsController {
     @Retry(name = "getRetry")
     @GetMapping("/{termsId}")
     public ResponseDTO<TermsResponseDto> get(@PathVariable Long termsId) {
-        logger.info("TermsController - get invoked");
+        logger.info("TermsController - get started");
         logger.debug("TermsController - termsId: {}", termsId);
-        return ok(termsService.get(termsId));
+        TermsResponseDto termsResponseDto = termsService.get(termsId);
+        logger.info("TermsController - get finished");
+        return ok(termsResponseDto);
     }
 
     @Operation(
@@ -148,10 +154,12 @@ public class TermsController {
     @RateLimiter(name = "updateRateLimiter")
     @PutMapping("/{termsId}")
     public ResponseDTO<TermsResponseDto> update(@PathVariable Long termsId, @Valid @RequestBody TermsRequestDto request) {
-        logger.info("TermsController - update invoked");
+        logger.info("TermsController - update started");
         logger.debug("TermsController - termsId: {}", termsId);
         logger.debug("TermsController - request: {}", request.toString());
-        return ok(termsService.update(termsId, request));
+        TermsResponseDto responseDto = termsService.update(termsId, request);
+        logger.info("TermsController - update finished");
+        return ok(responseDto);
     }
 
     @Operation(
@@ -179,9 +187,10 @@ public class TermsController {
     @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{termsId}")
     public ResponseDTO<TermsResponseDto> delete(@PathVariable Long termsId) {
-        logger.info("TermsController - delete invoked");
+        logger.info("TermsController - delete started");
         logger.debug("TermsController - termsId: {}", termsId);
         termsService.delete(termsId);
+        logger.info("TermsController - delete finished");
         return ok();
     }
 }

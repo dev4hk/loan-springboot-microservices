@@ -58,9 +58,11 @@ public class CounselController {
     @RateLimiter(name = "createRateLimiter")
     @PostMapping
     public ResponseDTO<CounselResponseDto> create(@Valid @RequestBody CounselRequestDto request) {
-        logger.info("CounselController - create invoked");
+        logger.info("CounselController - create started");
         logger.debug("CounselController - request: {}", request.toString());
-        return ok(counselService.create(request));
+        CounselResponseDto counselResponseDto = counselService.create(request);
+        logger.info("CounselController - create finished");
+        return ok(counselResponseDto);
     }
 
     @Operation(
@@ -88,9 +90,11 @@ public class CounselController {
     @RateLimiter(name = "getRateLimiter")
     @GetMapping("/{counselId}")
     public ResponseDTO<CounselResponseDto> get(@PathVariable Long counselId) {
-        logger.info("CounselController - get invoked");
+        logger.info("CounselController - get started");
         logger.debug("CounselController - counselId: {}", counselId);
-        return ok(counselService.get(counselId));
+        CounselResponseDto counselResponseDto = counselService.get(counselId);
+        logger.info("CounselController - get finished");
+        return ok(counselResponseDto);
     }
 
     @Operation(
@@ -118,10 +122,12 @@ public class CounselController {
     @RateLimiter(name = "updateRateLimiter")
     @PutMapping("/{counselId}")
     public ResponseDTO<CounselResponseDto> update(@PathVariable Long counselId, @Valid @RequestBody CounselRequestDto request) {
-        logger.info("CounselController - update invoked");
+        logger.info("CounselController - update started");
         logger.debug("CounselController - counselId: {}", counselId);
         logger.debug("CounselController - request: {}", request.toString());
-        return ok(counselService.update(counselId, request));
+        CounselResponseDto update = counselService.update(counselId, request);
+        logger.info("CounselController - update finished");
+        return ok(update);
     }
 
     @Operation(
@@ -149,9 +155,10 @@ public class CounselController {
     @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{counselId}")
     public ResponseDTO<CounselResponseDto> delete(@PathVariable Long counselId) {
-        logger.info("CounselController - delete invoked");
+        logger.info("CounselController - delete started");
         logger.debug("CounselController - counselId: {}", counselId);
         counselService.delete(counselId);
+        logger.info("CounselController - delete finished");
         return ok();
     }
 

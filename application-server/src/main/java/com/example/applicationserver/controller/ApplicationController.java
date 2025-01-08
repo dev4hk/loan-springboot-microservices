@@ -71,9 +71,11 @@ public class ApplicationController {
     @RateLimiter(name = "createRateLimiter")
     @PostMapping
     public ResponseDTO<ApplicationResponseDto> create(@Valid @RequestBody ApplicationRequestDto request) {
-        logger.info("ApplicationController - create invoked");
+        logger.info("ApplicationController - create started");
         logger.debug("ApplicationController - request: {}", request.toString());
-        return ok(applicationService.create(request));
+        ApplicationResponseDto applicationResponseDto = applicationService.create(request);
+        logger.info("ApplicationController - create finished");
+        return ok(applicationResponseDto);
     }
 
     @Operation(
@@ -102,9 +104,11 @@ public class ApplicationController {
     @Retry(name = "getRetry")
     @GetMapping("/{applicationId}")
     public ResponseDTO<ApplicationResponseDto> get(@PathVariable Long applicationId) {
-        logger.info("ApplicationController - get invoked");
+        logger.info("ApplicationController - get started");
         logger.debug("ApplicationController - applicationID: {}", applicationId);
-        return ok(applicationService.get(applicationId));
+        ApplicationResponseDto applicationResponseDto = applicationService.get(applicationId);
+        logger.info("ApplicationController - get finished");
+        return ok(applicationResponseDto);
     }
 
     @Operation(
@@ -132,10 +136,12 @@ public class ApplicationController {
     @RateLimiter(name = "updateRateLimiter")
     @PutMapping("/{applicationId}")
     public ResponseDTO<ApplicationResponseDto> update(@PathVariable Long applicationId, @Valid @RequestBody ApplicationRequestDto request) {
-        logger.info("ApplicationController - update invoked");
+        logger.info("ApplicationController - update started");
         logger.debug("ApplicationController - applicationID: {}", applicationId);
         logger.debug("ApplicationController - request: {}", request.toString());
-        return ok(applicationService.update(applicationId, request));
+        ApplicationResponseDto update = applicationService.update(applicationId, request);
+        logger.info("ApplicationController - update finished");
+        return ok(update);
     }
 
     @Operation(
@@ -163,9 +169,10 @@ public class ApplicationController {
     @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{applicationId}")
     public ResponseDTO<ApplicationResponseDto> delete(@PathVariable Long applicationId) {
-        logger.info("ApplicationController - delete invoked");
+        logger.info("ApplicationController - delete started");
         logger.debug("ApplicationController - applicationID: {}", applicationId);
         applicationService.delete(applicationId);
+        logger.info("ApplicationController - delete finished");
         return ok();
     }
 
@@ -201,10 +208,11 @@ public class ApplicationController {
     @RateLimiter(name = "acceptTermsRateLimiter")
     @PostMapping("/{applicationId}/terms")
     public ResponseDTO<Void> acceptTerms(@PathVariable Long applicationId, @Valid @RequestBody AcceptTermsRequestDto request) {
-        logger.info("ApplicationController - acceptTerms invoked");
+        logger.info("ApplicationController - acceptTerms started");
         logger.debug("ApplicationController - applicationID: {}", applicationId);
         logger.debug("ApplicationController - request: {}", request.toString());
         applicationService.acceptTerms(applicationId, request);
+        logger.info("ApplicationController - acceptTerms finished");
         return ok();
     }
 
@@ -240,9 +248,10 @@ public class ApplicationController {
     @RateLimiter(name = "uploadRateLimiter")
     @PostMapping(value = "/{applicationId}/files", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseDTO<Void> upload(@PathVariable Long applicationId, MultipartFile file) {
-        logger.info("ApplicationController - upload invoked");
+        logger.info("ApplicationController - upload started");
         logger.debug("ApplicationController - applicationID: {}", applicationId);
         applicationService.uploadFile(applicationId, file);
+        logger.info("ApplicationController - upload finished");
         return ok();
     }
 
@@ -278,10 +287,12 @@ public class ApplicationController {
     @RateLimiter(name = "downloadRateLimiter")
     @GetMapping("/{applicationId}/files")
     public ResponseEntity<Resource> download(@PathVariable Long applicationId, @RequestParam(value = "fileName") String fileName) {
-        logger.info("ApplicationController - download invoked");
+        logger.info("ApplicationController - download started");
         logger.debug("ApplicationController - applicationID: {}", applicationId);
         logger.debug("ApplicationController - fileName: {}", fileName);
-        return ResponseEntity.ok(applicationService.downloadFile(applicationId, fileName));
+        Resource resource = applicationService.downloadFile(applicationId, fileName);
+        logger.info("ApplicationController - download finished");
+        return ResponseEntity.ok(resource);
     }
 
     @Operation(
@@ -316,9 +327,11 @@ public class ApplicationController {
     @RateLimiter(name = "getFilesInfoRateLimiter")
     @GetMapping("/{applicationId}/files/info")
     public ResponseDTO<List<FileResponseDto>> getFilesInfo(@PathVariable Long applicationId) {
-        logger.info("ApplicationController - getFilesInfo invoked");
+        logger.info("ApplicationController - getFilesInfo started");
         logger.debug("ApplicationController - applicationID: {}", applicationId);
-        return ok(applicationService.loadAllFiles(applicationId));
+        List<FileResponseDto> fileResponseDtos = applicationService.loadAllFiles(applicationId);
+        logger.info("ApplicationController - getFilesInfo finished");
+        return ok(fileResponseDtos);
     }
 
     @Operation(
@@ -353,9 +366,10 @@ public class ApplicationController {
     @RateLimiter(name = "deleteAllFilesRateLimiter")
     @DeleteMapping("/{applicationId}/files")
     public ResponseDTO<Void> deleteAllFiles(@PathVariable Long applicationId) {
-        logger.info("ApplicationController - deleteAllFiles invoked");
+        logger.info("ApplicationController - deleteAllFiles started");
         logger.debug("ApplicationController - applicationID: {}", applicationId);
         applicationService.deleteAllFiles(applicationId);
+        logger.info("ApplicationController - deleteAllFiles finished");
         return ok();
     }
 
@@ -391,10 +405,11 @@ public class ApplicationController {
     @RateLimiter(name = "updateGrantRateLimiter")
     @PutMapping("/{applicationId}/grant")
     public ResponseDTO<Void> updateGrant(@PathVariable Long applicationId, @Valid @RequestBody GrantAmountDto grantAmountDto) {
-        logger.info("ApplicationController - updateGrant invoked");
+        logger.info("ApplicationController - updateGrant started");
         logger.debug("ApplicationController - applicationID: {}", applicationId);
         logger.debug("ApplicationController - grantAmountDto: {}", grantAmountDto.toString());
         applicationService.updateGrant(applicationId, grantAmountDto);
+        logger.info("ApplicationController - updateGrant finished");
         return ok();
     }
 
@@ -430,9 +445,11 @@ public class ApplicationController {
     @RateLimiter(name = "contractRateLimiter")
     @PutMapping("/{applicationId}/contract")
     public ResponseDTO<ApplicationResponseDto> contract(@PathVariable Long applicationId) {
-        logger.info("ApplicationController - contract invoked");
+        logger.info("ApplicationController - contract started");
         logger.debug("ApplicationController - applicationID: {}", applicationId);
-        return ok(applicationService.contract(applicationId));
+        ApplicationResponseDto contract = applicationService.contract(applicationId);
+        logger.info("ApplicationController - contract finished");
+        return ok(contract);
     }
 
 }

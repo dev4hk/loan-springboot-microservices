@@ -63,10 +63,11 @@ public class FileStorageController {
     @RateLimiter(name = "uploadRateLimiter")
     @PostMapping(value = "/{applicationId}", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
     public ResponseDTO<Void> upload(@PathVariable Long applicationId, MultipartFile file) {
-        logger.info("FileStorageController - upload invoked");
+        logger.info("FileStorageController - upload started");
         logger.debug("FileStorageController - applicationId: {}", applicationId);
         logger.debug("FileStorageController - originalFilename: {}", file.getOriginalFilename());
         fileStorageService.save(applicationId, file);
+        logger.info("FileStorageController - upload finished");
         return ok();
     }
 
@@ -96,10 +97,11 @@ public class FileStorageController {
     @Retry(name = "download")
     @GetMapping("/{applicationId}")
     public ResponseEntity<Resource> download(@PathVariable Long applicationId, @RequestParam(value = "fileName") String fileName) {
-        logger.info("FileStorageController - download invoked");
+        logger.info("FileStorageController - download started");
         logger.debug("FileStorageController - applicationId: {}", applicationId);
         logger.debug("FileStorageController - fileName: {}", fileName);
         Resource file = fileStorageService.load(applicationId, fileName);
+        logger.info("FileStorageController - download finished");
         return ResponseEntity.ok()
                 .header(
                         HttpHeaders.CONTENT_DISPOSITION,
@@ -133,7 +135,7 @@ public class FileStorageController {
     @Retry(name = "getFilesInfo")
     @GetMapping("/{applicationId}/info")
     public ResponseDTO<List<FileResponseDto>> getFilesInfo(@PathVariable Long applicationId) {
-        logger.info("FileStorageController - getFileInfo invoked");
+        logger.info("FileStorageController - getFileInfo started");
         logger.debug("FileStorageController - applicationId: {}", applicationId);
         List<FileResponseDto> filesInfo = fileStorageService.loadAll(applicationId).map(path -> {
             String fileName = path.getFileName().toString();
@@ -142,6 +144,7 @@ public class FileStorageController {
                     .url(MvcUriComponentsBuilder.fromMethodName(FileStorageController.class, "download", applicationId, fileName).build().toString())
                     .build();
         }).toList();
+        logger.info("FileStorageController - getFileInfo finished");
         return ok(filesInfo);
     }
 
@@ -170,9 +173,10 @@ public class FileStorageController {
     @RateLimiter(name = "deleteAllRateLimiter")
     @DeleteMapping("/{applicationId}")
     public ResponseDTO<Void> deleteAll(@PathVariable Long applicationId) {
-        logger.info("FileStorageController - deleteAll invoked");
+        logger.info("FileStorageController - deleteAll started");
         logger.debug("FileStorageController - applicationId: {}", applicationId);
         fileStorageService.deleteAll(applicationId);
+        logger.info("FileStorageController - deleteAll finished");
         return ok();
     }
 

@@ -62,8 +62,10 @@ public class AcceptTermsController {
     @RateLimiter(name = "createRateLimiter")
     @PostMapping
     public ResponseDTO<List<AcceptTermsResponseDto>> create(@Valid @RequestBody AcceptTermsRequestDto acceptTermsRequestDto) {
-        logger.info("AcceptTermsController - create invoked");
+        logger.info("AcceptTermsController - create started");
         logger.debug("AcceptTermsController - acceptTermsRequestDto: {}", acceptTermsRequestDto.toString());
-        return ResponseDTO.ok(acceptTermsService.create(acceptTermsRequestDto));
+        List<AcceptTermsResponseDto> acceptTermsResponseDtos = acceptTermsService.create(acceptTermsRequestDto);
+        logger.info("AcceptTermsController - create finished");
+        return ResponseDTO.ok(acceptTermsResponseDtos);
     }
 }

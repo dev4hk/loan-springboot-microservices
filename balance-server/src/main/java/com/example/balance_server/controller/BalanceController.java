@@ -59,10 +59,11 @@ public class BalanceController {
     @RateLimiter(name = "createRateLimiter")
     @PostMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> create(@PathVariable Long applicationId, @Valid @RequestBody BalanceRequestDto request) {
-        logger.info("BalanceController - create invoked");
+        logger.info("BalanceController - create started");
         logger.debug("BalanceController - applicationId: {}", applicationId);
         logger.debug("BalanceController - request: {}", request.toString());
         BalanceResponseDto response = balanceService.create(applicationId, request);
+        logger.info("BalanceController - create finished");
         return ResponseDTO.ok(response);
     }
 
@@ -92,9 +93,10 @@ public class BalanceController {
     @RateLimiter(name = "getRateLimiter")
     @GetMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> get(@PathVariable Long applicationId) {
-        logger.info("BalanceController - get invoked");
+        logger.info("BalanceController - get started");
         logger.debug("BalanceController - applicationId: {}", applicationId);
         BalanceResponseDto response = balanceService.get(applicationId);
+        logger.info("BalanceController - get finished");
         return ResponseDTO.ok(response);
     }
 
@@ -123,10 +125,11 @@ public class BalanceController {
     @RateLimiter(name = "updateRateLimiter")
     @PutMapping("/{applicationId}")
     public ResponseDTO<BalanceResponseDto> update(@PathVariable Long applicationId, @Valid @RequestBody BalanceUpdateRequestDto request) {
-        logger.info("BalanceController - update invoked");
+        logger.info("BalanceController - update started");
         logger.debug("BalanceController - applicationId: {}", applicationId);
         logger.debug("BalanceController - request: {}", request.toString());
         BalanceResponseDto response = balanceService.update(applicationId, request);
+        logger.info("BalanceController - update finished");
         return ResponseDTO.ok(response);
     }
 
@@ -155,10 +158,11 @@ public class BalanceController {
     @RateLimiter(name = "repaymentUpdateRateLimiter")
     @PutMapping("/{applicationId}/repayment")
     public ResponseDTO<List<BalanceResponseDto>> repaymentUpdate(@PathVariable Long applicationId, @RequestBody @NotEmpty List<@Valid BalanceRepaymentRequestDto> request) {
-        logger.info("BalanceController - repaymentUpdate invoked");
+        logger.info("BalanceController - repaymentUpdate started");
         logger.debug("BalanceController - applicationId: {}", applicationId);
         logger.debug("BalanceController - request: {}", request.toString());
         List<BalanceResponseDto> response = balanceService.repaymentUpdate(applicationId, request);
+        logger.info("BalanceController - repaymentUpdate finished");
         return ResponseDTO.ok(response);
     }
 
@@ -187,9 +191,10 @@ public class BalanceController {
     @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{applicationId}")
     public ResponseDTO<Void> delete(@PathVariable Long applicationId) {
-        logger.info("BalanceController - delete invoked");
+        logger.info("BalanceController - delete started");
         logger.debug("BalanceController - applicationId: {}", applicationId);
         balanceService.delete(applicationId);
+        logger.info("BalanceController - delete finished");
         return ResponseDTO.ok();
     }
 }
