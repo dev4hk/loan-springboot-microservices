@@ -115,8 +115,8 @@ public class RepaymentServiceImpl implements IRepaymentService {
                         .type(BalanceRepaymentRequestDto.RepaymentType.ADD)
                         .build(),
                 BalanceRepaymentRequestDto.builder()
-                        .repaymentAmount(beforeRepaymentAmount)
-                        .type(BalanceRepaymentRequestDto.RepaymentType.ADD)
+                        .repaymentAmount(repaymentRequestDto.getRepaymentAmount())
+                        .type(BalanceRepaymentRequestDto.RepaymentType.REMOVE)
                         .build()
         );
         ResponseDTO<List<BalanceResponseDto>> response = balanceClient.repaymentUpdate(
