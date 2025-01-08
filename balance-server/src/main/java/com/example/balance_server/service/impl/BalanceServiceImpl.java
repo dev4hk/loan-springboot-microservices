@@ -34,8 +34,6 @@ public class BalanceServiceImpl implements IBalanceService {
     @Override
     public BalanceResponseDto create(Long applicationId, BalanceRequestDto request) {
         logger.info("BalanceServiceImpl - create invoked");
-        logger.debug("BalanceServiceImpl - applicationId: {}", applicationId);
-        logger.debug("BalanceServiceImpl - request: {}", request);
 
         Balance balance = BalanceMapper.mapToBalance(request);
 
@@ -55,7 +53,6 @@ public class BalanceServiceImpl implements IBalanceService {
     @Override
     public BalanceResponseDto get(Long applicationId) {
         logger.info("BalanceServiceImpl - get invoked");
-        logger.debug("BalanceServiceImpl - applicationId: {}", applicationId);
         Balance balance = balanceRepository.findByApplicationId(applicationId).orElseThrow(() -> {
             {
                 logger.error("BalanceServiceImpl - Balance does not exist");
@@ -68,8 +65,6 @@ public class BalanceServiceImpl implements IBalanceService {
     @Override
     public BalanceResponseDto update(Long applicationId, BalanceUpdateRequestDto request) {
         logger.info("BalanceServiceImpl - update invoked");
-        logger.debug("BalanceServiceImpl - applicationId: {}", applicationId);
-        logger.debug("BalanceServiceImpl - request: {}", request);
         Balance balance = balanceRepository.findByApplicationId(applicationId).orElseThrow(() ->
                 {
                     logger.error("BalanceServiceImpl - Balance does not exist");
@@ -89,8 +84,6 @@ public class BalanceServiceImpl implements IBalanceService {
     @Override
     public List<BalanceResponseDto> repaymentUpdate(Long applicationId, List<BalanceRepaymentRequestDto> request) {
         logger.info("BalanceServiceImpl - repaymentUpdate invoked");
-        logger.debug("BalanceServiceImpl - applicationId: {}", applicationId);
-        logger.debug("BalanceServiceImpl - request: {}", request);
         Balance balance = balanceRepository.findByApplicationId(applicationId).orElseThrow(() -> {
             logger.error("BalanceServiceImpl - Balance does not exist");
             return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Balance does not exist", HttpStatus.NOT_FOUND);
@@ -118,7 +111,6 @@ public class BalanceServiceImpl implements IBalanceService {
     @Override
     public void delete(Long applicationId) {
         logger.info("BalanceServiceImpl - delete invoked");
-        logger.debug("BalanceServiceImpl - applicationId: {}", applicationId);
         Balance balance = balanceRepository.findByApplicationId(applicationId).orElseThrow(() ->
                 {
                     logger.error("BalanceServiceImpl - Balance does not exist");

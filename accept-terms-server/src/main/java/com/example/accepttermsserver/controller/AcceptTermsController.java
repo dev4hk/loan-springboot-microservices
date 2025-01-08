@@ -63,7 +63,7 @@ public class AcceptTermsController {
     @PostMapping
     public ResponseDTO<List<AcceptTermsResponseDto>> create(@Valid @RequestBody AcceptTermsRequestDto acceptTermsRequestDto) {
         logger.info("AcceptTermsController - create invoked");
-        logger.debug("AcceptTermsController - acceptTermsRequestDto: {}", acceptTermsRequestDto);
+        logger.debug("AcceptTermsController - acceptTermsRequestDto: {}", acceptTermsRequestDto.toString());
         return ResponseDTO.ok(acceptTermsService.create(acceptTermsRequestDto));
     }
 }

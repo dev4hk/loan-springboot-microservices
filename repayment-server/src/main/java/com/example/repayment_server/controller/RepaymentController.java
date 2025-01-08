@@ -62,7 +62,7 @@ public class RepaymentController {
             @Valid @RequestBody RepaymentRequestDto repaymentRequestDto) {
         logger.info("RepaymentController - createRepayment invoked");
         logger.debug("RepaymentController - applicationId: {}", applicationId);
-        logger.debug("RepaymentController - repaymentRequestDto: {}", repaymentRequestDto);
+        logger.debug("RepaymentController - repaymentRequestDto: {}", repaymentRequestDto.toString());
         RepaymentResponseDto responseDto = repaymentService.create(applicationId, repaymentRequestDto);
         return ok(responseDto);
     }
@@ -128,7 +128,7 @@ public class RepaymentController {
             @Valid @RequestBody RepaymentRequestDto repaymentRequestDto) {
         logger.info("RepaymentController - updateRepayment invoked");
         logger.debug("RepaymentController - repaymentId: {}", repaymentId);
-        logger.debug("RepaymentController - repaymentRequestDto: {}", repaymentRequestDto);
+        logger.debug("RepaymentController - repaymentRequestDto: {}", repaymentRequestDto.toString());
         RepaymentUpdateResponseDto responseDto = repaymentService.update(repaymentId, repaymentRequestDto);
         return ok(responseDto);
     }

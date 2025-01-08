@@ -31,7 +31,6 @@ public class AcceptTermsServiceImpl implements IAcceptTermsService {
     @Override
     public List<AcceptTermsResponseDto> create(AcceptTermsRequestDto acceptTermsRequestDto) {
         logger.info("AcceptTermsServiceImpl - create invoked");
-        logger.debug("AcceptTermsServiceImpl - acceptTermsRequestDto: {}", acceptTermsRequestDto);
         List<Long> termsIds = new ArrayList<>(acceptTermsRequestDto.getTermsIds());
 
         if (termsIds.isEmpty()) {

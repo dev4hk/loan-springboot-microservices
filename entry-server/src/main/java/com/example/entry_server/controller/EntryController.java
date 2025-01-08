@@ -63,7 +63,7 @@ public class EntryController {
     public ResponseDTO<EntryResponseDto> createEntry(@PathVariable Long applicationId, @Valid @RequestBody EntryRequestDto request) {
         logger.info("EntryController - createEntry invoked");
         logger.debug("EntryController - applicationId: {}", applicationId);
-        logger.debug("EntryController - request: {}", request);
+        logger.debug("EntryController - request: {}", request.toString());
         EntryResponseDto response = entryService.create(applicationId, request);
         return ResponseDTO.ok(response);
     }
@@ -127,7 +127,7 @@ public class EntryController {
     public ResponseDTO<EntryUpdateResponseDto> updateEntry(@PathVariable Long entryId, @Valid @RequestBody EntryRequestDto request) {
         logger.info("EntryController - updateEntry invoked");
         logger.debug("EntryController - entryId: {}", entryId);
-        logger.debug("EntryController - request: {}", request);
+        logger.debug("EntryController - request: {}", request.toString());
         EntryUpdateResponseDto response = entryService.update(entryId, request);
         return ResponseDTO.ok(response);
     }

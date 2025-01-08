@@ -53,7 +53,7 @@ logging:
   level:
     com:
       example:
-        entryserver: DEBUG
+        entry_server: DEBUG
 resilience4j.circuitbreaker:
   configs:
     default:

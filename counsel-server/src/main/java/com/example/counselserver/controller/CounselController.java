@@ -59,7 +59,7 @@ public class CounselController {
     @PostMapping
     public ResponseDTO<CounselResponseDto> create(@Valid @RequestBody CounselRequestDto request) {
         logger.info("CounselController - create invoked");
-        logger.debug("CounselController - request: {}", request);
+        logger.debug("CounselController - request: {}", request.toString());
         return ok(counselService.create(request));
     }
 
@@ -120,7 +120,7 @@ public class CounselController {
     public ResponseDTO<CounselResponseDto> update(@PathVariable Long counselId, @Valid @RequestBody CounselRequestDto request) {
         logger.info("CounselController - update invoked");
         logger.debug("CounselController - counselId: {}", counselId);
-        logger.debug("CounselController - request: {}", request);
+        logger.debug("CounselController - request: {}", request.toString());
         return ok(counselService.update(counselId, request));
     }
 

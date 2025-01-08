@@ -43,8 +43,6 @@ public class RepaymentServiceImpl implements IRepaymentService {
     @Override
     public RepaymentResponseDto create(Long applicationId, RepaymentRequestDto repaymentRequestDto) {
         logger.info("RepaymentServiceImpl - create invoked");
-        logger.debug("RepaymentServiceImpl - applicationId: {}", applicationId);
-        logger.debug("RepaymentServiceImpl - repaymentRequestDto: {}", repaymentRequestDto);
         if (!isRepayableApplication(applicationId)) {
             logger.error("RepaymentServiceImpl - Application not repayable");
             throw new BaseException(ResultType.BAD_REQUEST, "Application not repayable", HttpStatus.BAD_REQUEST);
@@ -72,7 +70,6 @@ public class RepaymentServiceImpl implements IRepaymentService {
 
     private boolean isRepayableApplication(Long applicationId) {
         logger.info("RepaymentServiceImpl - isRepayableApplication invoked");
-        logger.debug("RepaymentServiceImpl - applicationId: {}", applicationId);
         ResponseDTO<ApplicationResponseDto> applicationResponseDto = applicationClient.get(applicationId);
         if (applicationResponseDto.getData() == null
                 || applicationResponseDto.getData().getContractedAt() == null
@@ -88,7 +85,6 @@ public class RepaymentServiceImpl implements IRepaymentService {
     @Override
     public List<RepaymentListResponseDto> get(Long applicationId) {
         logger.info("RepaymentServiceImpl - get invoked");
-        logger.debug("RepaymentServiceImpl - applicationId: {}", applicationId);
         List<Repayment> repayments = repaymentRepository.findAllByApplicationId(applicationId);
         return repayments.stream().map(RepaymentMapper::mapToRepaymentListResponseDto).collect(Collectors.toList());
     }
@@ -96,8 +92,6 @@ public class RepaymentServiceImpl implements IRepaymentService {
     @Override
     public RepaymentUpdateResponseDto update(Long repaymentId, RepaymentRequestDto repaymentRequestDto) {
         logger.info("RepaymentServiceImpl - update invoked");
-        logger.debug("RepaymentServiceImpl - repaymentId: {}", repaymentId);
-        logger.debug("RepaymentServiceImpl - repaymentRequestDto: {}", repaymentRequestDto);
         Repayment repayment = repaymentRepository.findById(repaymentId).orElseThrow(() ->
                 {
                     logger.error("RepaymentServiceImpl - Repayment does not exist");
@@ -139,7 +133,6 @@ public class RepaymentServiceImpl implements IRepaymentService {
     @Override
     public void delete(Long repaymentId) {
         logger.info("RepaymentServiceImpl - delete invoked");
-        logger.debug("RepaymentServiceImpl - repaymentId: {}", repaymentId);
         Repayment repayment = repaymentRepository.findById(repaymentId).orElseThrow(() ->
                 new BaseException(ResultType.RESOURCE_NOT_FOUND, "Repayment does not exist", HttpStatus.NOT_FOUND)
         );

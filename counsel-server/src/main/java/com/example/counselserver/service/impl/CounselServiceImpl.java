@@ -28,7 +28,6 @@ public class CounselServiceImpl implements ICounselService {
     @Override
     public CounselResponseDto create(CounselRequestDto request) {
         logger.info("CounselServiceImpl - create invoked");
-        logger.debug("CounselServiceImpl - request: {}", request);
         Counsel counsel = CounselMapper.mapToCounsel(request);
         counsel.setAppliedAt(LocalDateTime.now());
         counsel.setIsDeleted(false);
@@ -40,7 +39,6 @@ public class CounselServiceImpl implements ICounselService {
     @Override
     public CounselResponseDto get(Long counselId) {
         logger.info("CounselServiceImpl - get invoked");
-        logger.debug("CounselServiceImpl - counselId: {}", counselId);
         Counsel counsel = counselRepository.findById(counselId)
                 .orElseThrow(() ->
                         {
@@ -54,8 +52,6 @@ public class CounselServiceImpl implements ICounselService {
     @Override
     public CounselResponseDto update(Long counselId, CounselRequestDto request) {
         logger.info("CounselServiceImpl - update invoked");
-        logger.debug("CounselServiceImpl - counselId: {}", counselId);
-        logger.debug("CounselServiceImpl - request: {}", request);
         Counsel counsel = counselRepository.findById(counselId).orElseThrow(() ->
                 {
                     logger.error("CounselServiceImpl - Counsel does not exist");
@@ -76,7 +72,6 @@ public class CounselServiceImpl implements ICounselService {
     @Override
     public void delete(Long counselId) {
         logger.info("CounselServiceImpl - delete invoked");
-        logger.debug("CounselServiceImpl - counselId: {}", counselId);
         Counsel counsel = counselRepository.findById(counselId)
                 .orElseThrow(() ->
                 {

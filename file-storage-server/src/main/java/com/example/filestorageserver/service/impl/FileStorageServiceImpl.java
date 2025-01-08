@@ -34,8 +34,6 @@ public class FileStorageServiceImpl implements IFileStorageService {
     @Override
     public void save(Long applicationId, MultipartFile file) {
         logger.info("FileStorageServiceImpl - upload invoked");
-        logger.debug("FileStorageServiceImpl - applicationId: {}", applicationId);
-        logger.debug("FileStorageServiceImpl - originalFilename: {}", file.getOriginalFilename());
         try {
             String applicationPath = uploadPath.concat("/" + applicationId);
             Path directory = Path.of(applicationPath);
@@ -56,8 +54,6 @@ public class FileStorageServiceImpl implements IFileStorageService {
     @Override
     public Resource load(Long applicationId, String fileName) {
         logger.info("FileStorageServiceImpl - download invoked");
-        logger.debug("FileStorageServiceImpl - applicationId: {}", applicationId);
-        logger.debug("FileStorageServiceImpl - fileName: {}", fileName);
         try {
             String applicationPath = uploadPath.concat("/" + applicationId);
             Path file = Paths.get(applicationPath).resolve(fileName);
@@ -82,7 +78,6 @@ public class FileStorageServiceImpl implements IFileStorageService {
     @Override
     public Stream<Path> loadAll(Long applicationId) {
         logger.info("FileStorageServiceImpl - getFileInfo invoked");
-        logger.debug("FileStorageServiceImpl - applicationId: {}", applicationId);
         try {
             String applicationPath = uploadPath.concat("/" + applicationId);
             return Files.walk(Paths.get(applicationPath), 1).filter(path -> !path.equals(Paths.get(applicationPath)));
@@ -95,7 +90,6 @@ public class FileStorageServiceImpl implements IFileStorageService {
     @Override
     public void deleteAll(Long applicationId) {
         logger.info("FileStorageServiceImpl - deleteAll invoked");
-        logger.debug("FileStorageServiceImpl - applicationId: {}", applicationId);
         String applicationPath = uploadPath.concat("/" + applicationId);
         FileSystemUtils.deleteRecursively(Paths.get(applicationPath).toFile());
     }

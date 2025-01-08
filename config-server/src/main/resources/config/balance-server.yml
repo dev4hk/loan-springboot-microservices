@@ -54,7 +54,7 @@ logging:
   level:
     com:
       example:
-        balanceserver: DEBUG
+        balance_server: DEBUG
 resilience4j.retry:
   configs:
     default:

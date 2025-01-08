@@ -61,7 +61,7 @@ public class BalanceController {
     public ResponseDTO<BalanceResponseDto> create(@PathVariable Long applicationId, @Valid @RequestBody BalanceRequestDto request) {
         logger.info("BalanceController - create invoked");
         logger.debug("BalanceController - applicationId: {}", applicationId);
-        logger.debug("BalanceController - request: {}", request);
+        logger.debug("BalanceController - request: {}", request.toString());
         BalanceResponseDto response = balanceService.create(applicationId, request);
         return ResponseDTO.ok(response);
     }
@@ -125,7 +125,7 @@ public class BalanceController {
     public ResponseDTO<BalanceResponseDto> update(@PathVariable Long applicationId, @Valid @RequestBody BalanceUpdateRequestDto request) {
         logger.info("BalanceController - update invoked");
         logger.debug("BalanceController - applicationId: {}", applicationId);
-        logger.debug("BalanceController - request: {}", request);
+        logger.debug("BalanceController - request: {}", request.toString());
         BalanceResponseDto response = balanceService.update(applicationId, request);
         return ResponseDTO.ok(response);
     }
@@ -157,7 +157,7 @@ public class BalanceController {
     public ResponseDTO<List<BalanceResponseDto>> repaymentUpdate(@PathVariable Long applicationId, @RequestBody @NotEmpty List<@Valid BalanceRepaymentRequestDto> request) {
         logger.info("BalanceController - repaymentUpdate invoked");
         logger.debug("BalanceController - applicationId: {}", applicationId);
-        logger.debug("BalanceController - request: {}", request);
+        logger.debug("BalanceController - request: {}", request.toString());
         List<BalanceResponseDto> response = balanceService.repaymentUpdate(applicationId, request);
         return ResponseDTO.ok(response);
     }

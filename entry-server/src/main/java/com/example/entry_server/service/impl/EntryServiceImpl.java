@@ -39,8 +39,6 @@ public class EntryServiceImpl implements IEntryService {
     @Override
     public EntryResponseDto create(Long applicationId, EntryRequestDto request) {
         logger.info("EntryServiceImpl - create invoked");
-        logger.debug("EntryServiceImpl - applicationId: {}", applicationId);
-        logger.debug("EntryServiceImpl - request: {}", request);
 
         if (!isContractedApplication(applicationId)) {
             logger.error("EntryServiceImpl - Application is not contracted");
@@ -64,7 +62,6 @@ public class EntryServiceImpl implements IEntryService {
 
     private boolean isContractedApplication(Long applicationId) {
         logger.info("EntryServiceImpl - isContractedApplication invoked");
-        logger.debug("EntryServiceImpl - applicationId: {}", applicationId);
         ResponseDTO<ApplicationResponseDto> responseDto = applicationClient.get(applicationId);
         if (responseDto.getData() == null) {
             logger.error("EntryServiceImpl - Application does not exist");
@@ -77,7 +74,6 @@ public class EntryServiceImpl implements IEntryService {
     @Override
     public EntryResponseDto get(Long applicationId) {
         logger.info("EntryServiceImpl - get invoked");
-        logger.debug("EntryServiceImpl - applicationId: {}", applicationId);
         Entry entry = entryRepository.findByApplicationId(applicationId)
                 .orElseThrow(() ->
                         {
@@ -91,8 +87,6 @@ public class EntryServiceImpl implements IEntryService {
     @Override
     public EntryUpdateResponseDto update(Long entryId, EntryRequestDto request) {
         logger.info("EntryServiceImpl - update invoked");
-        logger.debug("EntryServiceImpl - entryId: {}", entryId);
-        logger.debug("EntryServiceImpl - request: {}", request);
         Entry entry = entryRepository.findById(entryId)
                 .orElseThrow(() ->
                         {
@@ -123,7 +117,6 @@ public class EntryServiceImpl implements IEntryService {
     @Override
     public void delete(Long entryId) {
         logger.info("EntryServiceImpl - delete invoked");
-        logger.debug("EntryServiceImpl - entryId: {}", entryId);
         Entry entry = entryRepository.findById(entryId)
                 .orElseThrow(() ->
                         {

@@ -71,7 +71,7 @@ public class JudgementController {
     @PostMapping
     public ResponseDTO<JudgementResponseDto> create(@Valid @RequestBody JudgementRequestDto request) {
         logger.info("JudgementController - create invoked");
-        logger.debug("JudgementController - request: {}", request);
+        logger.debug("JudgementController - request: {}", request.toString());
         return ok(judgementService.create(request));
     }
 
@@ -185,7 +185,7 @@ public class JudgementController {
     public ResponseDTO<JudgementResponseDto> update(@PathVariable Long judgementId, @Valid @RequestBody JudgementRequestDto request) {
         logger.info("JudgementController - update invoked");
         logger.debug("JudgementController - judgementId: {}", judgementId);
-        logger.debug("JudgementController - request: {}", request);
+        logger.debug("JudgementController - request: {}", request.toString());
         return ok(judgementService.update(judgementId, request));
     }
 

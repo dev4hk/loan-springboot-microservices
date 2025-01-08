@@ -65,7 +65,7 @@ public class TermsController {
     @PostMapping
     public ResponseDTO<TermsResponseDto> create(@Valid @RequestBody TermsRequestDto request) {
         logger.info("TermsController - create invoked");
-        logger.debug("TermsController - request: {}", request);
+        logger.debug("TermsController - request: {}", request.toString());
         return ok(termsService.create(request));
     }
 
@@ -150,7 +150,7 @@ public class TermsController {
     public ResponseDTO<TermsResponseDto> update(@PathVariable Long termsId, @Valid @RequestBody TermsRequestDto request) {
         logger.info("TermsController - update invoked");
         logger.debug("TermsController - termsId: {}", termsId);
-        logger.debug("TermsController - request: {}", request);
+        logger.debug("TermsController - request: {}", request.toString());
         return ok(termsService.update(termsId, request));
     }
 

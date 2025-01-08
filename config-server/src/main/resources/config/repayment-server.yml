@@ -53,7 +53,7 @@ logging:
   level:
     com:
       example:
-        repaymentserver: DEBUG
+        repayment_server: DEBUG
 resilience4j.circuitbreaker:
   configs:
     default:

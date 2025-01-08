@@ -53,7 +53,7 @@ logging:
   level:
     com:
       example:
-        judgementserver: DEBUG
+        judgement_server: DEBUG
 
 resilience4j.circuitbreaker:
   configs:

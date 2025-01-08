@@ -46,7 +46,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public ApplicationResponseDto create(ApplicationRequestDto request) {
         logger.info("ApplicationServiceImpl - create invoked");
-        logger.debug("ApplicationServiceImpl - request: {}", request);
         Application application = ApplicationMapper.mapToApplication(request);
         application.setAppliedAt(LocalDateTime.now());
         Application created = applicationRepository.save(application);
@@ -57,7 +56,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public ApplicationResponseDto get(Long applicationId) {
         logger.info("ApplicationServiceImpl - get invoked");
-        logger.debug("ApplicationServiceImpl - applicationId: {}", applicationId);
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> {
                     logger.error("ApplicationServiceImpl - Application does not exist");
@@ -69,8 +67,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public ApplicationResponseDto update(Long applicationId, ApplicationRequestDto request) {
         logger.info("ApplicationServiceImpl - update invoked");
-        logger.debug("ApplicationServiceImpl - applicationId: {}", applicationId);
-        logger.debug("ApplicationServiceImpl - request: {}", request);
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> {
                     logger.error("ApplicationServiceImpl - Application does not exist");
@@ -88,7 +84,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public void delete(Long applicationId) {
         logger.info("ApplicationServiceImpl - delete invoked");
-        logger.debug("ApplicationServiceImpl - applicationId: {}", applicationId);
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> {
                     logger.error("ApplicationServiceImpl - Application does not exist");
@@ -100,7 +95,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public void acceptTerms(Long applicationId, AcceptTermsRequestDto request) {
         logger.info("ApplicationServiceImpl - acceptTerms invoked");
-        logger.debug("ApplicationServiceImpl - request: {}", request);
         get(applicationId);
         ResponseDTO<List<TermsResponseDto>> termsResponse = termClient.getAll();
 
@@ -137,7 +131,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public void uploadFile(Long applicationId, MultipartFile file) {
         logger.info("ApplicationServiceImpl - uploadFile invoked");
-        logger.debug("ApplicationServiceImpl - applicationId: {}", applicationId);
         if (!isPresentApplication(applicationId)) {
             logger.error("ApplicationServiceImpl - Application does not exist");
             throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
@@ -148,7 +141,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public Resource downloadFile(Long applicationId, String fileName) {
         logger.info("ApplicationServiceImpl - downloadFile invoked");
-        logger.debug("ApplicationServiceImpl - fileName: {}", fileName);
         ResponseEntity<Resource> fileStorageResponse = fileStorageClient.download(applicationId, fileName);
         return fileStorageResponse.getBody();
     }
@@ -156,7 +148,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public List<FileResponseDto> loadAllFiles(Long applicationId) {
         logger.info("ApplicationServiceImpl - loadAllFiles invoked");
-        logger.debug("ApplicationServiceImpl - applicationId: {}", applicationId);
         ResponseDTO<List<FileResponseDto>> fileStorageResponse = fileStorageClient.getFilesInfo(applicationId);
         return fileStorageResponse.getData();
     }
@@ -164,15 +155,12 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public void deleteAllFiles(Long applicationId) {
         logger.info("ApplicationServiceImpl - deleteAllFiles invoked");
-        logger.debug("ApplicationServiceImpl - applicationId: {}", applicationId);
         fileStorageClient.deleteAll(applicationId);
     }
 
     @Override
     public void updateGrant(Long applicationId, GrantAmountDto grantAmountDto) {
         logger.info("ApplicationServiceImpl - updateGrant invoked");
-        logger.debug("ApplicationServiceImpl - applicationId: {}", applicationId);
-        logger.debug("ApplicationServiceImpl - grantAmountDto: {}", grantAmountDto);
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> {
                     logger.error("ApplicationServiceImpl - Application does not exist");
@@ -184,7 +172,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public ApplicationResponseDto contract(Long applicationId) {
         logger.info("ApplicationServiceImpl - contract invoked");
-        logger.debug("ApplicationServiceImpl - applicationId: {}", applicationId);
         Application application = applicationRepository.findById(applicationId)
                 .orElseThrow(() -> {
                     logger.error("ApplicationServiceImpl - Application does not exist");
@@ -210,7 +197,6 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     private boolean isPresentApplication(Long applicationId) {
         logger.info("ApplicationServiceImpl - isPresentApplication invoked");
-        logger.debug("ApplicationServiceImpl - applicationId: {}", applicationId);
         return applicationRepository.existsById(applicationId);
     }
 }

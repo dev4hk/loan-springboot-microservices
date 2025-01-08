@@ -33,7 +33,6 @@ public class JudgementServiceImpl implements IJudgementService {
     @Override
     public JudgementResponseDto create(JudgementRequestDto request) {
         logger.info("JudgementServiceImpl - create invoked");
-        logger.debug("JudgementServiceImpl - request: {}", request);
         Long applicationId = request.getApplicationId();
         ensureApplicationExists(applicationId);
         Judgement judgement = JudgementMapper.mapToJudgement(request);
@@ -45,7 +44,6 @@ public class JudgementServiceImpl implements IJudgementService {
     @Override
     public JudgementResponseDto get(Long judgementId) {
         logger.info("JudgementServiceImpl - get invoked");
-        logger.debug("JudgementServiceImpl - judgementId: {}", judgementId);
         Judgement judgement = judgementRepository.findById(judgementId)
                 .orElseThrow(() ->
                         {
@@ -60,7 +58,6 @@ public class JudgementServiceImpl implements IJudgementService {
     @Override
     public JudgementResponseDto getJudgementOfApplication(Long applicationId) {
         logger.info("JudgementServiceImpl - getJudgmentOfApplication invoked");
-        logger.debug("JudgementServiceImpl - applicationId: {}", applicationId);
         ensureApplicationExists(applicationId);
         Judgement judgement = judgementRepository.findByApplicationId(applicationId)
                 .orElseThrow(() ->
@@ -75,8 +72,6 @@ public class JudgementServiceImpl implements IJudgementService {
     @Override
     public JudgementResponseDto update(Long judgementId, JudgementRequestDto request) {
         logger.info("JudgementServiceImpl - update invoked");
-        logger.debug("JudgementServiceImpl - judgementId: {}", judgementId);
-        logger.debug("JudgementServiceImpl - request: {}", request);
         ensureApplicationExists(request.getApplicationId());
         Judgement judgement = judgementRepository.findById(judgementId)
                 .orElseThrow(() ->
@@ -94,7 +89,6 @@ public class JudgementServiceImpl implements IJudgementService {
     @Override
     public void delete(Long judgementId) {
         logger.info("JudgementServiceImpl - delete invoked");
-        logger.debug("JudgementServiceImpl - judgementId: {}", judgementId);
         Judgement judgement = judgementRepository.findById(judgementId)
                 .orElseThrow(() ->
                         {
@@ -108,7 +102,6 @@ public class JudgementServiceImpl implements IJudgementService {
     @Override
     public GrantAmountDto grant(Long judgementId) {
         logger.info("JudgementServiceImpl - grant invoked");
-        logger.debug("JudgementServiceImpl - judgementId: {}", judgementId);
         Judgement judgement = judgementRepository.findById(judgementId).orElseThrow(() ->
                 {
                     logger.error("JudgementServiceImpl - Judgement does not exist");
@@ -129,7 +122,6 @@ public class JudgementServiceImpl implements IJudgementService {
 
     private void ensureApplicationExists(Long applicationId) {
         logger.info("JudgementServiceImpl - ensureApplicationExists invoked");
-        logger.debug("JudgementServiceImpl - applicationId: {}", applicationId);
         ResponseDTO<ApplicationResponseDto> response = applicationClient.get(applicationId);
         if (response.getData() == null) {
             logger.error("JudgementServiceImpl - Application server error");

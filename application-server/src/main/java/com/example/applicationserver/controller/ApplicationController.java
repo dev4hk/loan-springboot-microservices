@@ -72,7 +72,7 @@ public class ApplicationController {
     @PostMapping
     public ResponseDTO<ApplicationResponseDto> create(@Valid @RequestBody ApplicationRequestDto request) {
         logger.info("ApplicationController - create invoked");
-        logger.debug("ApplicationController - request: {}", request);
+        logger.debug("ApplicationController - request: {}", request.toString());
         return ok(applicationService.create(request));
     }
 
@@ -134,7 +134,7 @@ public class ApplicationController {
     public ResponseDTO<ApplicationResponseDto> update(@PathVariable Long applicationId, @Valid @RequestBody ApplicationRequestDto request) {
         logger.info("ApplicationController - update invoked");
         logger.debug("ApplicationController - applicationID: {}", applicationId);
-        logger.debug("ApplicationController - request: {}", request);
+        logger.debug("ApplicationController - request: {}", request.toString());
         return ok(applicationService.update(applicationId, request));
     }
 
@@ -203,7 +203,7 @@ public class ApplicationController {
     public ResponseDTO<Void> acceptTerms(@PathVariable Long applicationId, @Valid @RequestBody AcceptTermsRequestDto request) {
         logger.info("ApplicationController - acceptTerms invoked");
         logger.debug("ApplicationController - applicationID: {}", applicationId);
-        logger.debug("ApplicationController - request: {}", request);
+        logger.debug("ApplicationController - request: {}", request.toString());
         applicationService.acceptTerms(applicationId, request);
         return ok();
     }
@@ -393,7 +393,7 @@ public class ApplicationController {
     public ResponseDTO<Void> updateGrant(@PathVariable Long applicationId, @Valid @RequestBody GrantAmountDto grantAmountDto) {
         logger.info("ApplicationController - updateGrant invoked");
         logger.debug("ApplicationController - applicationID: {}", applicationId);
-        logger.debug("ApplicationController - grantAmountDto: {}", grantAmountDto);
+        logger.debug("ApplicationController - grantAmountDto: {}", grantAmountDto.toString());
         applicationService.updateGrant(applicationId, grantAmountDto);
         return ok();
     }

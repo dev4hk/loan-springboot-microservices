@@ -29,7 +29,6 @@ public class TermsServiceImpl implements ITermsService {
     @Override
     public TermsResponseDto create(TermsRequestDto request) {
         logger.info("TermsServiceImpl - create invoked");
-        logger.debug("TermsServiceImpl - request: {}", request);
         Terms terms = TermsMapper.mapToEntity(request);
         Terms created = termsRepository.save(terms);
         return TermsMapper.mapToTermsResponseDto(created);
@@ -47,7 +46,6 @@ public class TermsServiceImpl implements ITermsService {
     @Override
     public TermsResponseDto get(Long termsId) {
         logger.info("TermsServiceImpl - get invoked");
-        logger.debug("TermsServiceImpl - termsId: {}", termsId);
         Terms terms = termsRepository.findById(termsId)
                 .orElseThrow(() ->
                         {
@@ -61,8 +59,6 @@ public class TermsServiceImpl implements ITermsService {
     @Override
     public TermsResponseDto update(Long termsId, TermsRequestDto request) {
         logger.info("TermsServiceImpl - update invoked");
-        logger.debug("TermsServiceImpl - termsId: {}", termsId);
-        logger.debug("TermsServiceImpl - request: {}", request);
         Terms terms = termsRepository.findById(termsId).orElseThrow(() ->
                 {
                     logger.error("TermsServiceImpl - Terms does not exist");
@@ -77,7 +73,6 @@ public class TermsServiceImpl implements ITermsService {
     @Override
     public void delete(Long termsId) {
         logger.info("TermsServiceImpl - delete invoked");
-        logger.debug("TermsServiceImpl - termsId: {}", termsId);
         Terms terms = termsRepository.findById(termsId).orElseThrow(() ->
                 {
                     logger.error("TermsServiceImpl - Terms does not exist");
