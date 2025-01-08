@@ -95,6 +95,19 @@ services:
       file: common-config.yml
       service: network-deploy-service
 
+  tempo:
+    image: grafana/tempo:2.4.2
+    container_name: tempo
+    command: -config.file /etc/tempo-config.yml
+    ports:
+      - "3110:3100"
+      - "4317:4317"
+    volumes:
+      - ../observability/tempo/tempo.yml:/etc/tempo-config.yml
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
   grafana:
     image: grafana/grafana:latest
     environment:
@@ -213,6 +226,7 @@ services:
       service: microservice-base-config
     environment:
       SPRING_APPLICATION_NAME: "config-server"
+      OTEL_SERVICE_NAME: "config-server"
 
   eureka-server:
     image: "eureka-server:5.0"
@@ -233,6 +247,7 @@ services:
       service: microservice-config-server-config
     environment:
       SPRING_APPLICATION_NAME: "eureka-server"
+      OTEL_SERVICE_NAME: "eureka-server"
 
   counsel-server:
     image: "counsel-server:5.0"
@@ -254,6 +269,7 @@ services:
       - "../../counsel-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "counsel-server"
+      OTEL_SERVICE_NAME: "counsel-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -278,6 +294,7 @@ services:
       - "../../application-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "application-server"
+      OTEL_SERVICE_NAME: "application-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -302,6 +319,7 @@ services:
       - "../../terms-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "terms-server"
+      OTEL_SERVICE_NAME: "terms-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -326,6 +344,7 @@ services:
       - "../../accept-terms-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "accept-terms-server"
+      OTEL_SERVICE_NAME: "accept-terms-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -348,6 +367,7 @@ services:
       start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "file-storage-server"
+      OTEL_SERVICE_NAME: "file-storage-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -372,6 +392,7 @@ services:
       - "../../judgement-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "judgement-server"
+      OTEL_SERVICE_NAME: "judgement-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -396,6 +417,7 @@ services:
       - "../../entry-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "entry-server"
+      OTEL_SERVICE_NAME: "entry-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -420,6 +442,7 @@ services:
       - "../../balance-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "balance-server"
+      OTEL_SERVICE_NAME: "balance-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -444,6 +467,7 @@ services:
       - "../../repayment-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "repayment-server"
+      OTEL_SERVICE_NAME: "repayment-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
@@ -474,6 +498,7 @@ services:
         condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "gateway-server"
+      OTEL_SERVICE_NAME: "gateway-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
