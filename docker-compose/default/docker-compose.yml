@@ -217,9 +217,9 @@ services:
       - "8071:8071"
     healthcheck:
       test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     extends:
       file: common-config.yml
@@ -238,9 +238,9 @@ services:
         condition: service_healthy
     healthcheck:
       test: "curl --fail --silent localhost:8070/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     extends:
       file: common-config.yml
@@ -261,9 +261,9 @@ services:
       - "8080:8080"
     healthcheck:
       test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../counsel-server/.env"
@@ -286,9 +286,9 @@ services:
       - "8081:8081"
     healthcheck:
       test: "curl --fail --silent localhost:8081/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../application-server/.env"
@@ -311,9 +311,9 @@ services:
       - "8082:8082"
     healthcheck:
       test: "curl --fail --silent localhost:8082/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../terms-server/.env"
@@ -336,9 +336,9 @@ services:
       - "8083:8083"
     healthcheck:
       test: "curl --fail --silent localhost:8083/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../accept-terms-server/.env"
@@ -361,9 +361,9 @@ services:
       - "8084:8084"
     healthcheck:
       test: "curl --fail --silent localhost:8084/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "file-storage-server"
@@ -384,9 +384,9 @@ services:
       - "8085:8085"
     healthcheck:
       test: "curl --fail --silent localhost:8085/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../judgement-server/.env"
@@ -409,9 +409,9 @@ services:
       - "8086:8086"
     healthcheck:
       test: "curl --fail --silent localhost:8086/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../entry-server/.env"
@@ -434,9 +434,9 @@ services:
       - "8087:8087"
     healthcheck:
       test: "curl --fail --silent localhost:8087/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../balance-server/.env"
@@ -459,9 +459,9 @@ services:
       - "8088:8088"
     healthcheck:
       test: "curl --fail --silent localhost:8088/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../repayment-server/.env"
