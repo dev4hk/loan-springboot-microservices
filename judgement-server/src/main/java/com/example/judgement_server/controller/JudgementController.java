@@ -17,6 +17,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +35,7 @@ import static com.example.judgement_server.dto.ResponseDTO.ok;
 @RestController
 public class JudgementController {
 
+    private static final Logger logger = LoggerFactory.getLogger(JudgementController.class);
     private final IJudgementService judgementService;
 
     @Operation(
@@ -67,6 +70,8 @@ public class JudgementController {
     @RateLimiter(name = "createRateLimiter")
     @PostMapping
     public ResponseDTO<JudgementResponseDto> create(@Valid @RequestBody JudgementRequestDto request) {
+        logger.info("JudgementController - create started");
+        logger.debug("JudgementController - request: {}", request.toString());
         return ok(judgementService.create(request));
     }
 
@@ -103,6 +108,8 @@ public class JudgementController {
     @Retry(name = "getRetry")
     @GetMapping("/{judgementId}")
     public ResponseDTO<JudgementResponseDto> get(@PathVariable Long judgementId) {
+        logger.info("JudgementController - get started");
+        logger.debug("JudgementController - judgementId: {}", judgementId);
         return ok(judgementService.get(judgementId));
     }
 
@@ -139,6 +146,8 @@ public class JudgementController {
     @Retry(name = "getJudgmentOfApplicationRetry")
     @GetMapping("/applications/{applicationId}")
     public ResponseDTO<JudgementResponseDto> getJudgmentOfApplication(@PathVariable Long applicationId) {
+        logger.info("JudgementController - getJudgmentOfApplication started");
+        logger.debug("JudgementController - applicationId: {}", applicationId);
         return ok(judgementService.getJudgementOfApplication(applicationId));
     }
 
@@ -174,6 +183,9 @@ public class JudgementController {
     @RateLimiter(name = "updateRateLimiter")
     @PutMapping("/{judgementId}")
     public ResponseDTO<JudgementResponseDto> update(@PathVariable Long judgementId, @Valid @RequestBody JudgementRequestDto request) {
+        logger.info("JudgementController - update started");
+        logger.debug("JudgementController - judgementId: {}", judgementId);
+        logger.debug("JudgementController - request: {}", request.toString());
         return ok(judgementService.update(judgementId, request));
     }
 
@@ -209,7 +221,10 @@ public class JudgementController {
     @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{judgementId}")
     public ResponseDTO<Void> delete(@PathVariable Long judgementId) {
+        logger.info("JudgementController - delete started");
+        logger.debug("JudgementController - judgementId: {}", judgementId);
         judgementService.delete(judgementId);
+        logger.info("JudgementController - delete finished");
         return ok();
     }
 
@@ -245,7 +260,11 @@ public class JudgementController {
     @RateLimiter(name = "grantRateLimiter")
     @PatchMapping("/{judgementId}/grants")
     public ResponseDTO<GrantAmountDto> grant(@PathVariable Long judgementId) {
-        return ok(judgementService.grant(judgementId));
+        logger.info("JudgementController - grant started");
+        logger.debug("JudgementController - judgementId: {}", judgementId);
+        GrantAmountDto grant = judgementService.grant(judgementId);
+        logger.info("JudgementController - grant finished");
+        return ok(grant);
     }
 
 }

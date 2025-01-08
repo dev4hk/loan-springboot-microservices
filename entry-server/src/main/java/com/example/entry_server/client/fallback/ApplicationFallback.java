@@ -16,7 +16,7 @@ public class ApplicationFallback implements ApplicationClient {
 
     @Override
     public ResponseDTO<ApplicationResponseDto> get(Long applicationId) {
-        logger.error("ApplicationFallback for get invoked for applicationId: {}", applicationId);
+        logger.error("ApplicationFallback - get invoked for applicationId: {}", applicationId);
 
         ApplicationResponseDto fallbackResponse = ApplicationResponseDto.builder()
                 .applicationId(applicationId)

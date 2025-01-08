@@ -9,6 +9,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
@@ -69,12 +71,12 @@ public class BalanceControllerTest {
 
     @Test
     public void repaymentUpdate() {
-        when(balanceService.repaymentUpdate(eq(applicationId), any(BalanceRepaymentRequestDto.class))).thenReturn(response);
+        when(balanceService.repaymentUpdate(eq(applicationId), anyList())).thenReturn(List.of(response));
 
-        ResponseDTO<BalanceResponseDto> result = balanceController.repaymentUpdate(applicationId, repaymentRequest);
+        ResponseDTO<List<BalanceResponseDto>> result = balanceController.repaymentUpdate(applicationId, List.of(repaymentRequest));
 
-        assertEquals(response, result.getData());
-        verify(balanceService, times(1)).repaymentUpdate(eq(applicationId), any(BalanceRepaymentRequestDto.class));
+        assertEquals(response, result.getData().getFirst());
+        verify(balanceService, times(1)).repaymentUpdate(eq(applicationId), anyList());
     }
 
     @Test

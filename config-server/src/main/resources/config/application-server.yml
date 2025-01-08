@@ -45,6 +45,10 @@ management:
   info:
     env:
       enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 endpoints:
   shutdown:
     enabled: true
@@ -61,6 +65,8 @@ logging:
     com:
       example:
         applicationserver: DEBUG
+  pattern:
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 resilience4j.circuitbreaker:
   configs:
     default:

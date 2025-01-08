@@ -1,24 +1,235 @@
 services:
+  
+  read:
+    image: grafana/loki:latest
+    command: "-config.file=/etc/loki/config.yaml -target=read"
+    ports:
+      - 3101:3100
+      - 7946
+      - 9095
+    env_file:
+      - ../observability/loki/.env
+    volumes:
+      - ../observability/loki/loki-config.yaml:/etc/loki/config.yaml
+    depends_on:
+      - minio
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks: &loki-dns
+      ms-loan:
+        aliases:
+          - loki
+  write:
+    image: grafana/loki:latest
+    command: "-config.file=/etc/loki/config.yaml -target=write"
+    ports:
+      - 3102:3100
+      - 7946
+      - 9095
+    env_file:
+      - ../observability/loki/.env
+    volumes:
+      - ../observability/loki/loki-config.yaml:/etc/loki/config.yaml
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3100/ready || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    depends_on:
+      - minio
+    networks:
+      <<: *loki-dns
+
+  alloy:
+    image: grafana/alloy:latest
+    volumes:
+      - ../observability/alloy/alloy-local-config.yaml:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    command: run --server.http.listen-addr=0.0.0.0:12345 --storage.path=/var/lib/alloy/data /etc/alloy/config.alloy
+    ports:
+      - 12345:12345
+    depends_on:
+      - gateway
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
+  minio:
+    image: minio/minio
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /data/loki-data && \
+        mkdir -p /data/loki-ruler && \
+        minio server /data
+    environment:
+      - MINIO_PROMETHEUS_AUTH_TYPE=public
+      - MINIO_UPDATE=off
+    env_file:
+      - ../observability/minio/.env
+    ports:
+      - 9000
+    volumes:
+      - ./.data/minio:/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
+      interval: 15s
+      timeout: 20s
+      retries: 5
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
+  prometheus:
+    image: prom/prometheus:v2.50.1
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ../observability/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
+  tempo:
+    image: grafana/tempo:2.4.2
+    container_name: tempo
+    command: -config.file /etc/tempo-config.yml
+    ports:
+      - "3110:3100"
+      - "4317:4317"
+    volumes:
+      - ../observability/tempo/tempo.yml:/etc/tempo-config.yml
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
+  grafana:
+    image: grafana/grafana:latest
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    depends_on:
+      - gateway
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        /run.sh
+    ports:
+      - "3000:3000"
+    volumes:
+      - ../observability/grafana/datasource.yml:/etc/grafana/provisioning/datasources/datasource.yml
+    healthcheck:
+      test: [ "CMD-SHELL", "wget --no-verbose --tries=1 --spider http://localhost:3000/api/health || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
+  backend:
+    image: grafana/loki:latest
+    env_file:
+      - ../observability/loki/.env
+    volumes:
+      - ../observability/loki/loki-config.yaml:/etc/loki/config.yaml
+    ports:
+      - "3100"
+      - "7946"
+    command: "-config.file=/etc/loki/config.yaml -target=backend -legacy-read-mode=false"
+    depends_on:
+      - gateway
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
+
+  gateway:
+    image: nginx:latest
+    depends_on:
+      - read
+      - write
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        cat <<EOF > /etc/nginx/nginx.conf
+        user  nginx;
+        worker_processes  5;  ## Default: 1
+        events {
+          worker_connections   1000;
+        }
+        http {
+          resolver 127.0.0.11;
+          server {
+            listen             3100;
+            location = / {
+              return 200 'OK';
+              auth_basic off;
+            }
+            location = /api/prom/push {
+              proxy_pass       http://write:3100\$$request_uri;
+            }
+            location = /api/prom/tail {
+              proxy_pass       http://read:3100\$$request_uri;
+              proxy_set_header Upgrade \$$http_upgrade;
+              proxy_set_header Connection "upgrade";
+            }
+            location ~ /api/prom/.* {
+              proxy_pass       http://read:3100\$$request_uri;
+            }
+            location = /loki/api/v1/push {
+              proxy_pass       http://write:3100\$$request_uri;
+            }
+            location = /loki/api/v1/tail {
+              proxy_pass       http://read:3100\$$request_uri;
+              proxy_set_header Upgrade \$$http_upgrade;
+              proxy_set_header Connection "upgrade";
+            }
+            location ~ /loki/api/.* {
+              proxy_pass       http://read:3100\$$request_uri;
+            }
+          }
+        }
+        EOF
+        /docker-entrypoint.sh nginx -g "daemon off;"
+    ports:
+      - "3100:3100"
+    healthcheck:
+      test: [ "CMD", "service", "nginx", "status" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
 
   config-server:
-    image: "config-server:4.0"
+    image: "config-server:5.0"
     container_name: "config-server-ms"
     ports:
       - "8071:8071"
     healthcheck:
       test: "curl --fail --silent localhost:8071/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     extends:
       file: common-config.yml
       service: microservice-base-config
     environment:
       SPRING_APPLICATION_NAME: "config-server"
+      OTEL_SERVICE_NAME: "config-server"
 
   eureka-server:
-    image: "eureka-server:4.0"
+    image: "eureka-server:5.0"
     container_name: "eureka-server-ms"
     ports:
       - "8070:8070"
@@ -27,18 +238,19 @@ services:
         condition: service_healthy
     healthcheck:
       test: "curl --fail --silent localhost:8070/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     extends:
       file: common-config.yml
       service: microservice-config-server-config
     environment:
       SPRING_APPLICATION_NAME: "eureka-server"
+      OTEL_SERVICE_NAME: "eureka-server"
 
   counsel-server:
-    image: "counsel-server:4.0"
+    image: "counsel-server:5.0"
     container_name: "counsel-server-ms"
     depends_on:
       config-server:
@@ -49,20 +261,21 @@ services:
       - "8080:8080"
     healthcheck:
       test: "curl --fail --silent localhost:8080/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../counsel-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "counsel-server"
+      OTEL_SERVICE_NAME: "counsel-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   application-server:
-    image: "application-server:4.0"
+    image: "application-server:5.0"
     container_name: "application-server-ms"
     depends_on:
       config-server:
@@ -73,20 +286,21 @@ services:
       - "8081:8081"
     healthcheck:
       test: "curl --fail --silent localhost:8081/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../application-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "application-server"
+      OTEL_SERVICE_NAME: "application-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   terms-server:
-    image: "terms-server:4.0"
+    image: "terms-server:5.0"
     container_name: "terms-server-ms"
     depends_on:
       config-server:
@@ -97,20 +311,21 @@ services:
       - "8082:8082"
     healthcheck:
       test: "curl --fail --silent localhost:8082/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../terms-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "terms-server"
+      OTEL_SERVICE_NAME: "terms-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   accept-terms-server:
-    image: "accept-terms-server:4.0"
+    image: "accept-terms-server:5.0"
     container_name: "accept-terms-server-ms"
     depends_on:
       config-server:
@@ -121,20 +336,21 @@ services:
       - "8083:8083"
     healthcheck:
       test: "curl --fail --silent localhost:8083/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../accept-terms-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "accept-terms-server"
+      OTEL_SERVICE_NAME: "accept-terms-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   file-storage-server:
-    image: "file-storage-server:4.0"
+    image: "file-storage-server:5.0"
     container_name: "file-storage-server-ms"
     depends_on:
       config-server:
@@ -145,18 +361,19 @@ services:
       - "8084:8084"
     healthcheck:
       test: "curl --fail --silent localhost:8084/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     environment:
       SPRING_APPLICATION_NAME: "file-storage-server"
+      OTEL_SERVICE_NAME: "file-storage-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   judgement-server:
-    image: "judgement-server:4.0"
+    image: "judgement-server:5.0"
     container_name: "judgement-server-ms"
     depends_on:
       config-server:
@@ -167,20 +384,21 @@ services:
       - "8085:8085"
     healthcheck:
       test: "curl --fail --silent localhost:8085/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../judgement-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "judgement-server"
+      OTEL_SERVICE_NAME: "judgement-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   entry-server:
-    image: "entry-server:4.0"
+    image: "entry-server:5.0"
     container_name: "entry-server-ms"
     depends_on:
       config-server:
@@ -191,20 +409,21 @@ services:
       - "8086:8086"
     healthcheck:
       test: "curl --fail --silent localhost:8086/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../entry-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "entry-server"
+      OTEL_SERVICE_NAME: "entry-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   balance-server:
-    image: "balance-server:4.0"
+    image: "balance-server:5.0"
     container_name: "balance-server-ms"
     depends_on:
       config-server:
@@ -215,20 +434,21 @@ services:
       - "8087:8087"
     healthcheck:
       test: "curl --fail --silent localhost:8087/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../balance-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "balance-server"
+      OTEL_SERVICE_NAME: "balance-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   repayment-server:
-    image: "repayment-server:4.0"
+    image: "repayment-server:5.0"
     container_name: "repayment-server-ms"
     depends_on:
       config-server:
@@ -239,20 +459,21 @@ services:
       - "8088:8088"
     healthcheck:
       test: "curl --fail --silent localhost:8088/actuator/health/readiness | grep UP || exit 1"
-      interval: 10s
+      interval: 20s
       timeout: 5s
-      retries: 10
+      retries: 20
       start_period: 10s
     env_file:
       - "../../repayment-server/.env"
     environment:
       SPRING_APPLICATION_NAME: "repayment-server"
+      OTEL_SERVICE_NAME: "repayment-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config
 
   gateway-server:
-    image: "gateway-server:4.0"
+    image: "gateway-server:5.0"
     container_name: gateway-server-ms
     ports:
       - "8072:8072"
@@ -277,6 +498,7 @@ services:
         condition: service_healthy
     environment:
       SPRING_APPLICATION_NAME: "gateway-server"
+      OTEL_SERVICE_NAME: "gateway-server"
     extends:
       file: common-config.yml
       service: microservice-eureka-config

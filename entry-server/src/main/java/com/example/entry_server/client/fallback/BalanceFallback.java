@@ -18,7 +18,7 @@ public class BalanceFallback implements BalanceClient {
 
     @Override
     public ResponseDTO<BalanceResponseDto> create(Long applicationId, BalanceRequestDto request) {
-        logger.error("BalanceFallback create() invoked for applicationId: {}", applicationId);
+        logger.error("BalanceFallback - create invoked for applicationId: {}", applicationId);
 
         BalanceResponseDto fallbackResponseDto = BalanceResponseDto.builder()
                 .applicationId(applicationId)
@@ -34,7 +34,7 @@ public class BalanceFallback implements BalanceClient {
 
     @Override
     public ResponseDTO<BalanceResponseDto> update(Long applicationId, BalanceUpdateRequestDto request) {
-        logger.error("BalanceFallback update() invoked for applicationId: {}", applicationId);
+        logger.error("BalanceFallback - update invoked for applicationId: {}", applicationId);
 
         BalanceResponseDto fallbackResponseDto = BalanceResponseDto.builder()
                 .applicationId(applicationId)

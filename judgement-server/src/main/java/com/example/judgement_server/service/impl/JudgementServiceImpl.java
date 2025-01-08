@@ -13,6 +13,8 @@ import com.example.judgement_server.mapper.JudgementMapper;
 import com.example.judgement_server.repository.JudgementRepository;
 import com.example.judgement_server.service.IJudgementService;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,11 +26,13 @@ import java.math.BigDecimal;
 @Service
 public class JudgementServiceImpl implements IJudgementService {
 
+    private static final Logger logger = LoggerFactory.getLogger(JudgementServiceImpl.class);
     private final JudgementRepository judgementRepository;
     private final ApplicationClient applicationClient;
 
     @Override
     public JudgementResponseDto create(JudgementRequestDto request) {
+        logger.info("JudgementServiceImpl - create invoked");
         Long applicationId = request.getApplicationId();
         ensureApplicationExists(applicationId);
         Judgement judgement = JudgementMapper.mapToJudgement(request);
@@ -39,25 +43,43 @@ public class JudgementServiceImpl implements IJudgementService {
     @Transactional(readOnly = true)
     @Override
     public JudgementResponseDto get(Long judgementId) {
+        logger.info("JudgementServiceImpl - get invoked");
         Judgement judgement = judgementRepository.findById(judgementId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() ->
+                        {
+                            logger.error("JudgementServiceImpl - Judgement does not exist");
+                            return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND);
+                        }
+                        );
         return JudgementMapper.mapToJudgementResponseDto(judgement);
     }
 
     @Transactional(readOnly = true)
     @Override
     public JudgementResponseDto getJudgementOfApplication(Long applicationId) {
+        logger.info("JudgementServiceImpl - getJudgmentOfApplication invoked");
         ensureApplicationExists(applicationId);
         Judgement judgement = judgementRepository.findByApplicationId(applicationId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() ->
+                        {
+                            logger.error("JudgementServiceImpl - Judgement does not exist");
+                            return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND);
+                        }
+                        );
         return JudgementMapper.mapToJudgementResponseDto(judgement);
     }
 
     @Override
     public JudgementResponseDto update(Long judgementId, JudgementRequestDto request) {
+        logger.info("JudgementServiceImpl - update invoked");
         ensureApplicationExists(request.getApplicationId());
         Judgement judgement = judgementRepository.findById(judgementId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() ->
+                        {
+                            logger.error("JudgementServiceImpl - Judgement does not exist");
+                            return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND);
+                        }
+                        );
         judgement.setFirstname(request.getFirstname());
         judgement.setLastname(request.getLastname());
         judgement.setApprovalAmount(request.getApprovalAmount());
@@ -66,15 +88,25 @@ public class JudgementServiceImpl implements IJudgementService {
 
     @Override
     public void delete(Long judgementId) {
+        logger.info("JudgementServiceImpl - delete invoked");
         Judgement judgement = judgementRepository.findById(judgementId)
-                .orElseThrow(() -> new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND));
+                .orElseThrow(() ->
+                        {
+                            logger.error("JudgementServiceImpl - Judgement does not exist");
+                            return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND);
+                        }
+                        );
         judgement.setIsDeleted(true);
     }
 
     @Override
     public GrantAmountDto grant(Long judgementId) {
+        logger.info("JudgementServiceImpl - grant invoked");
         Judgement judgement = judgementRepository.findById(judgementId).orElseThrow(() ->
-                new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND)
+                {
+                    logger.error("JudgementServiceImpl - Judgement does not exist");
+                    return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND);
+                }
         );
 
         Long applicationId = judgement.getApplicationId();
@@ -85,18 +117,14 @@ public class JudgementServiceImpl implements IJudgementService {
                 .applicationId(applicationId)
                 .build();
         ResponseDTO<Void> applicationResponseDto = applicationClient.updateGrant(applicationId, grantAmountDto);
-        if(applicationResponseDto.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
-            throw new BaseException(ResultType.SYSTEM_ERROR, applicationResponseDto.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
         return grantAmountDto;
     }
 
     private void ensureApplicationExists(Long applicationId) {
+        logger.info("JudgementServiceImpl - ensureApplicationExists invoked");
         ResponseDTO<ApplicationResponseDto> response = applicationClient.get(applicationId);
-        if (response.getResult().code.equals(ResultType.SYSTEM_ERROR.getCode())) {
-            throw new BaseException(ResultType.SYSTEM_ERROR, response.getResult().desc, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
         if (response.getData() == null) {
+            logger.error("JudgementServiceImpl - Application server error");
             throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application server error", HttpStatus.NOT_FOUND);
         }
     }

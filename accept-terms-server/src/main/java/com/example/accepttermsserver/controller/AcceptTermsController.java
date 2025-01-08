@@ -13,6 +13,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +32,8 @@ import java.util.List;
 @RequestMapping("/api")
 @RestController
 public class AcceptTermsController {
+
+    private static final Logger logger = LoggerFactory.getLogger(AcceptTermsController.class);
 
     private final IAcceptTermsService acceptTermsService;
 
@@ -58,6 +62,10 @@ public class AcceptTermsController {
     @RateLimiter(name = "createRateLimiter")
     @PostMapping
     public ResponseDTO<List<AcceptTermsResponseDto>> create(@Valid @RequestBody AcceptTermsRequestDto acceptTermsRequestDto) {
-        return ResponseDTO.ok(acceptTermsService.create(acceptTermsRequestDto));
+        logger.info("AcceptTermsController - create started");
+        logger.debug("AcceptTermsController - acceptTermsRequestDto: {}", acceptTermsRequestDto.toString());
+        List<AcceptTermsResponseDto> acceptTermsResponseDtos = acceptTermsService.create(acceptTermsRequestDto);
+        logger.info("AcceptTermsController - create finished");
+        return ResponseDTO.ok(acceptTermsResponseDtos);
     }
 }

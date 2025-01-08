@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -120,18 +121,18 @@ class BalanceServiceImplTest {
                 .type(BalanceRepaymentRequestDto.RepaymentType.ADD)
                 .build();
 
-        BalanceResponseDto response = balanceService.repaymentUpdate(applicationId, repaymentRequest);
+        List<BalanceResponseDto> response = balanceService.repaymentUpdate(applicationId, List.of(repaymentRequest));
 
         assertNotNull(response);
-        assertEquals(applicationId, response.getApplicationId());
-        assertEquals(BigDecimal.valueOf(1100), response.getBalance());
+        assertEquals(applicationId, response.getFirst().getApplicationId());
+        assertEquals(BigDecimal.valueOf(1100), response.getFirst().getBalance());
 
         repaymentRequest.setType(BalanceRepaymentRequestDto.RepaymentType.REMOVE);
-        response = balanceService.repaymentUpdate(applicationId, repaymentRequest);
+        response = balanceService.repaymentUpdate(applicationId, List.of(repaymentRequest));
 
         assertNotNull(response);
-        assertEquals(applicationId, response.getApplicationId());
-        assertEquals(BigDecimal.valueOf(1000), response.getBalance());
+        assertEquals(applicationId, response.getFirst().getApplicationId());
+        assertEquals(BigDecimal.valueOf(1000), response.getFirst().getBalance());
     }
 
     @DisplayName("delete balance")

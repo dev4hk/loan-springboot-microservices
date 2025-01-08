@@ -17,6 +17,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -31,6 +33,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class EntryController {
 
+    private static final Logger logger = LoggerFactory.getLogger(EntryController.class);
     private final IEntryService entryService;
 
     @Operation(
@@ -58,7 +61,11 @@ public class EntryController {
     @RateLimiter(name = "createEntryRateLimiter")
     @PostMapping("/{applicationId}")
     public ResponseDTO<EntryResponseDto> createEntry(@PathVariable Long applicationId, @Valid @RequestBody EntryRequestDto request) {
+        logger.info("EntryController - createEntry started");
+        logger.debug("EntryController - applicationId: {}", applicationId);
+        logger.debug("EntryController - request: {}", request.toString());
         EntryResponseDto response = entryService.create(applicationId, request);
+        logger.info("EntryController - createEntry finished");
         return ResponseDTO.ok(response);
     }
 
@@ -88,7 +95,10 @@ public class EntryController {
     @Retry(name = "getEntry")
     @GetMapping("/{applicationId}")
     public ResponseDTO<EntryResponseDto> getEntry(@PathVariable Long applicationId) {
+        logger.info("EntryController - getEntry started");
+        logger.debug("EntryController - applicationId: {}", applicationId);
         EntryResponseDto response = entryService.get(applicationId);
+        logger.info("EntryController - getEntry finished");
         return ResponseDTO.ok(response);
     }
 
@@ -117,7 +127,11 @@ public class EntryController {
     @RateLimiter(name = "updateEntryRateLimiter")
     @PutMapping("/{entryId}")
     public ResponseDTO<EntryUpdateResponseDto> updateEntry(@PathVariable Long entryId, @Valid @RequestBody EntryRequestDto request) {
+        logger.info("EntryController - updateEntry started");
+        logger.debug("EntryController - entryId: {}", entryId);
+        logger.debug("EntryController - request: {}", request.toString());
         EntryUpdateResponseDto response = entryService.update(entryId, request);
+        logger.info("EntryController - updateEntry finished");
         return ResponseDTO.ok(response);
     }
 
@@ -146,7 +160,10 @@ public class EntryController {
     @RateLimiter(name = "deleteEntryRateLimiter")
     @DeleteMapping("/{entryId}")
     public ResponseDTO<Void> deleteEntry(@PathVariable Long entryId) {
+        logger.info("EntryController - deleteEntry started");
+        logger.debug("EntryController - entryId: {}", entryId);
         entryService.delete(entryId);
+        logger.info("EntryController - deleteEntry finished");
         return ResponseDTO.ok();
     }
 }

@@ -16,7 +16,7 @@ public class JudgementFallback implements JudgementClient {
 
     @Override
     public ResponseDTO<JudgementResponseDto> getJudgmentOfApplication(Long applicationId) {
-        logger.error("JudgementFallback getJudgmentOfApplication() invoked for applicationId: {}", applicationId);
+        logger.error("JudgementFallback - getJudgmentOfApplication invoked for applicationId: {}", applicationId);
         JudgementResponseDto fallbackResponse = JudgementResponseDto.builder()
                 .applicationId(applicationId)
                 .build();

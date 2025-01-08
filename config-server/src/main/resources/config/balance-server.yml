@@ -39,6 +39,10 @@ management:
   info:
     env:
       enabled: true
+  metrics:
+    tags:
+      application: ${spring.application.name}
+
 endpoints:
   shutdown:
     enabled: true
@@ -54,7 +58,9 @@ logging:
   level:
     com:
       example:
-        balanceserver: DEBUG
+        balance_server: DEBUG
+  pattern:
+    level: "%5p [${spring.application.name},%X{trace_id},%X{span_id}]"
 resilience4j.retry:
   configs:
     default:

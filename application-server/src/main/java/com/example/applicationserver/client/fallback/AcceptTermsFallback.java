@@ -19,7 +19,7 @@ public class AcceptTermsFallback implements AcceptTermsClient {
 
     @Override
     public ResponseDTO<List<AcceptTermsResponseDto>> create(AcceptTermsRequestDto acceptTermsRequestDto) {
-        logger.error("AcceptTermsFallback create() invoked");
+        logger.error("AcceptTermsFallback - create invoked");
         ResultObject resultObject = ResultObject.builder()
                 .code(ResultType.SYSTEM_ERROR.getCode())
                 .desc("Error creating accept terms")

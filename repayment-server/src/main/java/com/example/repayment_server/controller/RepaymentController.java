@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +30,7 @@ import static com.example.repayment_server.dto.ResponseDTO.ok;
 @RequiredArgsConstructor
 public class RepaymentController {
 
+    private static final Logger logger = LoggerFactory.getLogger(RepaymentController.class);
     private final IRepaymentService repaymentService;
 
     @Operation(
@@ -57,7 +60,11 @@ public class RepaymentController {
     public ResponseDTO<RepaymentResponseDto> createRepayment(
             @PathVariable Long applicationId,
             @Valid @RequestBody RepaymentRequestDto repaymentRequestDto) {
+        logger.info("RepaymentController - createRepayment started");
+        logger.debug("RepaymentController - applicationId: {}", applicationId);
+        logger.debug("RepaymentController - repaymentRequestDto: {}", repaymentRequestDto.toString());
         RepaymentResponseDto responseDto = repaymentService.create(applicationId, repaymentRequestDto);
+        logger.info("RepaymentController - createRepayment finished");
         return ok(responseDto);
     }
 
@@ -87,7 +94,10 @@ public class RepaymentController {
     @GetMapping("/{applicationId}")
     public ResponseDTO<List<RepaymentListResponseDto>> getRepayments(
             @PathVariable Long applicationId) {
+        logger.info("RepaymentController - getRepayments started");
+        logger.debug("RepaymentController - applicationId: {}", applicationId);
         List<RepaymentListResponseDto> responseDtos = repaymentService.get(applicationId);
+        logger.info("RepaymentController - getRepayments finished");
         return ok(responseDtos);
     }
 
@@ -118,7 +128,11 @@ public class RepaymentController {
     public ResponseDTO<RepaymentUpdateResponseDto> updateRepayment(
             @PathVariable Long repaymentId,
             @Valid @RequestBody RepaymentRequestDto repaymentRequestDto) {
+        logger.info("RepaymentController - updateRepayment started");
+        logger.debug("RepaymentController - repaymentId: {}", repaymentId);
+        logger.debug("RepaymentController - repaymentRequestDto: {}", repaymentRequestDto.toString());
         RepaymentUpdateResponseDto responseDto = repaymentService.update(repaymentId, repaymentRequestDto);
+        logger.info("RepaymentController - updateRepayment finished");
         return ok(responseDto);
     }
 
@@ -148,7 +162,10 @@ public class RepaymentController {
     @DeleteMapping("/{repaymentId}")
     public ResponseDTO<Void> deleteRepayment(
             @PathVariable Long repaymentId) {
+        logger.info("RepaymentController - createRepayment started");
+        logger.debug("RepaymentController - deleteRepayment: {}", repaymentId);
         repaymentService.delete(repaymentId);
+        logger.info("RepaymentController - createRepayment finished");
         return ok();
     }
 }
