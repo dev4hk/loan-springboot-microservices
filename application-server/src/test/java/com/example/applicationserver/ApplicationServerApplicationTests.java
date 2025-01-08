@@ -1,10 +1,12 @@
 package com.example.applicationserver;
 
 import com.example.applicationserver.client.AcceptTermsClient;
-import com.example.applicationserver.client.FileStorageClient;
 import com.example.applicationserver.client.JudgementClient;
 import com.example.applicationserver.client.TermsClient;
-import com.example.applicationserver.client.dto.*;
+import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.client.dto.AcceptTermsResponseDto;
+import com.example.applicationserver.client.dto.JudgementResponseDto;
+import com.example.applicationserver.client.dto.TermsResponseDto;
 import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.GrantAmountDto;
 import com.example.applicationserver.dto.ResponseDTO;
@@ -19,13 +21,10 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
@@ -51,9 +50,6 @@ class ApplicationServerApplicationTests {
     private AcceptTermsClient acceptTermsClient;
 
     @MockitoBean
-    private FileStorageClient fileStorageClient;
-
-    @MockitoBean
     private JudgementClient judgementClient;
 
     private Application application;
@@ -61,8 +57,6 @@ class ApplicationServerApplicationTests {
     private TermsResponseDto termsResponseDto;
 
     private AcceptTermsResponseDto acceptTermsResponseDto;
-
-    private FileResponseDto fileResponseDto;
 
     private JudgementResponseDto judgementResponseDto;
 
@@ -90,11 +84,6 @@ class ApplicationServerApplicationTests {
                 .termsId(1L)
                 .build();
 
-        fileResponseDto = FileResponseDto.builder()
-                .name("filename")
-                .url("url")
-                .build();
-
         judgementResponseDto = JudgementResponseDto.builder()
                 .applicationId(1L)
                 .judgementId(1L)
@@ -107,13 +96,9 @@ class ApplicationServerApplicationTests {
         when(applicationRepository.existsById(anyLong())).thenReturn(Boolean.TRUE);
         when(termsClient.getAll()).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), List.of(termsResponseDto)));
         when(acceptTermsClient.create(any(AcceptTermsRequestDto.class))).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), List.of(acceptTermsResponseDto)));
-        when(fileStorageClient.upload(anyLong(), any(MultipartFile.class))).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), null));
-        when(fileStorageClient.getFilesInfo(anyLong())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), List.of(fileResponseDto)));
-        when(fileStorageClient.deleteAll(anyLong())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), null));
 
-        byte[] fileContent = "This is a test file".getBytes();
+        byte[] fileContent = "This is a test file" .getBytes();
         Resource resource = new ByteArrayResource(fileContent);
-        when(fileStorageClient.download(anyLong(), anyString())).thenReturn(ResponseEntity.ok(resource));
 
         when(judgementClient.getJudgmentOfApplication(anyLong())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), judgementResponseDto));
     }
@@ -259,65 +244,6 @@ class ApplicationServerApplicationTests {
 
     @Order(8)
     @Test
-    void should_upload_file() throws IOException {
-        Long applicationId = 1L;
-        MockMultipartFile file = new MockMultipartFile(
-                "file",
-                "test.txt",
-                MediaType.TEXT_PLAIN_VALUE,
-                "This is a test file".getBytes()
-        );
-
-        RestAssured.given()
-                .multiPart("file", file.getOriginalFilename(), file.getBytes(), MediaType.TEXT_PLAIN_VALUE)
-                .contentType("multipart/form-data")
-                .post("/api/" + applicationId + "/files")
-                .then()
-                .log().all()
-                .statusCode(200);
-    }
-
-
-    @Order(9)
-    @Test
-    void should_download_file() {
-        String fileName = "test.txt";
-        String fileContent = "This is a test file";
-
-        RestAssured.given()
-                .queryParam("fileName", fileName)
-                .get("/api/1/files")
-                .then()
-                .log().all()
-                .statusCode(200);
-    }
-
-    @Order(10)
-    @Test
-    void should_get_files_info() {
-        Long applicationId = 1L;
-
-        RestAssured.given()
-                .get("/api/" + applicationId + "/files/info")
-                .then()
-                .log().all()
-                .statusCode(200);
-    }
-
-    @Order(11)
-    @Test
-    void should_delete_all_files() {
-        Long applicationId = 1L;
-
-        RestAssured.given()
-                .delete("/api/" + applicationId + "/files")
-                .then()
-                .log().all()
-                .statusCode(200);
-    }
-
-    @Order(12)
-    @Test
     void should_update_grant() {
         Long applicationId = 1L;
         GrantAmountDto grantAmountDto = GrantAmountDto.builder()
@@ -340,7 +266,7 @@ class ApplicationServerApplicationTests {
                 .contentType("application/json");
     }
 
-    @Order(13)
+    @Order(9)
     @Test
     void should_contract_application() {
         Long applicationId = 1L;
@@ -360,7 +286,7 @@ class ApplicationServerApplicationTests {
                 .statusCode(200);
     }
 
-    @Order(14)
+    @Order(10)
     @Test
     void should_delete_application() {
         RestAssured.given()
@@ -370,7 +296,7 @@ class ApplicationServerApplicationTests {
                 .statusCode(200);
     }
 
-    @Order(15)
+    @Order(11)
     @Test
     void should_throw_exception_when_request_delete_non_exist_application() {
         when(applicationRepository.findById(anyLong())).thenReturn(Optional.empty());

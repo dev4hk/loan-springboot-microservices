@@ -1,7 +1,9 @@
 package com.example.filestorageserver.service.impl;
 
+import com.example.filestorageserver.client.ApplicationClient;
+import com.example.filestorageserver.client.dto.ApplicationResponseDto;
 import com.example.filestorageserver.constants.ResultType;
-import com.example.filestorageserver.controller.FileStorageController;
+import com.example.filestorageserver.dto.ResponseDTO;
 import com.example.filestorageserver.exception.BaseException;
 import com.example.filestorageserver.service.IFileStorageService;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +29,19 @@ import java.util.stream.Stream;
 public class FileStorageServiceImpl implements IFileStorageService {
 
     private static final Logger logger = LoggerFactory.getLogger(FileStorageServiceImpl.class);
-    
+
     @Value("${spring.servlet.multipart.location}")
     private String uploadPath;
+
+    private final ApplicationClient applicationClient;
 
     @Override
     public void save(Long applicationId, MultipartFile file) {
         logger.info("FileStorageServiceImpl - upload invoked");
+        if (!checkIfApplicationPresent(applicationId)) {
+            logger.error("FileStorageServiceImpl - Application does not exist");
+            throw new BaseException(ResultType.BAD_REQUEST, "Application does not exist", HttpStatus.BAD_REQUEST);
+        }
         try {
             String applicationPath = uploadPath.concat("/" + applicationId);
             Path directory = Path.of(applicationPath);
@@ -54,6 +62,10 @@ public class FileStorageServiceImpl implements IFileStorageService {
     @Override
     public Resource load(Long applicationId, String fileName) {
         logger.info("FileStorageServiceImpl - download invoked");
+        if (!checkIfApplicationPresent(applicationId)) {
+            logger.error("FileStorageServiceImpl - Application does not exist");
+            throw new BaseException(ResultType.BAD_REQUEST, "Application does not exist", HttpStatus.BAD_REQUEST);
+        }
         try {
             String applicationPath = uploadPath.concat("/" + applicationId);
             Path file = Paths.get(applicationPath).resolve(fileName);
@@ -78,6 +90,10 @@ public class FileStorageServiceImpl implements IFileStorageService {
     @Override
     public Stream<Path> loadAll(Long applicationId) {
         logger.info("FileStorageServiceImpl - getFileInfo invoked");
+        if (!checkIfApplicationPresent(applicationId)) {
+            logger.error("FileStorageServiceImpl - Application does not exist");
+            throw new BaseException(ResultType.BAD_REQUEST, "Application does not exist", HttpStatus.BAD_REQUEST);
+        }
         try {
             String applicationPath = uploadPath.concat("/" + applicationId);
             return Files.walk(Paths.get(applicationPath), 1).filter(path -> !path.equals(Paths.get(applicationPath)));
@@ -90,8 +106,18 @@ public class FileStorageServiceImpl implements IFileStorageService {
     @Override
     public void deleteAll(Long applicationId) {
         logger.info("FileStorageServiceImpl - deleteAll invoked");
+        if (!checkIfApplicationPresent(applicationId)) {
+            logger.error("FileStorageServiceImpl - Application does not exist");
+            throw new BaseException(ResultType.BAD_REQUEST, "Application does not exist", HttpStatus.BAD_REQUEST);
+        }
         String applicationPath = uploadPath.concat("/" + applicationId);
         FileSystemUtils.deleteRecursively(Paths.get(applicationPath).toFile());
+    }
+
+    public boolean checkIfApplicationPresent(Long applicationId) {
+        logger.info("FileStorageServiceImpl - checkIfApplicationPresent invoked");
+        ResponseDTO<ApplicationResponseDto> responseDto = applicationClient.get(applicationId);
+        return responseDto.getData() != null;
     }
 
 }
