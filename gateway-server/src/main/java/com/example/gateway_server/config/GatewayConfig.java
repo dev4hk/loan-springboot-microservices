@@ -42,6 +42,7 @@ public class GatewayConfig {
                         .path("/loan/balance/**")
                         .filters(f -> f.rewritePath("/loan/balance/(?<segment>.*)", "/${segment}")
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
+                                .filter(blockAcceptTermsAccessFilter.apply(new BlockAccessFilter.Config()))
                                 .circuitBreaker(config -> config.setName("balanceCircuitBreaker")
                                         .setFallbackUri("forward:/error")
                                 )
