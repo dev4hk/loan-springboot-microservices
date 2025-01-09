@@ -1,13 +1,10 @@
 package com.example.applicationserver.controller;
 
 import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
-import com.example.applicationserver.client.dto.FileResponseDto;
-import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.GrantAmountDto;
 import com.example.applicationserver.dto.ResponseDTO;
-import com.example.applicationserver.exception.BaseException;
 import com.example.applicationserver.service.IApplicationService;
 import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import io.github.resilience4j.retry.annotation.Retry;
@@ -21,15 +18,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.util.List;
 
 import static com.example.applicationserver.dto.ResponseDTO.ok;
 
@@ -213,163 +203,6 @@ public class ApplicationController {
         logger.debug("ApplicationController - request: {}", request.toString());
         applicationService.acceptTerms(applicationId, request);
         logger.info("ApplicationController - acceptTerms finished");
-        return ok();
-    }
-
-    @Operation(
-            summary = "Upload file REST API",
-            description = "REST API to upload file"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "HTTP Status Bad Request",
-                    content = @Content(
-                            schema = @Schema(implementation = ResponseDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "HTTP Not Found",
-                    content = @Content(
-                            schema = @Schema(implementation = ResponseDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error"
-            )
-    }
-    )
-    @RateLimiter(name = "uploadRateLimiter")
-    @PostMapping(value = "/{applicationId}/files", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseDTO<Void> upload(@PathVariable Long applicationId, MultipartFile file) {
-        logger.info("ApplicationController - upload started");
-        logger.debug("ApplicationController - applicationID: {}", applicationId);
-        applicationService.uploadFile(applicationId, file);
-        logger.info("ApplicationController - upload finished");
-        return ok();
-    }
-
-    @Operation(
-            summary = "Download file REST API",
-            description = "REST API to download file"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "HTTP Status Bad Request",
-                    content = @Content(
-                            schema = @Schema(implementation = ResponseDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "HTTP Not Found",
-                    content = @Content(
-                            schema = @Schema(implementation = ResponseDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error"
-            )
-    }
-    )
-    @RateLimiter(name = "downloadRateLimiter")
-    @GetMapping("/{applicationId}/files")
-    public ResponseEntity<Resource> download(@PathVariable Long applicationId, @RequestParam(value = "fileName") String fileName) {
-        logger.info("ApplicationController - download started");
-        logger.debug("ApplicationController - applicationID: {}", applicationId);
-        logger.debug("ApplicationController - fileName: {}", fileName);
-        Resource resource = applicationService.downloadFile(applicationId, fileName);
-        logger.info("ApplicationController - download finished");
-        return ResponseEntity.ok(resource);
-    }
-
-    @Operation(
-            summary = "Fetch files info REST API",
-            description = "REST API to fetch files info"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "HTTP Status Bad Request",
-                    content = @Content(
-                            schema = @Schema(implementation = ResponseDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "HTTP Not Found",
-                    content = @Content(
-                            schema = @Schema(implementation = ResponseDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error"
-            )
-    }
-    )
-    @RateLimiter(name = "getFilesInfoRateLimiter")
-    @GetMapping("/{applicationId}/files/info")
-    public ResponseDTO<List<FileResponseDto>> getFilesInfo(@PathVariable Long applicationId) {
-        logger.info("ApplicationController - getFilesInfo started");
-        logger.debug("ApplicationController - applicationID: {}", applicationId);
-        List<FileResponseDto> fileResponseDtos = applicationService.loadAllFiles(applicationId);
-        logger.info("ApplicationController - getFilesInfo finished");
-        return ok(fileResponseDtos);
-    }
-
-    @Operation(
-            summary = "Delete files REST API",
-            description = "REST API to delete files"
-    )
-    @ApiResponses({
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "HTTP Status OK"
-            ),
-            @ApiResponse(
-                    responseCode = "400",
-                    description = "HTTP Status Bad Request",
-                    content = @Content(
-                            schema = @Schema(implementation = ResponseDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "HTTP Not Found",
-                    content = @Content(
-                            schema = @Schema(implementation = ResponseDTO.class)
-                    )
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "HTTP Status Internal Server Error"
-            )
-    }
-    )
-    @RateLimiter(name = "deleteAllFilesRateLimiter")
-    @DeleteMapping("/{applicationId}/files")
-    public ResponseDTO<Void> deleteAllFiles(@PathVariable Long applicationId) {
-        logger.info("ApplicationController - deleteAllFiles started");
-        logger.debug("ApplicationController - applicationID: {}", applicationId);
-        applicationService.deleteAllFiles(applicationId);
-        logger.info("ApplicationController - deleteAllFiles finished");
         return ok();
     }
 

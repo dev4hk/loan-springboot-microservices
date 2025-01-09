@@ -1,6 +1,10 @@
 package com.example.filestorageserver.service.impl;
 
+import com.example.filestorageserver.client.ApplicationClient;
+import com.example.filestorageserver.client.dto.ApplicationResponseDto;
 import com.example.filestorageserver.constants.ResultType;
+import com.example.filestorageserver.dto.ResponseDTO;
+import com.example.filestorageserver.dto.ResultObject;
 import com.example.filestorageserver.exception.BaseException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -23,6 +27,7 @@ import java.util.Comparator;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -34,6 +39,9 @@ public class FileStorageServiceImplTest {
     @Mock(lenient = true)
     private MultipartFile multipartFile;
 
+    @Mock
+    private ApplicationClient applicationClient;
+
     @InjectMocks
     private FileStorageServiceImpl fileStorageService;
 
@@ -44,6 +52,11 @@ public class FileStorageServiceImplTest {
         Field uploadPathField = FileStorageServiceImpl.class.getDeclaredField("uploadPath");
         uploadPathField.setAccessible(true);
         uploadPathField.set(fileStorageService, UPLOAD_DIR);
+        when(applicationClient.get(anyLong())).thenReturn(new ResponseDTO<>(
+                ResultObject.builder().build(),
+                ApplicationResponseDto.builder().build()
+        ));
+
     }
 
     @AfterEach

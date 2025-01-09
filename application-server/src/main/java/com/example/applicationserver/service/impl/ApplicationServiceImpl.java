@@ -1,12 +1,12 @@
 package com.example.applicationserver.service.impl;
 
 import com.example.applicationserver.client.AcceptTermsClient;
-import com.example.applicationserver.client.FileStorageClient;
 import com.example.applicationserver.client.JudgementClient;
 import com.example.applicationserver.client.TermsClient;
-import com.example.applicationserver.client.dto.*;
+import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.client.dto.JudgementResponseDto;
+import com.example.applicationserver.client.dto.TermsResponseDto;
 import com.example.applicationserver.constants.ResultType;
-import com.example.applicationserver.controller.ApplicationController;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.GrantAmountDto;
@@ -19,13 +19,9 @@ import com.example.applicationserver.service.IApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -40,7 +36,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     private final ApplicationRepository applicationRepository;
     private final TermsClient termClient;
     private final AcceptTermsClient acceptTermsClient;
-    private final FileStorageClient fileStorageClient;
     private final JudgementClient judgementClient;
 
     @Override
@@ -129,36 +124,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
     @Override
-    public void uploadFile(Long applicationId, MultipartFile file) {
-        logger.info("ApplicationServiceImpl - uploadFile invoked");
-        if (!isPresentApplication(applicationId)) {
-            logger.error("ApplicationServiceImpl - Application does not exist");
-            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
-        }
-        ResponseDTO<Void> fileStorageResponse = fileStorageClient.upload(applicationId, file);
-    }
-
-    @Override
-    public Resource downloadFile(Long applicationId, String fileName) {
-        logger.info("ApplicationServiceImpl - downloadFile invoked");
-        ResponseEntity<Resource> fileStorageResponse = fileStorageClient.download(applicationId, fileName);
-        return fileStorageResponse.getBody();
-    }
-
-    @Override
-    public List<FileResponseDto> loadAllFiles(Long applicationId) {
-        logger.info("ApplicationServiceImpl - loadAllFiles invoked");
-        ResponseDTO<List<FileResponseDto>> fileStorageResponse = fileStorageClient.getFilesInfo(applicationId);
-        return fileStorageResponse.getData();
-    }
-
-    @Override
-    public void deleteAllFiles(Long applicationId) {
-        logger.info("ApplicationServiceImpl - deleteAllFiles invoked");
-        fileStorageClient.deleteAll(applicationId);
-    }
-
-    @Override
     public void updateGrant(Long applicationId, GrantAmountDto grantAmountDto) {
         logger.info("ApplicationServiceImpl - updateGrant invoked");
         Application application = applicationRepository.findById(applicationId)
@@ -195,8 +160,4 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     }
 
-    private boolean isPresentApplication(Long applicationId) {
-        logger.info("ApplicationServiceImpl - isPresentApplication invoked");
-        return applicationRepository.existsById(applicationId);
-    }
 }
