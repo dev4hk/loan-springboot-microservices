@@ -1,5 +1,6 @@
 package com.example.gateway_server.config;
 
+import com.example.gateway_server.filter.BlockAccessFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
