@@ -1,4 +1,16 @@
 services:
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0.7
+    container_name: keycloak
+    ports:
+      - "7080:8080"
+    env_file:
+      - "../keycloak/.env"
+    command: "start-dev"
+    extends:
+      file: common-config.yml
+      service: network-deploy-service
   
   read:
     image: grafana/loki:latest
@@ -481,6 +493,7 @@ services:
     environment:
       SPRING_APPLICATION_NAME: "gateway-server"
       OTEL_SERVICE_NAME: "gateway-server"
+      SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK-SET-URI: "http://keycloak:8080/realms/master/protocol/openid-connect/certs"
     extends:
       file: common-config.yml
       service: microservice-eureka-config

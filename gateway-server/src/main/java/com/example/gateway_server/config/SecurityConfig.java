@@ -47,7 +47,7 @@ public class SecurityConfig {
                                 .pathMatchers(TERMS.getUri()).hasRole(MANAGER.getRole())
                 )
                 .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec
-                        .jwt(Customizer.withDefaults()));
+                        .jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(grantedAuthoritiesExtractor())));
         serverHttpSecurity.csrf(csrfSpec -> csrfSpec.disable());
         return serverHttpSecurity.build();
     }
