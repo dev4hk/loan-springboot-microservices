@@ -7,10 +7,7 @@ import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
 import com.example.applicationserver.client.dto.JudgementResponseDto;
 import com.example.applicationserver.client.dto.TermsResponseDto;
 import com.example.applicationserver.constants.ResultType;
-import com.example.applicationserver.dto.ApplicationRequestDto;
-import com.example.applicationserver.dto.ApplicationResponseDto;
-import com.example.applicationserver.dto.GrantAmountDto;
-import com.example.applicationserver.dto.ResponseDTO;
+import com.example.applicationserver.dto.*;
 import com.example.applicationserver.entity.Application;
 import com.example.applicationserver.exception.BaseException;
 import com.example.applicationserver.mapper.ApplicationMapper;
@@ -19,6 +16,7 @@ import com.example.applicationserver.service.IApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +35,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     private final TermsClient termClient;
     private final AcceptTermsClient acceptTermsClient;
     private final JudgementClient judgementClient;
+    private final StreamBridge streamBridge;
 
     @Override
     public ApplicationResponseDto create(ApplicationRequestDto request) {
@@ -44,7 +43,21 @@ public class ApplicationServiceImpl implements IApplicationService {
         Application application = ApplicationMapper.mapToApplication(request);
         application.setAppliedAt(LocalDateTime.now());
         Application created = applicationRepository.save(application);
+        sendCommunication(application);
         return ApplicationMapper.mapToApplicationResponseDto(created);
+    }
+
+    private void sendCommunication(Application application) {
+        var applicationMsgDto = new ApplicationMsgDto(
+                application.getApplicationId(),
+                application.getFirstname(),
+                application.getLastname(),
+                application.getEmail(),
+                application.getCellPhone()
+        );
+        logger.debug("Sending Communication request for the details: {}", applicationMsgDto);
+        var result = streamBridge.send("sendCommunication-out-0", applicationMsgDto);
+        logger.debug("Is the Communication request successfully invoked?: {}", result);
     }
 
     @Transactional(readOnly = true)

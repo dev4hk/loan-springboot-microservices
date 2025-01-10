@@ -25,6 +25,16 @@ spring:
     openfeign:
       circuitbreaker:
         enabled: true
+    stream:
+      bindings:
+        sendCommunication-out-0:
+          destination: send-communication
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${MQ_USERNAME}
+    password: ${MQ_PASSWORD}
+    connection-timeout: 10s
 
 management:
   endpoints:
