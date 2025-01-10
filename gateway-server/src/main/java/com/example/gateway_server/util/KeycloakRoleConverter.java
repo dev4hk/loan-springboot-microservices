@@ -1,4 +1,4 @@
-package com.example.gateway_server.config;
+package com.example.gateway_server.util;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.security.core.GrantedAuthority;
