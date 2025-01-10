@@ -1,5 +1,7 @@
 package com.example.gateway_server.config;
 
+import com.example.gateway_server.filter.AddUsernameHeaderGatewayFilterFactory;
+import com.example.gateway_server.filter.AddUsernameHeaderGatewayFilterFactory.Config;
 import com.example.gateway_server.filter.BlockAccessFilter;
 import org.springframework.cloud.gateway.route.RouteLocator;
 import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
@@ -14,7 +16,7 @@ import java.time.LocalDateTime;
 public class GatewayConfig {
 
     @Bean
-    public RouteLocator loanRouteConfig(RouteLocatorBuilder routeLocatorBuilder, BlockAccessFilter blockAcceptTermsAccessFilter) {
+    public RouteLocator loanRouteConfig(RouteLocatorBuilder routeLocatorBuilder, BlockAccessFilter blockAcceptTermsAccessFilter, AddUsernameHeaderGatewayFilterFactory addUsernameHeaderGatewayFilterFactory) {
         return routeLocatorBuilder.routes()
 //                .route(p -> p
 //                        .path("/loan/accept-terms/**")
@@ -37,6 +39,7 @@ public class GatewayConfig {
                                 .circuitBreaker(config -> config.setName("applicationCircuitBreaker")
                                         .setFallbackUri("forward:/error")
                                 )
+                                .filter(addUsernameHeaderGatewayFilterFactory.apply(new Config()))
                         )
                         .uri("lb://APPLICATION-SERVER"))
                 .route(p -> p
@@ -47,6 +50,7 @@ public class GatewayConfig {
                                 .circuitBreaker(config -> config.setName("balanceCircuitBreaker")
                                         .setFallbackUri("forward:/error")
                                 )
+                                .filter(addUsernameHeaderGatewayFilterFactory.apply(new Config()))
                         )
                         .uri("lb://BALANCE-SERVER"))
                 .route(p -> p
@@ -59,6 +63,7 @@ public class GatewayConfig {
                                 .retry(retryConfig -> retryConfig.setRetries(3).setMethods(HttpMethod.GET)
                                         .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true)
                                 )
+                                .filter(addUsernameHeaderGatewayFilterFactory.apply(new Config()))
                         )
                         .uri("lb://COUNSEL-SERVER"))
                 .route(p -> p
@@ -68,6 +73,7 @@ public class GatewayConfig {
                                 .circuitBreaker(config -> config.setName("entryCircuitBreaker")
                                         .setFallbackUri("forward:/error")
                                 )
+                                .filter(addUsernameHeaderGatewayFilterFactory.apply(new Config()))
                         )
                         .uri("lb://ENTRY-SERVER"))
                 .route(p -> p
@@ -77,12 +83,17 @@ public class GatewayConfig {
                                 .circuitBreaker(config -> config.setName("fileStorageCircuitBreaker")
                                         .setFallbackUri("forward:/error")
                                 )
+                                .filter(addUsernameHeaderGatewayFilterFactory.apply(new Config()))
                         )
                         .uri("lb://FILE-STORAGE-SERVER"))
                 .route(p -> p
                         .path("/loan/judgement/**")
                         .filters(f -> f.rewritePath("/loan/judgement/(?<segment>.*)", "/${segment}")
                                 .addResponseHeader("X-Response-Time", LocalDateTime.now().toString())
+                                .circuitBreaker(config -> config.setName("judgementCircuitBreaker")
+                                        .setFallbackUri("forward:/error")
+                                )
+                                .filter(addUsernameHeaderGatewayFilterFactory.apply(new Config()))
                         )
                         .uri("lb://JUDGEMENT-SERVER"))
                 .route(p -> p
@@ -95,6 +106,7 @@ public class GatewayConfig {
                                 .retry(retryConfig -> retryConfig.setRetries(3).setMethods(HttpMethod.GET)
                                         .setBackoff(Duration.ofMillis(100), Duration.ofMillis(1000), 2, true)
                                 )
+                                .filter(addUsernameHeaderGatewayFilterFactory.apply(new Config()))
                         )
                         .uri("lb://REPAYMENT-SERVER"))
                 .route(p -> p
@@ -104,6 +116,7 @@ public class GatewayConfig {
                                 .circuitBreaker(config -> config.setName("termsCircuitBreaker")
                                         .setFallbackUri("forward:/error")
                                 )
+                                .filter(addUsernameHeaderGatewayFilterFactory.apply(new Config()))
                         )
                         .uri("lb://TERMS-SERVER"))
                 .build();
