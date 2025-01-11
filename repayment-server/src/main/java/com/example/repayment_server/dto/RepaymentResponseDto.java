@@ -1,5 +1,6 @@
 package com.example.repayment_server.dto;
 
+import com.example.repayment_server.constants.CommunicationStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -17,6 +18,7 @@ public class RepaymentResponseDto {
     private Long applicationId;
     private BigDecimal repaymentAmount;
     private BigDecimal balance;
+    private CommunicationStatus communicationStatus;
     private LocalDateTime createdAt;
     private String createdBy;
     private LocalDateTime updatedAt;

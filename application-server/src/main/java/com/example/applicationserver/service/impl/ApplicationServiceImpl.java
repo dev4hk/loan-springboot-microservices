@@ -181,19 +181,15 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
     @Override
-    public boolean updateCommunicationStatus(Long applicationId, CommunicationStatus communicationStatus) {
+    public void updateCommunicationStatus(Long applicationId, CommunicationStatus communicationStatus) {
         logger.info("ApplicationServiceImpl - updateCommunicationStatus invoked");
-        boolean isUpdated = false;
-        if(communicationStatus != null) {
-            Application application = applicationRepository.findById(applicationId)
-                    .orElseThrow(() -> {
-                        logger.error("ApplicationServiceImpl - Application does not exist");
-                        return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
-                    });
-            application.setCommunicationStatus(communicationStatus);
-            isUpdated = true;
-        }
-        return isUpdated;
+
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> {
+                    logger.error("ApplicationServiceImpl - Application does not exist");
+                    return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
+                });
+        application.setCommunicationStatus(communicationStatus);
     }
 
 }

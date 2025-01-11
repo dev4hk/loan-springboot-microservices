@@ -17,6 +17,7 @@ public class EntryMapper {
                 .entryId(entry.getEntryId())
                 .applicationId(entry.getApplicationId())
                 .entryAmount(entry.getEntryAmount())
+                .communicationStatus(entry.getCommunicationStatus())
                 .createdAt(entry.getCreatedAt())
                 .createdBy(entry.getCreatedBy())
                 .updatedAt(entry.getUpdatedAt())

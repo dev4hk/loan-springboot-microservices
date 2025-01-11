@@ -31,6 +31,7 @@ public class CounselMapper {
                 .address(counsel.getAddress())
                 .addressDetail(counsel.getAddressDetail())
                 .appliedAt(counsel.getAppliedAt())
+                .communicationStatus(counsel.getCommunicationStatus())
                 .createdAt(counsel.getCreatedAt())
                 .createdBy(counsel.getCreatedBy())
                 .updatedAt(counsel.getUpdatedAt())

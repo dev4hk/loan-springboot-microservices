@@ -1,5 +1,6 @@
 package com.example.counselserver.dto;
 
+import com.example.counselserver.constants.CommunicationStatus;
 import lombok.*;
 
 import java.time.LocalDateTime;
@@ -20,6 +21,7 @@ public class CounselResponseDto {
     private String addressDetail;
     private String zipCode;
     private LocalDateTime appliedAt;
+    private CommunicationStatus communicationStatus;
     private LocalDateTime createdAt;
     private String createdBy;
     private LocalDateTime updatedAt;

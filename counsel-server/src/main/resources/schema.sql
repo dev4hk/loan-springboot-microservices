@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS `counsel` (
     `email` varchar(100) NOT NULL,
     `memo` text NOT NULL,
     `applied_at` date NOT NULL,
+    `communication_status` VARCHAR(20) DEFAULT NULL,
     `created_at` date NOT NULL,
     `created_by` varchar(20) NOT NULL,
     `updated_at` date DEFAULT NULL,

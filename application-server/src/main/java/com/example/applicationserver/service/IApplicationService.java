@@ -21,5 +21,5 @@ public interface IApplicationService {
 
     ApplicationResponseDto contract(Long applicationId);
 
-    boolean updateCommunicationStatus(Long applicationId, CommunicationStatus communicationStatus);
+    void updateCommunicationStatus(Long applicationId, CommunicationStatus communicationStatus);
 }

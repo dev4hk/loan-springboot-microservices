@@ -21,7 +21,7 @@ public class ApplicationFunctions {
         return applicationMsgDto -> {
             Long applicationId = applicationMsgDto.applicationId();
             CommunicationStatus communicationStatus = applicationMsgDto.communicationStatus();
-            logger.debug("Updating Communication status for the application ID: " + applicationMsgDto.applicationId());
+            logger.debug("Updating Communication status for the application ID: " + applicationId);
             applicationService.updateCommunicationStatus(applicationId, communicationStatus);
         };
     }

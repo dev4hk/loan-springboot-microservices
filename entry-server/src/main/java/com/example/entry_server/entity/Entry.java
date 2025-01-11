@@ -1,5 +1,6 @@
 package com.example.entry_server.entity;
 
+import com.example.entry_server.constants.CommunicationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
@@ -24,4 +25,6 @@ public class Entry extends BaseEntity {
 
     private BigDecimal entryAmount;
 
+    @Enumerated(EnumType.STRING)
+    private CommunicationStatus communicationStatus;
 }

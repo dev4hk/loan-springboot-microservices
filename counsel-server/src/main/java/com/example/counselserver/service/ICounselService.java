@@ -1,5 +1,6 @@
 package com.example.counselserver.service;
 
+import com.example.counselserver.constants.CommunicationStatus;
 import com.example.counselserver.dto.CounselRequestDto;
 import com.example.counselserver.dto.CounselResponseDto;
 
@@ -11,4 +12,6 @@ public interface ICounselService {
     CounselResponseDto update(Long counselId, CounselRequestDto request);
 
     void delete(Long counselId);
+
+    void updateCommunicationStatus(Long counselId, CommunicationStatus communicationStatus);
 }
