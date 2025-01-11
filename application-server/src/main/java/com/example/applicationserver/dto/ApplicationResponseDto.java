@@ -1,5 +1,6 @@
 package com.example.applicationserver.dto;
 
+import com.example.applicationserver.constants.CommunicationStatus;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -29,6 +30,8 @@ public class ApplicationResponseDto {
     private LocalDateTime appliedAt;
 
     private LocalDateTime contractedAt;
+
+    private CommunicationStatus communicationStatus;
 
     private LocalDateTime createdAt;
 

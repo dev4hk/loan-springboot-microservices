@@ -17,6 +17,7 @@ public class RepaymentMapper {
                 .repaymentId(repayment.getRepaymentId())
                 .applicationId(repayment.getApplicationId())
                 .repaymentAmount(repayment.getRepaymentAmount())
+                .communicationStatus(repayment.getCommunicationStatus())
                 .createdAt(repayment.getCreatedAt())
                 .createdBy(repayment.getCreatedBy())
                 .updatedAt(repayment.getUpdatedAt())

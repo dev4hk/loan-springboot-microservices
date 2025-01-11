@@ -7,6 +7,7 @@ import com.example.repayment_server.client.dto.ApplicationResponseDto;
 import com.example.repayment_server.client.dto.BalanceRepaymentRequestDto;
 import com.example.repayment_server.client.dto.BalanceResponseDto;
 import com.example.repayment_server.client.dto.EntryResponseDto;
+import com.example.repayment_server.constants.CommunicationStatus;
 import com.example.repayment_server.constants.ResultType;
 import com.example.repayment_server.controller.RepaymentController;
 import com.example.repayment_server.dto.*;
@@ -18,6 +19,7 @@ import com.example.repayment_server.service.IRepaymentService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,14 +41,13 @@ public class RepaymentServiceImpl implements IRepaymentService {
     private final ApplicationClient applicationClient;
     private final BalanceClient balanceClient;
     private final EntryClient entryClient;
+    private final StreamBridge streamBridge;
 
     @Override
     public RepaymentResponseDto create(Long applicationId, RepaymentRequestDto repaymentRequestDto) {
         logger.info("RepaymentServiceImpl - create invoked");
-        if (!isRepayableApplication(applicationId)) {
-            logger.error("RepaymentServiceImpl - Application not repayable");
-            throw new BaseException(ResultType.BAD_REQUEST, "Application not repayable", HttpStatus.BAD_REQUEST);
-        }
+
+        ApplicationResponseDto applicationResponseDto = checkRepayableAndGetApplication(applicationId);
 
         Repayment repayment = RepaymentMapper.mapToRepayment(repaymentRequestDto);
         repayment.setApplicationId(applicationId);
@@ -64,21 +65,25 @@ public class RepaymentServiceImpl implements IRepaymentService {
         );
         RepaymentResponseDto repaymentResponseDto = RepaymentMapper.mapToRepaymentResponseDto(repayment);
         repaymentResponseDto.setBalance(balanceResponseDto.getData().getFirst().getBalance());
-
+        sendCommunication(repayment, applicationResponseDto, CommunicationStatus.REPAYMENT_CREATED);
         return repaymentResponseDto;
     }
 
-    private boolean isRepayableApplication(Long applicationId) {
+    private ApplicationResponseDto checkRepayableAndGetApplication(Long applicationId) {
         logger.info("RepaymentServiceImpl - isRepayableApplication invoked");
         ResponseDTO<ApplicationResponseDto> applicationResponseDto = applicationClient.get(applicationId);
         if (applicationResponseDto.getData() == null
                 || applicationResponseDto.getData().getContractedAt() == null
         ) {
-            return false;
+            logger.error("RepaymentServiceImpl - Application not contracted");
+            throw new BaseException(ResultType.BAD_REQUEST, "Application not contracted", HttpStatus.BAD_REQUEST);
         }
         ResponseDTO<EntryResponseDto> entryResponseDto = entryClient.getEntry(applicationId);
-        return entryResponseDto.getData() != null;
-
+        if (entryResponseDto.getData() == null) {
+            logger.error("RepaymentServiceImpl - Application not repayable");
+            throw new BaseException(ResultType.BAD_REQUEST, "Application not repayable", HttpStatus.BAD_REQUEST);
+        }
+        return applicationResponseDto.getData();
     }
 
     @Transactional(readOnly = true)
@@ -118,6 +123,10 @@ public class RepaymentServiceImpl implements IRepaymentService {
                 repaymentRequestList
         );
 
+        ApplicationResponseDto applicationResponseDto = applicationClient.get(applicationId).getData();
+
+        sendCommunication(repayment, applicationResponseDto, CommunicationStatus.REPAYMENT_UPDATED);
+
         return RepaymentUpdateResponseDto.builder()
                 .applicationId(applicationId)
                 .beforeRepaymentAmount(beforeRepaymentAmount)
@@ -137,16 +146,46 @@ public class RepaymentServiceImpl implements IRepaymentService {
                 new BaseException(ResultType.RESOURCE_NOT_FOUND, "Repayment does not exist", HttpStatus.NOT_FOUND)
         );
 
-        Long applicationid = repayment.getApplicationId();
+        Long applicationId = repayment.getApplicationId();
         BigDecimal removeRepaymentAmount = repayment.getRepaymentAmount();
         balanceClient.repaymentUpdate(
-                applicationid,
+                applicationId,
                 List.of(BalanceRepaymentRequestDto.builder()
                         .repaymentAmount(removeRepaymentAmount)
                         .type(BalanceRepaymentRequestDto.RepaymentType.ADD)
                         .build())
         );
 
+        ApplicationResponseDto applicationResponseDto = applicationClient.get(applicationId).getData();
+        sendCommunication(repayment, applicationResponseDto, CommunicationStatus.REPAYMENT_UPDATED);
         repayment.setIsDeleted(true);
+    }
+
+    @Override
+    public void updateCommunicationStatus(Long repaymentId, CommunicationStatus communicationStatus) {
+        logger.info("RepaymentServiceImpl - updateCommunicationStatus invoked");
+        Repayment repayment = repaymentRepository.findById(repaymentId).orElseThrow(() ->
+                {
+                    logger.error("RepaymentServiceImpl - Repayment does not exist");
+                    return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Repayment does not exist", HttpStatus.NOT_FOUND);
+                }
+        );
+        repayment.setCommunicationStatus(communicationStatus);
+    }
+
+    private void sendCommunication(Repayment repayment, ApplicationResponseDto applicationResponseDto, CommunicationStatus communicationStatus) {
+        var repaymentMsgDto = new RepaymentMsgDto(
+                repayment.getRepaymentId(),
+                repayment.getApplicationId(),
+                repayment.getRepaymentAmount(),
+                applicationResponseDto.getFirstname(),
+                applicationResponseDto.getLastname(),
+                applicationResponseDto.getCellPhone(),
+                applicationResponseDto.getEmail(),
+                communicationStatus
+        );
+        logger.debug("Sending Communication request for the details: {}", repaymentMsgDto);
+        var result = streamBridge.send("sendCommunication-out-0", repaymentMsgDto);
+        logger.debug("Is the Communication request successfully invoked?: {}", result);
     }
 }

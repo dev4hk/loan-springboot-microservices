@@ -27,6 +27,7 @@ public class ApplicationMapper {
                 .approvalAmount(application.getApprovalAmount())
                 .appliedAt(application.getAppliedAt())
                 .contractedAt(application.getContractedAt())
+                .communicationStatus(application.getCommunicationStatus())
                 .createdAt(application.getCreatedAt())
                 .createdBy(application.getCreatedBy())
                 .updatedAt(application.getUpdatedAt())

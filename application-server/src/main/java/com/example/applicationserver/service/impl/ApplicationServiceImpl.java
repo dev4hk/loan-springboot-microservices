@@ -6,11 +6,9 @@ import com.example.applicationserver.client.TermsClient;
 import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
 import com.example.applicationserver.client.dto.JudgementResponseDto;
 import com.example.applicationserver.client.dto.TermsResponseDto;
+import com.example.applicationserver.constants.CommunicationStatus;
 import com.example.applicationserver.constants.ResultType;
-import com.example.applicationserver.dto.ApplicationRequestDto;
-import com.example.applicationserver.dto.ApplicationResponseDto;
-import com.example.applicationserver.dto.GrantAmountDto;
-import com.example.applicationserver.dto.ResponseDTO;
+import com.example.applicationserver.dto.*;
 import com.example.applicationserver.entity.Application;
 import com.example.applicationserver.exception.BaseException;
 import com.example.applicationserver.mapper.ApplicationMapper;
@@ -19,6 +17,7 @@ import com.example.applicationserver.service.IApplicationService;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,6 +36,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     private final TermsClient termClient;
     private final AcceptTermsClient acceptTermsClient;
     private final JudgementClient judgementClient;
+    private final StreamBridge streamBridge;
 
     @Override
     public ApplicationResponseDto create(ApplicationRequestDto request) {
@@ -44,6 +44,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         Application application = ApplicationMapper.mapToApplication(request);
         application.setAppliedAt(LocalDateTime.now());
         Application created = applicationRepository.save(application);
+        sendCommunication(created, CommunicationStatus.APPLICATION_RECEIVED);
         return ApplicationMapper.mapToApplicationResponseDto(created);
     }
 
@@ -73,6 +74,8 @@ public class ApplicationServiceImpl implements IApplicationService {
         application.setEmail(request.getEmail());
         application.setHopeAmount(request.getHopeAmount());
 
+        sendCommunication(application, CommunicationStatus.APPLICATION_UPDATED);
+
         return ApplicationMapper.mapToApplicationResponseDto(application);
     }
 
@@ -85,6 +88,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                     return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
                 });
         application.setIsDeleted(true);
+        sendCommunication(application, CommunicationStatus.APPLICATION_REMOVED);
     }
 
     @Override
@@ -132,6 +136,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                     return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
                 });
         application.setApprovalAmount(grantAmountDto.getApprovalAmount());
+        sendCommunication(application, CommunicationStatus.APPLICATION_GRANT_UPDATED);
     }
 
     @Override
@@ -156,8 +161,35 @@ public class ApplicationServiceImpl implements IApplicationService {
         }
 
         application.setContractedAt(LocalDateTime.now());
+        sendCommunication(application, CommunicationStatus.APPLICATION_CONTRACTED);
         return ApplicationMapper.mapToApplicationResponseDto(application);
 
+    }
+
+    private void sendCommunication(Application application, CommunicationStatus communicationStatus) {
+        var applicationMsgDto = new ApplicationMsgDto(
+                application.getApplicationId(),
+                application.getFirstname(),
+                application.getLastname(),
+                application.getEmail(),
+                application.getCellPhone(),
+                communicationStatus
+        );
+        logger.debug("Sending Communication request for the details: {}", applicationMsgDto);
+        var result = streamBridge.send("sendCommunication-out-0", applicationMsgDto);
+        logger.debug("Is the Communication request successfully invoked?: {}", result);
+    }
+
+    @Override
+    public void updateCommunicationStatus(Long applicationId, CommunicationStatus communicationStatus) {
+        logger.info("ApplicationServiceImpl - updateCommunicationStatus invoked");
+
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> {
+                    logger.error("ApplicationServiceImpl - Application does not exist");
+                    return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
+                });
+        application.setCommunicationStatus(communicationStatus);
     }
 
 }

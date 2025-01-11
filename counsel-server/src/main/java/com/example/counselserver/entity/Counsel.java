@@ -1,9 +1,7 @@
 package com.example.counselserver.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.counselserver.constants.CommunicationStatus;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -39,4 +37,7 @@ public class Counsel extends BaseEntity {
     private String addressDetail;
 
     private String zipCode;
+
+    @Enumerated(EnumType.STRING)
+    private CommunicationStatus communicationStatus;
 }

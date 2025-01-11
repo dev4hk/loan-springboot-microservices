@@ -1,5 +1,6 @@
 package com.example.entry_server.dto;
 
+import com.example.entry_server.constants.CommunicationStatus;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -17,6 +18,8 @@ public class EntryResponseDto {
     private Long applicationId;
 
     private BigDecimal entryAmount;
+
+    private CommunicationStatus communicationStatus;
 
     private LocalDateTime createdAt;
 

@@ -1,0 +1,38 @@
+server:
+  port: 9010
+
+spring:
+  application:
+    name: message-server
+  cloud:
+    function:
+      definition: applicationEmail|applicationSms;entryEmail|entrySms;repaymentEmail|repaymentSms;counselEmail|counselSms
+    stream:
+      bindings:
+        applicationEmailapplicationSms-in-0:
+          destination: application-send-communication
+          group: ${spring.application.name}
+        applicationEmailapplicationSms-out-0:
+          destination: application-communication-sent
+        entryEmailentrySms-in-0:
+          destination: entry-send-communication
+          group: ${spring.application.name}
+        entryEmailentrySms-out-0:
+          destination: entry-communication-sent
+        repaymentEmailrepaymentSms-in-0:
+          destination: repayment-send-communication
+          group: ${spring.application.name}
+        repaymentEmailrepaymentSms-out-0:
+          destination: repayment-communication-sent
+        counselEmailcounselSms-in-0:
+          destination: counsel-send-communication
+          group: ${spring.application.name}
+        counselEmailcounselSms-out-0:
+          destination: counsel-communication-sent
+
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${MQ_USERNAME}
+    password: ${MQ_PASSWORD}
+    connection-timeout: 10s

@@ -1,9 +1,7 @@
 package com.example.applicationserver.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import com.example.applicationserver.constants.CommunicationStatus;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -44,5 +42,8 @@ public class Application extends BaseEntity {
     private BigDecimal approvalAmount;
 
     private LocalDateTime contractedAt;
+
+    @Enumerated(EnumType.STRING)
+    private CommunicationStatus communicationStatus;
 
 }

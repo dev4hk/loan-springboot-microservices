@@ -1,5 +1,6 @@
 package com.example.repayment_server.entity;
 
+import com.example.repayment_server.constants.CommunicationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
@@ -25,4 +26,7 @@ public class Repayment extends BaseEntity{
     private Long applicationId;
 
     private BigDecimal repaymentAmount;
+
+    @Enumerated(EnumType.STRING)
+    private CommunicationStatus communicationStatus;
 }
