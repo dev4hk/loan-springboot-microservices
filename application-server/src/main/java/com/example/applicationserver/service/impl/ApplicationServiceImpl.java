@@ -74,6 +74,8 @@ public class ApplicationServiceImpl implements IApplicationService {
         application.setEmail(request.getEmail());
         application.setHopeAmount(request.getHopeAmount());
 
+        sendCommunication(application, CommunicationStatus.APPLICATION_UPDATED);
+
         return ApplicationMapper.mapToApplicationResponseDto(application);
     }
 
@@ -86,6 +88,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                     return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
                 });
         application.setIsDeleted(true);
+        sendCommunication(application, CommunicationStatus.APPLICATION_REMOVED);
     }
 
     @Override
@@ -133,6 +136,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                     return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
                 });
         application.setApprovalAmount(grantAmountDto.getApprovalAmount());
+        sendCommunication(application, CommunicationStatus.APPLICATION_GRANT_UPDATED);
     }
 
     @Override
@@ -157,6 +161,7 @@ public class ApplicationServiceImpl implements IApplicationService {
         }
 
         application.setContractedAt(LocalDateTime.now());
+        sendCommunication(application, CommunicationStatus.APPLICATION_CONTRACTED);
         return ApplicationMapper.mapToApplicationResponseDto(application);
 
     }
