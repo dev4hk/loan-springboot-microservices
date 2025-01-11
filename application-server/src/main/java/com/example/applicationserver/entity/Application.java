@@ -45,4 +45,6 @@ public class Application extends BaseEntity {
 
     private LocalDateTime contractedAt;
 
+    private Boolean communicationSw;
+
 }

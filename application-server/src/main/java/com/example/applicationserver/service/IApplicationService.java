@@ -19,4 +19,6 @@ public interface IApplicationService {
     void updateGrant(Long applicationId, GrantAmountDto grantAmountDto);
 
     ApplicationResponseDto contract(Long applicationId);
+
+    boolean updateCommunicationStatus(Long applicationId);
 }
