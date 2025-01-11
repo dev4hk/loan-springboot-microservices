@@ -34,10 +34,12 @@ spring:
         updateCommunication-in-0:
           destination: communication-sent
           group: ${spring.application.name}
-      kafka:
-        binder:
-          brokers:
-            - localhost:9092
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: ${MQ_USERNAME}
+    password: ${MQ_PASSWORD}
+    connection-timeout: 10s
 
 management:
   endpoints:
