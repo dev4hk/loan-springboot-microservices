@@ -1,6 +1,7 @@
 package com.example.applicationserver.service;
 
 import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.constants.CommunicationStatus;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.GrantAmountDto;
@@ -20,5 +21,5 @@ public interface IApplicationService {
 
     ApplicationResponseDto contract(Long applicationId);
 
-    boolean updateCommunicationStatus(Long applicationId);
+    boolean updateCommunicationStatus(Long applicationId, CommunicationStatus communicationStatus);
 }

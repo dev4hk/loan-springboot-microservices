@@ -6,6 +6,7 @@ import com.example.applicationserver.client.TermsClient;
 import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
 import com.example.applicationserver.client.dto.JudgementResponseDto;
 import com.example.applicationserver.client.dto.TermsResponseDto;
+import com.example.applicationserver.constants.CommunicationStatus;
 import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.*;
 import com.example.applicationserver.entity.Application;
@@ -43,21 +44,8 @@ public class ApplicationServiceImpl implements IApplicationService {
         Application application = ApplicationMapper.mapToApplication(request);
         application.setAppliedAt(LocalDateTime.now());
         Application created = applicationRepository.save(application);
-        sendCommunication(application);
+        sendCommunication(created, CommunicationStatus.APPLICATION_RECEIVED);
         return ApplicationMapper.mapToApplicationResponseDto(created);
-    }
-
-    private void sendCommunication(Application application) {
-        var applicationMsgDto = new ApplicationMsgDto(
-                application.getApplicationId(),
-                application.getFirstname(),
-                application.getLastname(),
-                application.getEmail(),
-                application.getCellPhone()
-        );
-        logger.debug("Sending Communication request for the details: {}", applicationMsgDto);
-        var result = streamBridge.send("sendCommunication-out-0", applicationMsgDto);
-        logger.debug("Is the Communication request successfully invoked?: {}", result);
     }
 
     @Transactional(readOnly = true)
@@ -173,17 +161,31 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     }
 
+    private void sendCommunication(Application application, CommunicationStatus communicationStatus) {
+        var applicationMsgDto = new ApplicationMsgDto(
+                application.getApplicationId(),
+                application.getFirstname(),
+                application.getLastname(),
+                application.getEmail(),
+                application.getCellPhone(),
+                communicationStatus
+        );
+        logger.debug("Sending Communication request for the details: {}", applicationMsgDto);
+        var result = streamBridge.send("sendCommunication-out-0", applicationMsgDto);
+        logger.debug("Is the Communication request successfully invoked?: {}", result);
+    }
+
     @Override
-    public boolean updateCommunicationStatus(Long applicationId) {
+    public boolean updateCommunicationStatus(Long applicationId, CommunicationStatus communicationStatus) {
         logger.info("ApplicationServiceImpl - updateCommunicationStatus invoked");
         boolean isUpdated = false;
-        if(applicationId != null) {
+        if(communicationStatus != null) {
             Application application = applicationRepository.findById(applicationId)
                     .orElseThrow(() -> {
                         logger.error("ApplicationServiceImpl - Application does not exist");
                         return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
                     });
-            application.setCommunicationSw(true);
+            application.setCommunicationStatus(communicationStatus);
             isUpdated = true;
         }
         return isUpdated;

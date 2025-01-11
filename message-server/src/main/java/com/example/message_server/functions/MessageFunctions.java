@@ -23,10 +23,10 @@ public class MessageFunctions {
     }
 
     @Bean
-    public Function<ApplicationMsgDto, Long> sms() {
+    public Function<ApplicationMsgDto, ApplicationMsgDto> sms() {
         return applicationMsgDto -> {
             logger.info("Sending sms with the details: " + applicationMsgDto.toString());
-            return applicationMsgDto.applicationId();
+            return applicationMsgDto;
         };
     }
 
