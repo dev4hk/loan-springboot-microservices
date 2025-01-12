@@ -60,9 +60,11 @@ public class ApplicationServiceImpl implements IApplicationService {
                     logger.error("ApplicationServiceImpl - Application does not exist");
                     return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
                 });
-        CounselResponseDto counselResponseDto = counselClient.getByEmail(application.getEmail()).getData();
+        ResponseDTO<CounselResponseDto> counselResponse = counselClient.getByEmail(application.getEmail());
         ApplicationResponseDto responseDto = ApplicationMapper.mapToApplicationResponseDto(application);
-        responseDto.setCounselInfo(counselResponseDto);
+        if (counselResponse != null && counselResponse.getData() != null) {
+            responseDto.setCounselInfo(counselResponse.getData());
+        }
         return responseDto;
     }
 
