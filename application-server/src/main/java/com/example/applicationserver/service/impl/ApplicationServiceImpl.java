@@ -1,9 +1,11 @@
 package com.example.applicationserver.service.impl;
 
 import com.example.applicationserver.client.AcceptTermsClient;
+import com.example.applicationserver.client.CounselClient;
 import com.example.applicationserver.client.JudgementClient;
 import com.example.applicationserver.client.TermsClient;
 import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.client.dto.CounselResponseDto;
 import com.example.applicationserver.client.dto.JudgementResponseDto;
 import com.example.applicationserver.client.dto.TermsResponseDto;
 import com.example.applicationserver.constants.CommunicationStatus;
@@ -35,6 +37,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     private final ApplicationRepository applicationRepository;
     private final TermsClient termClient;
     private final AcceptTermsClient acceptTermsClient;
+    private final CounselClient counselClient;
     private final JudgementClient judgementClient;
     private final StreamBridge streamBridge;
 
@@ -57,7 +60,10 @@ public class ApplicationServiceImpl implements IApplicationService {
                     logger.error("ApplicationServiceImpl - Application does not exist");
                     return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
                 });
-        return ApplicationMapper.mapToApplicationResponseDto(application);
+        CounselResponseDto counselResponseDto = counselClient.getByEmail(application.getEmail()).getData();
+        ApplicationResponseDto responseDto = ApplicationMapper.mapToApplicationResponseDto(application);
+        responseDto.setCounselInfo(counselResponseDto);
+        return responseDto;
     }
 
     @Override
