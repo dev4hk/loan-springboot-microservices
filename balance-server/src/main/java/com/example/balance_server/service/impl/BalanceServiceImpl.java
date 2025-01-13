@@ -89,7 +89,7 @@ public class BalanceServiceImpl implements IBalanceService {
             return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Balance does not exist", HttpStatus.NOT_FOUND);
         });
 
-        BigDecimal updatedBalance = balance.getBalance();
+        BigDecimal currentBalance = balance.getBalance();
 
         List<Balance> responseList = new ArrayList<>();
 
@@ -97,11 +97,16 @@ public class BalanceServiceImpl implements IBalanceService {
             BigDecimal amount = requestDto.getRepaymentAmount();
             RepaymentType type = requestDto.getType();
             if (type.equals(RepaymentType.ADD)) {
-                updatedBalance = updatedBalance.add(amount);
+                currentBalance = currentBalance.add(amount);
             } else {
-                updatedBalance = updatedBalance.subtract(amount);
+                currentBalance = currentBalance.subtract(amount);
             }
-            balance.setBalance(updatedBalance);
+
+            if (currentBalance.compareTo(BigDecimal.ZERO) < 0) {
+                throw new BaseException(ResultType.BAD_REQUEST, "Repayment cannot be larger than current balance", HttpStatus.BAD_REQUEST);
+            }
+
+            balance.setBalance(currentBalance);
             Balance updatedEntity = balanceRepository.save(balance);
             responseList.add(updatedEntity);
         }
