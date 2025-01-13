@@ -97,6 +97,16 @@ public class CounselController {
         return ok(counselResponseDto);
     }
 
+    @RateLimiter(name = "getByEmailRateLimiter")
+    @GetMapping("/email")
+    public ResponseDTO<CounselResponseDto> getByEmail(@RequestParam("email") String email) {
+        logger.info("CounselController - getByEmail started");
+        logger.debug("CounselController - email: {}", email);
+        CounselResponseDto counselResponseDto = counselService.getByEmail(email);
+        logger.info("CounselController - getByEmail finished");
+        return ok(counselResponseDto);
+    }
+
     @Operation(
             summary = "Update Counsel REST API",
             description = "REST API to update counsel"

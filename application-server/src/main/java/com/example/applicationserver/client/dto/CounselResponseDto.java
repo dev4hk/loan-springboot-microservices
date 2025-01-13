@@ -1,10 +1,8 @@
-package com.example.applicationserver.dto;
+package com.example.applicationserver.client.dto;
 
-import com.example.applicationserver.client.dto.CounselResponseDto;
 import com.example.applicationserver.constants.CommunicationStatus;
 import lombok.*;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -12,36 +10,20 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
-public class ApplicationResponseDto {
-
-    private Long applicationId;
-
+public class CounselResponseDto {
+    private Long counselId;
     private String firstname;
-
     private String lastname;
-
     private String cellPhone;
-
     private String email;
-
-    private BigDecimal hopeAmount;
-
-    private BigDecimal approvalAmount;
-
+    private String memo;
+    private String address;
+    private String addressDetail;
+    private String zipCode;
     private LocalDateTime appliedAt;
-
-    private LocalDateTime contractedAt;
-
     private CommunicationStatus communicationStatus;
-
     private LocalDateTime createdAt;
-
     private String createdBy;
-
     private LocalDateTime updatedAt;
-
     private String updatedBy;
-
-    private CounselResponseDto counselInfo;
-
 }

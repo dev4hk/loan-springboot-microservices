@@ -1,9 +1,11 @@
 package com.example.applicationserver.service.impl;
 
 import com.example.applicationserver.client.AcceptTermsClient;
+import com.example.applicationserver.client.CounselClient;
 import com.example.applicationserver.client.JudgementClient;
 import com.example.applicationserver.client.TermsClient;
 import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.client.dto.CounselResponseDto;
 import com.example.applicationserver.client.dto.JudgementResponseDto;
 import com.example.applicationserver.client.dto.TermsResponseDto;
 import com.example.applicationserver.constants.CommunicationStatus;
@@ -35,6 +37,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     private final ApplicationRepository applicationRepository;
     private final TermsClient termClient;
     private final AcceptTermsClient acceptTermsClient;
+    private final CounselClient counselClient;
     private final JudgementClient judgementClient;
     private final StreamBridge streamBridge;
 
@@ -57,7 +60,14 @@ public class ApplicationServiceImpl implements IApplicationService {
                     logger.error("ApplicationServiceImpl - Application does not exist");
                     return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
                 });
-        return ApplicationMapper.mapToApplicationResponseDto(application);
+
+        ResponseDTO<CounselResponseDto> counselResponse = counselClient.getByEmail(application.getEmail());
+
+        ApplicationResponseDto responseDto = ApplicationMapper.mapToApplicationResponseDto(application);
+        if (counselResponse != null && counselResponse.getData() != null) {
+            responseDto.setCounselInfo(counselResponse.getData());
+        }
+        return responseDto;
     }
 
     @Override
@@ -99,10 +109,6 @@ public class ApplicationServiceImpl implements IApplicationService {
 
         List<TermsResponseDto> terms = termsResponse.getData();
 
-        if (terms.isEmpty()) {
-            logger.error("ApplicationServiceImpl - Terms server error");
-            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Terms server error", HttpStatus.NOT_FOUND);
-        }
 
         List<Long> requestTermsIds = request.getTermsIds();
 
@@ -149,11 +155,6 @@ public class ApplicationServiceImpl implements IApplicationService {
                 });
 
         ResponseDTO<JudgementResponseDto> judgementResponse = judgementClient.getJudgmentOfApplication(applicationId);
-
-        if (judgementResponse.getData() == null) {
-            logger.error("ApplicationServiceImpl - Judgement does not exist");
-            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Judgement does not exist", HttpStatus.NOT_FOUND);
-        }
 
         if (application.getApprovalAmount() == null || application.getApprovalAmount().compareTo(BigDecimal.ZERO) == 0) {
             logger.error("ApplicationServiceImpl - Approval amount does not exist");

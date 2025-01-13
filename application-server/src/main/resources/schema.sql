@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS application (
     applied_at DATETIME NOT NULL,
     contracted_at DATETIME DEFAULT NULL,
     approval_amount DECIMAL(15,2) DEFAULT NULL,
-    communication_status VARCHAR(20) DEFAULT NULL,
+    communication_status VARCHAR(50) DEFAULT NULL,
     created_at date NOT NULL,
     created_by varchar(20) NOT NULL,
     updated_at date DEFAULT NULL,

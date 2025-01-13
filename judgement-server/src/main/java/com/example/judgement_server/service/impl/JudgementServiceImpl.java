@@ -123,10 +123,6 @@ public class JudgementServiceImpl implements IJudgementService {
     private void ensureApplicationExists(Long applicationId) {
         logger.info("JudgementServiceImpl - ensureApplicationExists invoked");
         ResponseDTO<ApplicationResponseDto> response = applicationClient.get(applicationId);
-        if (response.getData() == null) {
-            logger.error("JudgementServiceImpl - Application server error");
-            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application server error", HttpStatus.NOT_FOUND);
-        }
     }
 }
 

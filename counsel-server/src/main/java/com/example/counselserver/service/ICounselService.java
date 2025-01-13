@@ -14,4 +14,6 @@ public interface ICounselService {
     void delete(Long counselId);
 
     void updateCommunicationStatus(Long counselId, CommunicationStatus communicationStatus);
+
+    CounselResponseDto getByEmail(String email);
 }

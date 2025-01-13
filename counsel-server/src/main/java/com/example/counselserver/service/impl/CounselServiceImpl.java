@@ -113,4 +113,18 @@ public class CounselServiceImpl implements ICounselService {
         );
         counsel.setCommunicationStatus(communicationStatus);
     }
+
+    @Override
+    public CounselResponseDto getByEmail(String email) {
+        logger.info("CounselServiceImpl - getByEmail invoked");
+        Counsel counsel = counselRepository.findByEmail(email)
+                .orElseThrow(() ->
+                        {
+                            logger.error("CounselServiceImpl - Counsel does not exist");
+                            return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Counsel does not exist", HttpStatus.NOT_FOUND);
+                        }
+                );
+        return CounselMapper.mapToCounselResponseDto(counsel);
+
+    }
 }
