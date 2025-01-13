@@ -1,12 +1,21 @@
 package com.example.counselserver;
 
+import com.example.counselserver.dto.CounselMsgDto;
 import io.restassured.RestAssured;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
+import org.junit.jupiter.api.Order;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
 @TestMethodOrder(OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -15,10 +24,14 @@ class CounselServerApplicationTests {
     @LocalServerPort
     private int port;
 
+    @MockitoBean
+    private StreamBridge streamBridge;
+
     @BeforeEach
     public void setup() {
         RestAssured.port = port;
         RestAssured.baseURI = "http://localhost";
+        when(streamBridge.send(anyString(), any(CounselMsgDto.class))).thenReturn(true);
     }
 
     @Order(1)
@@ -42,6 +55,7 @@ class CounselServerApplicationTests {
                 .body(requestDto)
                 .post("/api")
                 .then()
+                .log().all()
                 .statusCode(200)
                 .body("data.firstname", equalTo("firstname"));
     }
@@ -52,6 +66,7 @@ class CounselServerApplicationTests {
         RestAssured.given()
                 .get("/api/1")
                 .then()
+                .log().all()
                 .statusCode(200)
                 .body("data.firstname", equalTo("firstname"));
     }
@@ -111,6 +126,7 @@ class CounselServerApplicationTests {
                 .body(requestDto)
                 .put("/api/1")
                 .then()
+                .log().all()
                 .statusCode(200);
 
         RestAssured.given()
@@ -152,6 +168,7 @@ class CounselServerApplicationTests {
         RestAssured.given()
                 .delete("/api/1")
                 .then()
+                .log().all()
                 .statusCode(200);
     }
 
@@ -187,8 +204,6 @@ class CounselServerApplicationTests {
                 .statusCode(400)
                 .body("data.firstname", equalTo("First name must contain only letters"));
     }
-
-
 
 
 }

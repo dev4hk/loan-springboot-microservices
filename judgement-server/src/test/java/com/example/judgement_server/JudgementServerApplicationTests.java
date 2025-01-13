@@ -8,20 +8,15 @@ import com.example.judgement_server.dto.JudgementRequestDto;
 import com.example.judgement_server.dto.ResponseDTO;
 import com.example.judgement_server.dto.ResultObject;
 import com.example.judgement_server.entity.Judgement;
-import com.example.judgement_server.repository.JudgementRepository;
 import io.restassured.RestAssured;
 import io.restassured.path.json.JsonPath;
-import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -29,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.when;
 
-@Slf4j
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class JudgementServerApplicationTests {
 
@@ -38,9 +33,6 @@ public class JudgementServerApplicationTests {
 
     @MockitoBean
     private ApplicationClient applicationClient;
-
-    @MockitoBean
-    private JudgementRepository judgementRepository;
 
     private JudgementRequestDto judgementRequestDto;
 
@@ -64,9 +56,6 @@ public class JudgementServerApplicationTests {
                 .approvalAmount(BigDecimal.TEN)
                 .build();
 
-        when(judgementRepository.findByApplicationId(anyLong())).thenReturn(Optional.of(judgement));
-        when(judgementRepository.findById(anyLong())).thenReturn(Optional.of(judgement));
-        when(judgementRepository.save(Mockito.any(Judgement.class))).thenReturn(judgement);
         ApplicationResponseDto applicationResponseDto = new ApplicationResponseDto();
         applicationResponseDto.setApplicationId(1L);
         ResponseDTO<ApplicationResponseDto> responseDTO = new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), applicationResponseDto);
@@ -78,6 +67,7 @@ public class JudgementServerApplicationTests {
     void tearDown() {
     }
 
+    @Order(1)
     @Test
     void should_create_judgement() {
         String responseBody = RestAssured.given()
@@ -100,194 +90,6 @@ public class JudgementServerApplicationTests {
         assertEquals("firstname", firstname);
         assertNotNull(lastname);
         assertEquals("lastname", lastname);
-    }
-
-    @Test
-    void should_get_judgement() {
-        String createResponse = RestAssured.given()
-                .contentType("application/json")
-                .body(this.judgementRequestDto)
-                .when()
-                .post("/api")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .asString();
-
-        JsonPath createJsonPath = new JsonPath(createResponse);
-        Long judgmentId = createJsonPath.getLong("data.judgementId");
-
-        String getResponse = RestAssured.given()
-                .when()
-                .get("/api/" + judgmentId)
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .asString();
-
-        JsonPath getJsonPath = new JsonPath(getResponse);
-        String firstname = getJsonPath.getString("data.firstname");
-        String lastname = getJsonPath.getString("data.lastname");
-        BigDecimal approvalAmount = new BigDecimal(getJsonPath.getFloat("data.approvalAmount"));
-
-        assertNotNull(firstname);
-        assertEquals("firstname", firstname);
-        assertNotNull(lastname);
-        assertEquals("lastname", lastname);
-        assertNotNull(approvalAmount);
-        assertEquals(BigDecimal.TEN, approvalAmount);
-    }
-
-    @Test
-    void should_get_judgment_of_application() {
-        String createResponse = RestAssured.given()
-                .contentType("application/json")
-                .body(this.judgementRequestDto)
-                .when()
-                .post("/api")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .asString();
-
-        String getResponse = RestAssured.given()
-                .when()
-                .get("/api/applications/1")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .asString();
-
-        JsonPath getJsonPath = new JsonPath(getResponse);
-        String firstname = getJsonPath.getString("data.firstname");
-        String lastname = getJsonPath.getString("data.lastname");
-        BigDecimal approvalAmount = new BigDecimal(getJsonPath.getFloat("data.approvalAmount"));
-
-        assertNotNull(firstname);
-        assertEquals("firstname", firstname);
-        assertNotNull(lastname);
-        assertEquals("lastname", lastname);
-        assertNotNull(approvalAmount);
-        assertEquals(BigDecimal.TEN, approvalAmount);
-    }
-
-    @Test
-    void should_update_judgement() {
-        String createResponse = RestAssured.given()
-                .contentType("application/json")
-                .body(this.judgementRequestDto)
-                .when()
-                .post("/api")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .asString();
-
-        JsonPath createJsonPath = new JsonPath(createResponse);
-        Long judgmentId = createJsonPath.getLong("data.judgementId");
-
-        JudgementRequestDto updatedRequestDto = JudgementRequestDto.builder()
-                .applicationId(1L)
-                .firstname("UpdatedFirstname")
-                .lastname("UpdatedLastname")
-                .approvalAmount(BigDecimal.valueOf(20))
-                .build();
-
-        String updateResponse = RestAssured.given()
-                .contentType("application/json")
-                .body(updatedRequestDto)
-                .when()
-                .put("/api/" + judgmentId)
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .asString();
-
-        JsonPath updateJsonPath = new JsonPath(updateResponse);
-        String firstname = updateJsonPath.getString("data.firstname");
-        String lastname = updateJsonPath.getString("data.lastname");
-        BigDecimal approvalAmount = new BigDecimal(updateJsonPath.getFloat("data.approvalAmount"));
-
-        assertNotNull(firstname);
-        assertEquals("UpdatedFirstname", firstname);
-        assertNotNull(lastname);
-        assertEquals("UpdatedLastname", lastname);
-        assertNotNull(approvalAmount);
-        assertEquals(BigDecimal.valueOf(20), approvalAmount);
-    }
-
-
-    @Test
-    void should_delete_judgement() {
-        String responseBody = RestAssured.given()
-                .contentType("application/json")
-                .body(this.judgementRequestDto)
-                .when()
-                .post("/api")
-                .then()
-                .log().all()
-                .statusCode(200)
-                .extract()
-                .body()
-                .asString();
-
-        JsonPath jsonPath = new JsonPath(responseBody);
-        Long judgementId = jsonPath.getLong("data.judgementId");
-
-        RestAssured.given()
-                .when()
-                .delete("/api/" + judgementId)
-                .then()
-                .log().all()
-                .statusCode(200);
-
-    }
-
-    @Test
-    void should_grant_judgement() {
-        String createResponse = RestAssured.given()
-                .contentType("application/json")
-                .body(this.judgementRequestDto)
-                .when()
-                .post("/api")
-                .then()
-                .statusCode(200)
-                .extract()
-                .body()
-                .asString();
-
-        JsonPath createJsonPath = new JsonPath(createResponse);
-        Long judgmentId = createJsonPath.getLong("data.judgementId");
-
-        GrantAmountDto grantAmountDto = GrantAmountDto.builder()
-                .applicationId(1L)
-                .approvalAmount(BigDecimal.TEN)
-                .build();
-
-        String grantResponse = RestAssured.given()
-                .when()
-                .patch("/api/" + judgmentId + "/grants")
-                .then()
-                .log().all()
-                .statusCode(200)
-                .extract()
-                .body()
-                .asString();
-
-        JsonPath grantJsonPath = new JsonPath(grantResponse);
-        Long applicationId = grantJsonPath.getLong("data.applicationId");
-        BigDecimal approvalAmount = new BigDecimal(grantJsonPath.getFloat("data.approvalAmount"));
-
-        assertNotNull(applicationId);
-        assertEquals(1L, applicationId);
-        assertNotNull(approvalAmount);
-        assertEquals(BigDecimal.TEN, approvalAmount);
     }
 
     @Test
@@ -363,6 +165,142 @@ public class JudgementServerApplicationTests {
                 .then()
                 .statusCode(400)
                 .body("data.approvalAmount", equalTo("Hope amount must be a number with up to 2 decimal places"));
+    }
+
+    @Order(2)
+    @Test
+    void should_get_judgement() {
+        String getResponse = RestAssured.given()
+                .when()
+                .get("/api/" + 1L)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        JsonPath getJsonPath = new JsonPath(getResponse);
+        String firstname = getJsonPath.getString("data.firstname");
+        String lastname = getJsonPath.getString("data.lastname");
+        BigDecimal approvalAmount = new BigDecimal(getJsonPath.getFloat("data.approvalAmount"));
+
+        assertNotNull(firstname);
+        assertEquals("firstname", firstname);
+        assertNotNull(lastname);
+        assertEquals("lastname", lastname);
+        assertNotNull(approvalAmount);
+        assertEquals(BigDecimal.TEN, approvalAmount);
+    }
+
+    @Order(3)
+    @Test
+    void should_get_judgment_of_application() {
+        String getResponse = RestAssured.given()
+                .when()
+                .get("/api/applications/1")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        JsonPath getJsonPath = new JsonPath(getResponse);
+        String firstname = getJsonPath.getString("data.firstname");
+        String lastname = getJsonPath.getString("data.lastname");
+        BigDecimal approvalAmount = new BigDecimal(getJsonPath.getFloat("data.approvalAmount"));
+
+        assertNotNull(firstname);
+        assertEquals("firstname", firstname);
+        assertNotNull(lastname);
+        assertEquals("lastname", lastname);
+        assertNotNull(approvalAmount);
+        assertEquals(BigDecimal.TEN, approvalAmount);
+    }
+
+    @Order(4)
+    @Test
+    void should_update_judgement() {
+        JudgementRequestDto updatedRequestDto = JudgementRequestDto.builder()
+                .applicationId(1L)
+                .firstname("UpdatedFirstname")
+                .lastname("UpdatedLastname")
+                .approvalAmount(BigDecimal.valueOf(20))
+                .build();
+
+        String updateResponse = RestAssured.given()
+                .contentType("application/json")
+                .body(updatedRequestDto)
+                .when()
+                .put("/api/" + 1L)
+                .then()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        JsonPath updateJsonPath = new JsonPath(updateResponse);
+        String firstname = updateJsonPath.getString("data.firstname");
+        String lastname = updateJsonPath.getString("data.lastname");
+        BigDecimal approvalAmount = new BigDecimal(updateJsonPath.getFloat("data.approvalAmount"));
+
+        assertNotNull(firstname);
+        assertEquals("UpdatedFirstname", firstname);
+        assertNotNull(lastname);
+        assertEquals("UpdatedLastname", lastname);
+        assertNotNull(approvalAmount);
+        assertEquals(BigDecimal.valueOf(20), approvalAmount);
+    }
+
+    @Order(5)
+    @Test
+    void should_grant_judgement() {
+        GrantAmountDto grantAmountDto = GrantAmountDto.builder()
+                .applicationId(1L)
+                .approvalAmount(BigDecimal.TEN)
+                .build();
+
+        String grantResponse = RestAssured.given()
+                .when()
+                .patch("/api/" + 1L + "/grants")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .extract()
+                .body()
+                .asString();
+
+        JsonPath grantJsonPath = new JsonPath(grantResponse);
+        Long applicationId = grantJsonPath.getLong("data.applicationId");
+        BigDecimal approvalAmount = new BigDecimal(grantJsonPath.getFloat("data.approvalAmount"));
+
+        assertNotNull(applicationId);
+        assertEquals(1L, applicationId);
+        assertNotNull(approvalAmount);
+        assertEquals(BigDecimal.valueOf(20), approvalAmount);
+    }
+
+    @Order(6)
+    @Test
+    void should_delete_judgement() {
+        RestAssured.given()
+                .when()
+                .delete("/api/" + 1L)
+                .then()
+                .log().all()
+                .statusCode(200);
+
+    }
+
+    @Test
+    void should_fail_when_delete_non_existing_judgement() {
+        RestAssured.given()
+                .when()
+                .delete("/api/" + 999L)
+                .then()
+                .log().all()
+                .statusCode(404);
+
     }
 
 }

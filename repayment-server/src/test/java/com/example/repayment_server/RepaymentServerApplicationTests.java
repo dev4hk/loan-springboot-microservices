@@ -8,6 +8,7 @@ import com.example.repayment_server.client.dto.BalanceRepaymentRequestDto;
 import com.example.repayment_server.client.dto.BalanceResponseDto;
 import com.example.repayment_server.client.dto.EntryResponseDto;
 import com.example.repayment_server.constants.ResultType;
+import com.example.repayment_server.dto.RepaymentMsgDto;
 import com.example.repayment_server.dto.RepaymentRequestDto;
 import com.example.repayment_server.dto.ResponseDTO;
 import com.example.repayment_server.dto.ResultObject;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
@@ -48,7 +50,7 @@ class RepaymentServerApplicationTests {
     private BalanceClient balanceClient;
 
     @MockitoBean
-    private RepaymentRepository repaymentRepository;
+    private StreamBridge streamBridge;
 
     private ApplicationResponseDto applicationResponseContractedDto;
     private ApplicationResponseDto applicationResponseNonContractedDto;
@@ -88,9 +90,12 @@ class RepaymentServerApplicationTests {
                 .repaymentAmount(BigDecimal.valueOf(1000))
                 .build();
 
-        when(repaymentRepository.save(any(Repayment.class))).thenReturn(repayment);
-        when(repaymentRepository.findAllByApplicationId(anyLong())).thenReturn(List.of(repayment));
-        when(repaymentRepository.findById(anyLong())).thenReturn(Optional.of(repayment));
+        when(applicationclient.get(anyLong())).thenReturn(
+                new ResponseDTO<>(
+                        new ResultObject(ResultType.SUCCESS, "success"),
+                        applicationResponseContractedDto)
+        );
+
         when(balanceClient.repaymentUpdate(anyLong(), anyList())).thenReturn(
                 new ResponseDTO<>(
                         new ResultObject(ResultType.SUCCESS, "success"),
@@ -100,14 +105,15 @@ class RepaymentServerApplicationTests {
         when(entryClient.getEntry(1L)).thenReturn(new ResponseDTO<>(
                 new ResultObject(ResultType.SUCCESS, "success"),
                 new EntryResponseDto(
-                1L,
-                1L,
-                BigDecimal.valueOf(1000),
-                LocalDateTime.now(),
-                "ENTRY_MS",
-                LocalDateTime.now(),
-                "ENTRY_MS"
-        )));
+                        1L,
+                        1L,
+                        BigDecimal.valueOf(1000),
+                        LocalDateTime.now(),
+                        "ENTRY_MS",
+                        LocalDateTime.now(),
+                        "ENTRY_MS"
+                )));
+        when(streamBridge.send(anyString(), any(RepaymentMsgDto.class))).thenReturn(true);
     }
 
     @Order(1)
@@ -222,8 +228,6 @@ class RepaymentServerApplicationTests {
     @Test
     void should_fail_to_delete_nonexistent_repayment() {
         Long repaymentId = 999L;
-
-        when(repaymentRepository.findById(repaymentId)).thenReturn(Optional.empty());
 
         RestAssured.given()
                 .contentType("application/json")

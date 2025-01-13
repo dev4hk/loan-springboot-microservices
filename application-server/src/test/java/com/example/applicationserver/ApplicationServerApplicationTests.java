@@ -1,33 +1,27 @@
 package com.example.applicationserver;
 
 import com.example.applicationserver.client.AcceptTermsClient;
+import com.example.applicationserver.client.CounselClient;
 import com.example.applicationserver.client.JudgementClient;
 import com.example.applicationserver.client.TermsClient;
-import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
-import com.example.applicationserver.client.dto.AcceptTermsResponseDto;
-import com.example.applicationserver.client.dto.JudgementResponseDto;
-import com.example.applicationserver.client.dto.TermsResponseDto;
+import com.example.applicationserver.client.dto.*;
 import com.example.applicationserver.constants.ResultType;
+import com.example.applicationserver.dto.ApplicationMsgDto;
 import com.example.applicationserver.dto.GrantAmountDto;
 import com.example.applicationserver.dto.ResponseDTO;
 import com.example.applicationserver.dto.ResultObject;
-import com.example.applicationserver.entity.Application;
-import com.example.applicationserver.repository.ApplicationRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.*;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.core.io.ByteArrayResource;
-import org.springframework.core.io.Resource;
-import org.springframework.http.ResponseEntity;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.*;
@@ -41,9 +35,6 @@ class ApplicationServerApplicationTests {
     private int port;
 
     @MockitoBean
-    private ApplicationRepository applicationRepository;
-
-    @MockitoBean
     private TermsClient termsClient;
 
     @MockitoBean
@@ -52,11 +43,17 @@ class ApplicationServerApplicationTests {
     @MockitoBean
     private JudgementClient judgementClient;
 
-    private Application application;
+    @MockitoBean
+    private CounselClient counselClient;
+
+    @MockitoBean
+    private StreamBridge streamBridge;
 
     private TermsResponseDto termsResponseDto;
 
     private AcceptTermsResponseDto acceptTermsResponseDto;
+
+    private CounselResponseDto counselResponseDto;
 
     private JudgementResponseDto judgementResponseDto;
 
@@ -64,13 +61,6 @@ class ApplicationServerApplicationTests {
     public void setup() {
         RestAssured.port = port;
         RestAssured.baseURI = "http://localhost";
-
-        application = Application.builder()
-                .applicationId(1L)
-                .firstname("firstname")
-                .lastname("lastname")
-                .hopeAmount(BigDecimal.valueOf(5000))
-                .build();
 
         termsResponseDto = TermsResponseDto.builder()
                 .name("term1")
@@ -90,17 +80,22 @@ class ApplicationServerApplicationTests {
                 .approvalAmount(BigDecimal.valueOf(5000))
                 .build();
 
+        counselResponseDto = CounselResponseDto.builder()
+                .firstname("firstname")
+                .lastname("lastname")
+                .cellPhone("0123456789")
+                .email("email@email.com")
+                .address("address")
+                .appliedAt(LocalDateTime.now())
+                .counselId(1L)
+                .memo("memo")
+                .build();
 
-        when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
-        when(applicationRepository.save(any(Application.class))).thenReturn(application);
-        when(applicationRepository.existsById(anyLong())).thenReturn(Boolean.TRUE);
         when(termsClient.getAll()).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), List.of(termsResponseDto)));
         when(acceptTermsClient.create(any(AcceptTermsRequestDto.class))).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), List.of(acceptTermsResponseDto)));
-
-        byte[] fileContent = "This is a test file" .getBytes();
-        Resource resource = new ByteArrayResource(fileContent);
-
+        when(counselClient.getByEmail(anyString())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), counselResponseDto));
         when(judgementClient.getJudgmentOfApplication(anyLong())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), judgementResponseDto));
+        when(streamBridge.send(anyString(), any(ApplicationMsgDto.class))).thenReturn(true);
     }
 
     @Order(1)
@@ -139,7 +134,6 @@ class ApplicationServerApplicationTests {
     @Order(3)
     @Test
     void should_throw_exception_when_request_non_exist_application_id() {
-        when(applicationRepository.findById(anyLong())).thenReturn(Optional.empty());
         RestAssured.given()
                 .get("/api/2")
                 .then()
@@ -210,7 +204,6 @@ class ApplicationServerApplicationTests {
                         "hopeAmount": 1000.00
                 }
                 """;
-        when(applicationRepository.findById(anyLong())).thenReturn(Optional.empty());
         RestAssured.given()
                 .contentType("application/json")
                 .body(requestDto)
@@ -270,14 +263,6 @@ class ApplicationServerApplicationTests {
     @Test
     void should_contract_application() {
         Long applicationId = 1L;
-        application = Application.builder()
-                .applicationId(1L)
-                .firstname("firstname")
-                .lastname("lastname")
-                .hopeAmount(BigDecimal.valueOf(5000))
-                .approvalAmount(BigDecimal.valueOf(5000))
-                .build();
-        when(applicationRepository.findById(anyLong())).thenReturn(Optional.of(application));
         RestAssured.given()
                 .contentType("application/json")
                 .put("/api/" + applicationId + "/contract")
@@ -299,7 +284,6 @@ class ApplicationServerApplicationTests {
     @Order(11)
     @Test
     void should_throw_exception_when_request_delete_non_exist_application() {
-        when(applicationRepository.findById(anyLong())).thenReturn(Optional.empty());
         RestAssured.given()
                 .delete("/api/2")
                 .then()

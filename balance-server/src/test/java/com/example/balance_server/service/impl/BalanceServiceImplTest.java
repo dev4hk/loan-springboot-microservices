@@ -115,6 +115,7 @@ class BalanceServiceImplTest {
     void should_repayment_update_balance() {
         Long applicationId = 1L;
         when(balanceRepository.findByApplicationId(applicationId)).thenReturn(Optional.of(this.balance));
+        when(balanceRepository.save(any(Balance.class))).thenReturn(this.balance);
 
         BalanceRepaymentRequestDto repaymentRequest = BalanceRepaymentRequestDto.builder()
                 .repaymentAmount(BigDecimal.valueOf(100))

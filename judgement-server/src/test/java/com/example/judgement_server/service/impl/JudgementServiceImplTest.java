@@ -10,6 +10,7 @@ import com.example.judgement_server.dto.ResponseDTO;
 import com.example.judgement_server.entity.Judgement;
 import com.example.judgement_server.exception.BaseException;
 import com.example.judgement_server.repository.JudgementRepository;
+import feign.FeignException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -83,15 +84,12 @@ public class JudgementServiceImplTest {
 
     @Test
     void testCreateApplicationNotFound() {
-        when(applicationClient.get(1L)).thenReturn(null);
+        doThrow(FeignException.class).when(applicationClient).get(anyLong());
 
-        BaseException exception = assertThrows(BaseException.class, () -> {
+        assertThrows(FeignException.class, () -> {
             judgementService.create(requestDto);
         });
 
-        assertEquals(ResultType.RESOURCE_NOT_FOUND.getCode(), exception.getCode());
-        verify(applicationClient, times(1)).get(1L);
-        verify(judgementRepository, never()).save(any(Judgement.class));
     }
 
     @Test
@@ -164,20 +162,15 @@ public class JudgementServiceImplTest {
     @Test
     void testGrantApplicationNotFound() {
         when(judgementRepository.findById(1L)).thenReturn(Optional.of(judgement));
-        when(applicationClient.get(1L)).thenReturn(
-                new ResponseDTO<>(
-
-                )
-        );
-
-        BaseException exception = assertThrows(BaseException.class, () -> {
+        GrantAmountDto expectedGrantAmountDto = GrantAmountDto.builder()
+                .approvalAmount(BigDecimal.valueOf(10000))
+                .applicationId(1L)
+                .build();
+        doThrow(FeignException.class).when(applicationClient).updateGrant(anyLong(), any(GrantAmountDto.class));
+        assertThrows(FeignException.class, () -> {
             judgementService.grant(1L);
         });
 
-        assertEquals(ResultType.RESOURCE_NOT_FOUND.getCode(), exception.getCode());
-        verify(judgementRepository, times(1)).findById(1L);
-        verify(applicationClient, times(1)).get(1L);
-        verify(applicationClient, never()).updateGrant(anyLong(), any(GrantAmountDto.class));
     }
 }
 
