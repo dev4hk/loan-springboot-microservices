@@ -54,6 +54,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         );
     }
 
+    @ExceptionHandler(CustomFeignException.class)
+    public ResponseEntity<?> handleCustomFeignException(CustomFeignException exception, WebRequest request) {
+        logger.info("GlobalExceptionHandler - handleCustomFeignException invoked");
+        return new ResponseEntity<>(exception.getErrorResponse(), exception.getHttpStatus());
+    }
+
     @ExceptionHandler(BaseException.class)
     public ResponseEntity<?> handleBaseException(BaseException exception, WebRequest request) {
         logger.info("GlobalExceptionHandler - handleBaseException invoked");

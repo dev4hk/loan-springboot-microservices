@@ -60,10 +60,6 @@ public class EntryServiceImpl implements IEntryService {
     private ApplicationResponseDto checkContractAndGetApplication(Long applicationId) {
         logger.info("EntryServiceImpl - isContractedApplication invoked");
         ResponseDTO<ApplicationResponseDto> responseDto = applicationClient.get(applicationId);
-        if (responseDto.getData() == null) {
-            logger.error("EntryServiceImpl - Application does not exist");
-            throw new BaseException(ResultType.BAD_REQUEST, "Application does not exist", HttpStatus.BAD_REQUEST);
-        }
         if(responseDto.getData().getContractedAt() == null) {
             logger.error("EntryServiceImpl - Application is not contracted");
             throw new BaseException(ResultType.BAD_REQUEST, "Application is not contracted", HttpStatus.BAD_REQUEST);
@@ -73,10 +69,6 @@ public class EntryServiceImpl implements IEntryService {
 
     private ApplicationResponseDto getApplication(Long applicationId) {
         ResponseDTO<ApplicationResponseDto> responseDto = applicationClient.get(applicationId);
-        if (responseDto.getData() == null) {
-            logger.error("EntryServiceImpl - Application does not exist");
-            throw new BaseException(ResultType.BAD_REQUEST, "Application does not exist", HttpStatus.BAD_REQUEST);
-        }
         return responseDto.getData();
     }
 

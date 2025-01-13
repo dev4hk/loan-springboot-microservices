@@ -9,7 +9,6 @@ import com.example.repayment_server.client.dto.BalanceResponseDto;
 import com.example.repayment_server.client.dto.EntryResponseDto;
 import com.example.repayment_server.constants.CommunicationStatus;
 import com.example.repayment_server.constants.ResultType;
-import com.example.repayment_server.controller.RepaymentController;
 import com.example.repayment_server.dto.*;
 import com.example.repayment_server.entity.Repayment;
 import com.example.repayment_server.exception.BaseException;
@@ -72,17 +71,11 @@ public class RepaymentServiceImpl implements IRepaymentService {
     private ApplicationResponseDto checkRepayableAndGetApplication(Long applicationId) {
         logger.info("RepaymentServiceImpl - isRepayableApplication invoked");
         ResponseDTO<ApplicationResponseDto> applicationResponseDto = applicationClient.get(applicationId);
-        if (applicationResponseDto.getData() == null
-                || applicationResponseDto.getData().getContractedAt() == null
-        ) {
+        if (applicationResponseDto.getData().getContractedAt() == null) {
             logger.error("RepaymentServiceImpl - Application not contracted");
             throw new BaseException(ResultType.BAD_REQUEST, "Application not contracted", HttpStatus.BAD_REQUEST);
         }
         ResponseDTO<EntryResponseDto> entryResponseDto = entryClient.getEntry(applicationId);
-        if (entryResponseDto.getData() == null) {
-            logger.error("RepaymentServiceImpl - Application not repayable");
-            throw new BaseException(ResultType.BAD_REQUEST, "Application not repayable", HttpStatus.BAD_REQUEST);
-        }
         return applicationResponseDto.getData();
     }
 
