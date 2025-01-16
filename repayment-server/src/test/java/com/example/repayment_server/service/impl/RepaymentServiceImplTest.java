@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cloud.stream.function.StreamBridge;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -44,6 +45,9 @@ class RepaymentServiceImplTest {
 
     @Mock
     EntryClient entryClient;
+
+    @Mock
+    StreamBridge streamBridge;
 
     ApplicationResponseDto applicationResponseDto;
 
@@ -127,6 +131,8 @@ class RepaymentServiceImplTest {
     @Test
     void should_update_repayment() {
         Long repaymentId = 1L;
+        Long applicationId = 1L;
+        when(applicationClient.get(applicationId)).thenReturn(new ResponseDTO<>(applicationResponseDto));
         when(repaymentRepository.findById(repaymentId)).thenReturn(Optional.of(repayment));
         when(balanceClient.repaymentUpdate(eq(1L), anyList())).thenReturn(new ResponseDTO<>(List.of(balanceResponseDto)));
         RepaymentUpdateResponseDto response = repaymentService.update(repaymentId, repaymentRequestDto);
@@ -140,6 +146,8 @@ class RepaymentServiceImplTest {
     @Test
     void should_delete_repayment() {
         Long repaymentId = 1L;
+        Long applicationId = 1L;
+        when(applicationClient.get(applicationId)).thenReturn(new ResponseDTO<>(applicationResponseDto));
         when(repaymentRepository.findById(repaymentId)).thenReturn(Optional.of(repayment));
         when(balanceClient.repaymentUpdate(eq(repaymentId), anyList())).thenReturn(new ResponseDTO<>(List.of(balanceResponseDto)));
         repaymentService.delete(repaymentId);

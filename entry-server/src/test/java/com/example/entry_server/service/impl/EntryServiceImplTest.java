@@ -18,6 +18,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
@@ -42,6 +43,9 @@ class EntryServiceImplTest {
 
     @Mock
     BalanceClient balanceClient;
+
+    @Mock
+    StreamBridge streamBridge;
 
     EntryRequestDto entryRequestDto;
     Entry entry;
@@ -149,6 +153,14 @@ class EntryServiceImplTest {
                         .balance(BigDecimal.valueOf(1000))
                         .build())
         );
+
+        when(applicationClient.get(anyLong())).thenReturn(new ResponseDTO<>(
+                ResultObject.builder()
+                        .code(ResultType.SUCCESS.getCode())
+                        .desc(ResultType.SUCCESS.getDesc())
+                        .build(),
+                applicationResponseDto
+        ));
 
         EntryUpdateResponseDto responseDto = entryService.update(entryId, entryRequestDto);
 

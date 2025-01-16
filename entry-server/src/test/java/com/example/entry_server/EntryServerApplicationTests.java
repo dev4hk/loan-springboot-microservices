@@ -11,7 +11,6 @@ import com.example.entry_server.dto.EntryRequestDto;
 import com.example.entry_server.dto.ResponseDTO;
 import com.example.entry_server.dto.ResultObject;
 import com.example.entry_server.entity.Entry;
-import com.example.entry_server.repository.EntryRepository;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.MethodOrderer.OrderAnnotation;
@@ -20,11 +19,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.mockito.ArgumentMatchers.any;
@@ -39,13 +38,13 @@ class EntryServerApplicationTests {
     private Integer port;
 
     @MockitoBean
-    private EntryRepository entryRepository;
-
-    @MockitoBean
     private ApplicationClient applicationClient;
 
     @MockitoBean
     private BalanceClient balanceClient;
+
+    @MockitoBean
+    private StreamBridge streamBridge;
 
     private ApplicationResponseDto applicationResponseContractedDto;
     private BalanceResponseDto balanceResponseDto;
@@ -75,9 +74,6 @@ class EntryServerApplicationTests {
                 .entryAmount(BigDecimal.valueOf(1000))
                 .build();
 
-        when(entryRepository.save(any(Entry.class))).thenReturn(entry);
-        when(entryRepository.findByApplicationId(anyLong())).thenReturn(Optional.of(entry));
-        when(entryRepository.findById(anyLong())).thenReturn(Optional.of(entry));
         when(applicationClient.get(anyLong())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), applicationResponseContractedDto));
         when(balanceClient.create(anyLong(), any(BalanceRequestDto.class))).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), balanceResponseDto));
         when(balanceClient.update(anyLong(), any(BalanceUpdateRequestDto.class))).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), balanceResponseDto));
@@ -193,14 +189,11 @@ class EntryServerApplicationTests {
         Long entryId = 999L;
         Long applicationId = 1L;
 
-        when(entryRepository.findById(entryId)).thenReturn(Optional.empty());
-
         RestAssured.given()
                 .contentType("application/json")
                 .delete("/api/" + entryId)
                 .then()
                 .statusCode(404);
     }
-
 
 }
