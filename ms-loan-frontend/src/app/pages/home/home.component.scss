@@ -1,0 +1,53 @@
+@keyframes slideDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.jumbotron {
+  border-left: 2px solid #29d0b2;
+  animation: slideDown 1s ease-out;
+}
+
+.header-color {
+  color: #29d0b2;
+}
+
+.slide-right {
+  animation: slideRight 1s ease-out;
+}
+
+.slide-left {
+  animation: slideLeft 1s ease-out;
+}
+
+.card-header {
+  border-color: #29d0b2;
+}
