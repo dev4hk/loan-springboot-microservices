@@ -55,11 +55,4 @@ public class ApplicationRequestDto {
     @DecimalMin(value = "0.0", inclusive = false, message = "Hope amount must be greater than zero")
     private BigDecimal hopeAmount;
 
-
-    @Schema(
-            description = "Approval amount", example = "100.00"
-    )
-    @Digits(integer = 15, fraction = 2, message = "Approval amount must be a number with up to 2 decimal places")
-    private BigDecimal approvalAmount;
-
 }
