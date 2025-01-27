@@ -44,8 +44,8 @@ class CounselServiceImplTest {
                 .email("mail@abc.de")
                 .memo("I want to get a loan")
                 .zipCode("12345")
-                .address("Somewhere in New York, New York")
-                .addressDetail("Random Apartment No. 101, 1st floor No. 101")
+                .address1("Somewhere in New York, New York")
+                .address2("Random Apartment No. 101, 1st floor No. 101")
                 .build();
 
         CounselRequestDto request = CounselRequestDto.builder()
@@ -55,8 +55,8 @@ class CounselServiceImplTest {
                 .email("mail@abc.de")
                 .memo("I want to get a loan")
                 .zipCode("12345")
-                .address("Somewhere in New York, New York")
-                .addressDetail("Random Apartment No. 101, 1st floor No. 101")
+                .address1("Somewhere in New York, New York")
+                .address2("Random Apartment No. 101, 1st floor No. 101")
                 .build();
 
         when(counselRepository.save(ArgumentMatchers.any(Counsel.class))).thenReturn(entity);

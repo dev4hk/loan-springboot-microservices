@@ -68,8 +68,10 @@ public class CounselServiceImpl implements ICounselService {
         counsel.setCellPhone(request.getCellPhone());
         counsel.setEmail(request.getEmail());
         counsel.setMemo(request.getMemo());
-        counsel.setAddress(request.getAddress());
-        counsel.setAddressDetail(request.getAddressDetail());
+        counsel.setAddress1(request.getAddress1());
+        counsel.setAddress2(request.getAddress2());
+        counsel.setCity(request.getCity());
+        counsel.setState(request.getState());
         counsel.setZipCode(request.getZipCode());
         sendCommunication(counsel, CommunicationStatus.COUNSEL_UPDATED);
         return CounselMapper.mapToCounselResponseDto(counsel);
