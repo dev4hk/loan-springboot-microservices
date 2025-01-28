@@ -11,7 +11,7 @@
   <div class="row my-5">
     <div class="col-md-7 slide-right">
       <h2>Loan Application Form</h2>
-      <form>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="form-group my-3">
           <label for="firstname">First Name</label>
           <input
@@ -19,10 +19,21 @@
             class="form-control my-1"
             id="firstname"
             placeholder="Enter your first name"
-            pattern="^[a-zA-Z]+$"
-            required
+            formControlName="firstname"
           />
+          <div
+            *ngIf="
+              form.controls['firstname'].invalid &&
+              (form.controls['firstname'].dirty ||
+                form.controls['firstname'].touched)
+            "
+          >
+            <small class="text-danger">{{
+              getErrorMessage("firstname")
+            }}</small>
+          </div>
         </div>
+
         <div class="form-group my-3">
           <label for="lastname">Last Name</label>
           <input
@@ -30,10 +41,19 @@
             class="form-control my-1"
             id="lastname"
             placeholder="Enter your last name"
-            pattern="^[a-zA-Z]+$"
-            required
+            formControlName="lastname"
           />
+          <div
+            *ngIf="
+              form.controls['lastname'].invalid &&
+              (form.controls['lastname'].dirty ||
+                form.controls['lastname'].touched)
+            "
+          >
+            <small class="text-danger">{{ getErrorMessage("lastname") }}</small>
+          </div>
         </div>
+
         <div class="form-group my-3">
           <label for="cellPhone">Cell Phone</label>
           <input
@@ -41,10 +61,21 @@
             class="form-control my-1"
             id="cellPhone"
             placeholder="Enter your cell phone"
-            pattern="^[0-9]{10}$"
-            required
+            formControlName="cellPhone"
           />
+          <div
+            *ngIf="
+              form.controls['cellPhone'].invalid &&
+              (form.controls['cellPhone'].dirty ||
+                form.controls['cellPhone'].touched)
+            "
+          >
+            <small class="text-danger">{{
+              getErrorMessage("cellPhone")
+            }}</small>
+          </div>
         </div>
+
         <div class="form-group my-3">
           <label for="email">Email</label>
           <input
@@ -52,10 +83,18 @@
             class="form-control my-1"
             id="email"
             placeholder="Enter your email"
-            pattern="^[a-zA-Z0-9._]+@[a-zA-Z]+\\.[a-zA-Z]{2,}$"
-            required
+            formControlName="email"
           />
+          <div
+            *ngIf="
+              form.controls['email'].invalid &&
+              (form.controls['email'].dirty || form.controls['email'].touched)
+            "
+          >
+            <small class="text-danger">{{ getErrorMessage("email") }}</small>
+          </div>
         </div>
+
         <div class="form-group my-3">
           <label for="hopeAmount">Hope Amount</label>
           <input
@@ -63,10 +102,21 @@
             class="form-control my-1"
             id="hopeAmount"
             placeholder="Enter the amount you hope to borrow"
-            pattern="^\d+(\.\d{1,2})?$"
-            required
+            formControlName="hopeAmount"
           />
+          <div
+            *ngIf="
+              form.controls['hopeAmount'].invalid &&
+              (form.controls['hopeAmount'].dirty ||
+                form.controls['hopeAmount'].touched)
+            "
+          >
+            <small class="text-danger">{{
+              getErrorMessage("hopeAmount")
+            }}</small>
+          </div>
         </div>
+
         <button type="submit" class="btn btn-custom my-3">
           Submit Application
         </button>
