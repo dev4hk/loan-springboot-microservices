@@ -13,69 +13,93 @@
     <div class="col-md-7 slide-right">
       <h2>Contact Our Loan Counselors</h2>
       <form>
-        <div class="form-group my-3">
-          <label for="firstname">First Name</label>
-          <input
-            type="text"
-            class="form-control my-1"
-            id="firstname"
-            placeholder="Enter your first name"
-            pattern="^[a-zA-Z]+$"
-            required
-          />
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="firstname">First Name</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="firstname"
+                placeholder="Enter your first name"
+                pattern="^[a-zA-Z]+$"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="lastname">Last Name</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="lastname"
+                placeholder="Enter your last name"
+                pattern="^[a-zA-Z]+$"
+                required
+              />
+            </div>
+          </div>
         </div>
-        <div class="form-group my-3">
-          <label for="lastname">Last Name</label>
-          <input
-            type="text"
-            class="form-control my-1"
-            id="lastname"
-            placeholder="Enter your last name"
-            pattern="^[a-zA-Z]+$"
-            required
-          />
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="cellPhone">Cell Phone</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="cellPhone"
+                placeholder="Enter your cell phone"
+                pattern="^[0-9]{10}$"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                class="form-control my-1"
+                id="email"
+                placeholder="Enter your email"
+                pattern="^[a-zA-Z0-9._]+@[a-zA-Z]+\\.[a-zA-Z]{2,}$"
+                required
+              />
+            </div>
+          </div>
         </div>
-        <div class="form-group my-3">
-          <label for="cellPhone">Cell Phone</label>
-          <input
-            type="text"
-            class="form-control my-1"
-            id="cellPhone"
-            placeholder="Enter your cell phone"
-            pattern="^[0-9]{10}$"
-            required
-          />
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="address1">Address 1</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="address1"
+                placeholder="Enter your address"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="address2">Address 2</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="address2"
+                placeholder="Enter additional address info"
+              />
+            </div>
+          </div>
         </div>
-        <div class="form-group my-3">
-          <label for="email">Email</label>
-          <input
-            type="email"
-            class="form-control my-1"
-            id="email"
-            placeholder="Enter your email"
-            pattern="^[a-zA-Z0-9._]+@[a-zA-Z]+\\.[a-zA-Z]{2,}$"
-            required
-          />
-        </div>
-        <div class="form-group my-3">
-          <label for="address1">Address 1</label>
-          <input
-            type="text"
-            class="form-control my-1"
-            id="address1"
-            placeholder="Enter your address"
-            required
-          />
-        </div>
-        <div class="form-group my-3">
-          <label for="address2">Address 2</label>
-          <input
-            type="text"
-            class="form-control my-1"
-            id="address2"
-            placeholder="Enter additional address info"
-          />
-        </div>
+
         <div class="row">
           <div class="col-md-4 form-group my-1">
             <label for="city">City</label>
@@ -109,6 +133,7 @@
             />
           </div>
         </div>
+
         <div class="form-group my-3">
           <label for="memo">Memo</label>
           <textarea
