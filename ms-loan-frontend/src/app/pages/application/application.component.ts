@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -8,10 +8,19 @@ import {
 } from '@angular/forms';
 import { ApplicationService } from '../../services/application.service';
 import { CommonModule } from '@angular/common';
+import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+
+const snackbarConfig: MatSnackBarConfig = {
+  duration: 3000,
+  horizontalPosition: 'center',
+  verticalPosition: 'top',
+};
 
 @Component({
   selector: 'app-application',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, MatSnackBarModule],
   templateUrl: './application.component.html',
   styleUrl: './application.component.scss',
 })
@@ -20,7 +29,8 @@ export class ApplicationComponent implements OnInit {
 
   constructor(
     private formBuilder: FormBuilder,
-    private applicationService: ApplicationService
+    private applicationService: ApplicationService,
+    private snackBar: MatSnackBar
   ) {}
 
   ngOnInit(): void {
@@ -84,7 +94,24 @@ export class ApplicationComponent implements OnInit {
 
   onSubmit() {
     if (this.form.valid) {
-      console.log('Form Submitted', this.form.value);
+      this.applicationService.createApplication(this.form.value).subscribe({
+        next: (res) => {
+          this.form.reset();
+          this.snackBar.open('Application submitted successfully!', 'Close', {
+            ...snackbarConfig,
+          });
+        },
+        error: (res) => {
+          console.log(res.error);
+          this.snackBar.open(
+            'Application submission failed. Please try again.',
+            'Close',
+            {
+              ...snackbarConfig,
+            }
+          );
+        },
+      });
     } else {
       this.form.markAllAsTouched();
     }

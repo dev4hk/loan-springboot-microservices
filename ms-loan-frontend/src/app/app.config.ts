@@ -10,6 +10,7 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { KeycloakService } from './utils/keycloak/keycloak.service';
 import { keycloakHttpInterceptor } from './utils/http/keycloak-http.interceptor';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -21,6 +22,6 @@ export const appConfig: ApplicationConfig = {
         return () => key.init();
       })(inject(KeycloakService));
       return initFn();
-    }),
+    }), provideAnimationsAsync(),
   ],
 };
