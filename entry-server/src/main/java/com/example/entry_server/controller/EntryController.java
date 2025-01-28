@@ -24,7 +24,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(
-        name = "CRUD REST APIs for Entry",
+        name = "Entry",
         description = "CRUD REST APIs to CREATE, UPDATE, FETCH AND DELETE entry details"
 )
 @Validated

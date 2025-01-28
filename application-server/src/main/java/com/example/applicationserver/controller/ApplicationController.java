@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.example.applicationserver.dto.ResponseDTO.ok;
 
 @Tag(
-        name = "CRUD REST APIs for Application",
+        name = "Application",
         description = "CRUD REST APIs to CREATE, UPDATE, FETCH AND DELETE application details"
 )
 @Validated

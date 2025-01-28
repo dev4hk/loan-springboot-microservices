@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 
 @Schema(
-        name = "Application Request",
+        name = "ApplicationRequestDto",
         description = "Schema to hold application information"
 )
 @NoArgsConstructor

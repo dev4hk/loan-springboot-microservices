@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import static com.example.judgement_server.dto.ResponseDTO.ok;
 
 @Tag(
-        name = "CRUD REST APIs for Judgement",
+        name = "Judgement",
         description = "CRUD REST APIs to CREATE, UPDATE, FETCH AND DELETE judgement details"
 )
 @Validated

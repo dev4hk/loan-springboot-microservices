@@ -27,7 +27,7 @@ import java.util.List;
 import static com.example.filestorageserver.dto.ResponseDTO.ok;
 
 @Tag(
-        name = "CRUD REST APIs for File Storage",
+        name = "FileStorage",
         description = "REST APIs to upload, download, fetch file info, delete files"
 )
 @RequiredArgsConstructor

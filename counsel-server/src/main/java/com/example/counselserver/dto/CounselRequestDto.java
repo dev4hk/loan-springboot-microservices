@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 @Schema(
-        name = "Counsel Request",
+        name = "CounselRequestDto",
         description = "Schema to hold counsel information"
 )
 @NoArgsConstructor

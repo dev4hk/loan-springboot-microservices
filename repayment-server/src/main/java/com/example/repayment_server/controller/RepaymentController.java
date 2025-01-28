@@ -21,7 +21,7 @@ import java.util.List;
 import static com.example.repayment_server.dto.ResponseDTO.ok;
 
 @Tag(
-        name = "CRUD REST APIs for Repayment",
+        name = "Repayment",
         description = "CRUD REST APIs to CREATE, UPDATE, FETCH AND DELETE repayment details"
 )
 @Validated

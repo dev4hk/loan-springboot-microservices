@@ -6,7 +6,7 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Schema(
-        name = "Grant Amount",
+        name = "GrantAmountDto",
         description = "Schema to hold grant amount information"
 )
 @NoArgsConstructor

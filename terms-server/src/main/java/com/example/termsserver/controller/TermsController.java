@@ -27,7 +27,7 @@ import java.util.List;
 import static com.example.termsserver.dto.ResponseDTO.ok;
 
 @Tag(
-        name = "CRUD REST APIs for Terms",
+        name = "Terms",
         description = "CRUD REST APIs to CREATE, UPDATE, FETCH AND DELETE terms details"
 )
 @Validated

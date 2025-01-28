@@ -7,7 +7,7 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Schema(
-        name = "Judgement Request",
+        name = "JudgementRequestDto",
         description = "Schema to hold judgement information"
 )
 @NoArgsConstructor
