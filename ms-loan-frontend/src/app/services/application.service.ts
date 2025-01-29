@@ -7,6 +7,7 @@ import { Response } from '../dtos/response';
   providedIn: 'root',
 })
 export class ApplicationService {
+
   private BASE_URL = 'http://localhost:8072/loan/application/api';
   constructor(private http: HttpClient) {}
 

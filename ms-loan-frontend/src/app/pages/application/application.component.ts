@@ -1,15 +1,13 @@
-import { Component, OnInit, ViewEncapsulation } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
-  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { ApplicationService } from '../../services/application.service';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 const snackbarConfig: MatSnackBarConfig = {
@@ -102,7 +100,6 @@ export class ApplicationComponent implements OnInit {
           });
         },
         error: (res) => {
-          console.log(res.error);
           this.snackBar.open(
             'Application submission failed. Please try again.',
             'Close',

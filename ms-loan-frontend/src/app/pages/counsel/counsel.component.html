@@ -12,7 +12,7 @@
   <div class="row my-5">
     <div class="col-md-7 slide-right">
       <h2>Contact Our Loan Counselors</h2>
-      <form>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="row">
           <div class="col-md-6">
             <div class="form-group my-3">
@@ -22,9 +22,19 @@
                 class="form-control my-1"
                 id="firstname"
                 placeholder="Enter your first name"
-                pattern="^[a-zA-Z]+$"
-                required
+                formControlName="firstname"
               />
+              <div
+                *ngIf="
+                  form.controls['firstname'].invalid &&
+                  (form.controls['firstname'].dirty ||
+                    form.controls['firstname'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("firstname")
+                }}</small>
+              </div>
             </div>
           </div>
 
@@ -36,9 +46,19 @@
                 class="form-control my-1"
                 id="lastname"
                 placeholder="Enter your last name"
-                pattern="^[a-zA-Z]+$"
-                required
+                formControlName="lastname"
               />
+              <div
+                *ngIf="
+                  form.controls['lastname'].invalid &&
+                  (form.controls['lastname'].dirty ||
+                    form.controls['lastname'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("lastname")
+                }}</small>
+              </div>
             </div>
           </div>
         </div>
@@ -52,9 +72,19 @@
                 class="form-control my-1"
                 id="cellPhone"
                 placeholder="Enter your cell phone"
-                pattern="^[0-9]{10}$"
-                required
+                formControlName="cellPhone"
               />
+              <div
+                *ngIf="
+                  form.controls['cellPhone'].invalid &&
+                  (form.controls['cellPhone'].dirty ||
+                    form.controls['cellPhone'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("cellPhone")
+                }}</small>
+              </div>
             </div>
           </div>
 
@@ -66,9 +96,19 @@
                 class="form-control my-1"
                 id="email"
                 placeholder="Enter your email"
-                pattern="^[a-zA-Z0-9._]+@[a-zA-Z]+\\.[a-zA-Z]{2,}$"
-                required
+                formControlName="email"
               />
+              <div
+                *ngIf="
+                  form.controls['email'].invalid &&
+                  (form.controls['email'].dirty ||
+                    form.controls['email'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("email")
+                }}</small>
+              </div>
             </div>
           </div>
         </div>
@@ -82,8 +122,19 @@
                 class="form-control my-1"
                 id="address1"
                 placeholder="Enter your address"
-                required
+                formControlName="address1"
               />
+              <div
+                *ngIf="
+                  form.controls['address1'].invalid &&
+                  (form.controls['address1'].dirty ||
+                    form.controls['address1'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("address1")
+                }}</small>
+              </div>
             </div>
           </div>
 
@@ -95,42 +146,91 @@
                 class="form-control my-1"
                 id="address2"
                 placeholder="Enter additional address info"
+                formControlName="address2"
               />
+              <div
+                *ngIf="
+                  form.controls['address2'].invalid &&
+                  (form.controls['address2'].dirty ||
+                    form.controls['address2'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("address2")
+                }}</small>
+              </div>
             </div>
           </div>
         </div>
 
         <div class="row">
-          <div class="col-md-4 form-group my-1">
-            <label for="city">City</label>
-            <input
-              type="text"
-              class="form-control"
-              id="city"
-              placeholder="Enter your city"
-              required
-            />
+          <div class="col-md-4">
+            <div class="form-group my-3">
+              <label for="city">City</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="city"
+                placeholder="Enter your city"
+                formControlName="city"
+              />
+              <div
+                *ngIf="
+                  form.controls['city'].invalid &&
+                  (form.controls['city'].dirty || form.controls['city'].touched)
+                "
+              >
+                <small class="text-danger">{{ getErrorMessage("city") }}</small>
+              </div>
+            </div>
           </div>
-          <div class="col-md-4 form-group my-1">
-            <label for="state">State</label>
-            <input
-              type="text"
-              class="form-control"
-              id="state"
-              placeholder="Enter your State"
-              required
-            />
+
+          <div class="col-md-4">
+            <div class="form-group my-3">
+              <label for="state">State</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="state"
+                placeholder="Enter your state"
+                formControlName="state"
+              />
+              <div
+                *ngIf="
+                  form.controls['state'].invalid &&
+                  (form.controls['state'].dirty ||
+                    form.controls['state'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("state")
+                }}</small>
+              </div>
+            </div>
           </div>
-          <div class="col-md-4 form-group my-1">
-            <label for="zipCode">Zip Code</label>
-            <input
-              type="text"
-              class="form-control"
-              id="zipCode"
-              placeholder="Enter your zip code"
-              pattern="^[0-9]{5}$"
-              required
-            />
+
+          <div class="col-md-4">
+            <div class="form-group my-3">
+              <label for="zipCode">Zip Code</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="zipCode"
+                placeholder="Enter your zip code"
+                formControlName="zipCode"
+              />
+              <div
+                *ngIf="
+                  form.controls['zipCode'].invalid &&
+                  (form.controls['zipCode'].dirty ||
+                    form.controls['zipCode'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("zipCode")
+                }}</small>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -141,9 +241,18 @@
             id="memo"
             rows="4"
             placeholder="Enter memo"
-            required
+            formControlName="memo"
           ></textarea>
+          <div
+            *ngIf="
+              form.controls['memo'].invalid &&
+              (form.controls['memo'].dirty || form.controls['memo'].touched)
+            "
+          >
+            <small class="text-danger">{{ getErrorMessage("memo") }}</small>
+          </div>
         </div>
+
         <button type="submit" class="btn btn-custom my-3">Submit</button>
       </form>
     </div>
