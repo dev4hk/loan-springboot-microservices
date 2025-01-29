@@ -130,7 +130,10 @@ export class ApplicationComponent implements OnInit {
   getApplication() {
     console.log('Called');
     this.applicationService.getApplicationByEmail().subscribe({
-      next: (res) => (this.application = res.data),
+      next: (res) => {
+        console.log(res);
+        this.application = res.data;
+      },
       error: (res) => console.log(res.error),
     });
   }

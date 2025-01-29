@@ -11,6 +11,7 @@
 
   <div class="row my-5">
     <div class="col-md-7 slide-right">
+      @if(!counsel) {
       <h2>Contact Our Loan Counselors</h2>
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="row">
@@ -258,6 +259,46 @@
 
         <button type="submit" class="btn btn-custom my-3">Submit</button>
       </form>
+      } @else {
+      <div class="card bg-dark text-white">
+        <div class="card-header px-3 header-color">Loan Counsel Details</div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <p class="card-text">
+                Applied At:
+                {{ counsel.appliedAt | date : "yyyy-MM-dd" }}
+              </p>
+              <p class="card-text">
+                Communication Status:
+                {{ counsel.communicationStatus }}
+              </p>
+              <p class="card-text">
+                Cell Phone:
+                {{ counsel.cellPhone }}
+              </p>
+              <p class="card-text">
+                Memo:
+                <span class="memo-button" (click)="toggleMemo()">{{
+                  showMemo ? "close details" : "open details"
+                }}</span>
+              </p>
+            </div>
+            <div class="col">
+              <p class="card-text">Email: {{ counsel.email }}</p>
+              <p class="card-text">
+                Created At:
+                {{ counsel.createdAt | date : "yyyy-MM-dd" }}
+              </p>
+              <p class="card-text">Created By: {{ counsel.createdBy }}</p>
+            </div>
+          </div>
+          <div class="memo-detail" [class.open]="showMemo">
+            {{ counsel.memo }}
+          </div>
+        </div>
+      </div>
+      }
     </div>
     <div class="col-md-5 slide-left">
       <div class="faq-wrapper px-4">

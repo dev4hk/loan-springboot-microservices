@@ -76,6 +76,28 @@
   padding: 0.5rem 0;
 }
 
+.memo-button {
+  background: none;
+  border: none;
+  color: #29d0b2;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  padding: 0;
+}
+
+.memo-detail {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+}
+
+.memo-detail.open {
+  max-height: 200px;
+  opacity: 1;
+}
+
 .btn-custom {
   background-color: #212529;
   color: #29d0b2;
@@ -88,4 +110,12 @@
 
 .faq-wrapper {
   border-left: 2px solid #29d0b2;
+}
+
+.card-header {
+  border-color: #29d0b2;
+}
+
+.header-color {
+  color: #29d0b2;
 }

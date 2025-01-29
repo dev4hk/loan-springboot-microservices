@@ -30,6 +30,7 @@ const snackbarConfig: MatSnackBarConfig = {
 export class CounselComponent implements OnInit {
   form: FormGroup = new FormGroup({});
   counsel?: CounselResponseDto;
+  showMemo = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -65,6 +66,7 @@ export class CounselComponent implements OnInit {
       state: ['', [Validators.required]],
       zipCode: ['', [Validators.required, Validators.pattern('^[0-9]{5}$')]],
     });
+    this.getCounsel();
   }
 
   addToggleFunctionality(): void {
@@ -85,6 +87,11 @@ export class CounselComponent implements OnInit {
         }
       });
     });
+  }
+
+  toggleMemo() {
+    console.log('clicked');
+    this.showMemo = !this.showMemo;
   }
 
   getErrorMessage(controlName: string): string {
@@ -149,7 +156,10 @@ export class CounselComponent implements OnInit {
 
   getCounsel() {
     this.counselService.getCounselByEmail().subscribe({
-      next: (res) => (this.counsel = res.data),
+      next: (res) => {
+        console.log(res);
+        this.counsel = res.data;
+      },
       error: (res) => console.log(res.error),
     });
   }
