@@ -50,7 +50,10 @@ export class CounselComponent implements OnInit {
         this.keycloakService.lastName,
         [Validators.required, Validators.pattern('^[a-zA-Z]+$')],
       ],
-      cellPhone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
+      cellPhone: [
+        this.counsel?.cellPhone,
+        [Validators.required, Validators.pattern('^[0-9]{10}$')],
+      ],
       email: [
         this.keycloakService.email,
         [
@@ -59,12 +62,15 @@ export class CounselComponent implements OnInit {
           Validators.pattern('^[a-zA-Z0-9._]+@[a-zA-Z]+\\.[a-zA-Z]{2,}$'),
         ],
       ],
-      memo: ['', [Validators.required]],
-      address1: ['', [Validators.required]],
-      address2: [''],
-      city: ['', [Validators.required]],
-      state: ['', [Validators.required]],
-      zipCode: ['', [Validators.required, Validators.pattern('^[0-9]{5}$')]],
+      memo: [this.counsel?.memo, [Validators.required]],
+      address1: [this.counsel?.address1, [Validators.required]],
+      address2: [this.counsel?.address2],
+      city: [this.counsel?.city, [Validators.required]],
+      state: [this.counsel?.state, [Validators.required]],
+      zipCode: [
+        this.counsel?.zipCode,
+        [Validators.required, Validators.pattern('^[0-9]{5}$')],
+      ],
     });
     this.getCounsel();
   }
@@ -132,11 +138,11 @@ export class CounselComponent implements OnInit {
     if (this.form.valid) {
       this.counselService.createCounsel(this.form.value).subscribe({
         next: (res) => {
-          console.log(res);
           this.form.reset();
           this.snackBar.open('Counsel submitted successfully!', 'Close', {
             ...snackbarConfig,
           });
+          this.counsel = res.data;
         },
         error: (res) => {
           console.log(res.error);

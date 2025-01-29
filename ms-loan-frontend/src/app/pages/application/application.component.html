@@ -234,6 +234,35 @@
         }
       </div>
 
+      <div class="card bg-dark text-white">
+        <div class="card-header px-3 header-color">Document Section</div>
+        <div class="card-body row">
+          <div class="col">
+            <h5 class="card-title">Mandatory Documents</h5>
+            <ul class="list-group">
+              <li
+                class="list-group-item bg-dark text-white"
+                *ngFor="let doc of ['1', '2', '3']"
+              >
+                {{ doc }}
+              </li>
+            </ul>
+          </div>
+          <div class="col">
+            <h5 class="card-title">Submitted Documents</h5>
+            <ul class="list-group">
+              <li
+                class="list-group-item bg-dark text-white"
+                *ngFor="let doc of ['1', '2', '3']"
+              >
+                {{ doc }}
+              </li>
+            </ul>
+            <button class="btn btn-primary mt-3">Upload Document</button>
+          </div>
+        </div>
+      </div>
+
       }
     </div>
     <div class="col-md-5 slide-left">

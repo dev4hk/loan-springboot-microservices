@@ -47,7 +47,10 @@ export class ApplicationComponent implements OnInit {
         this.keycloakService.lastName,
         [Validators.required, Validators.pattern('^[a-zA-Z]+$')],
       ],
-      cellPhone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
+      cellPhone: [
+        this.application?.cellPhone,
+        [Validators.required, Validators.pattern('^[0-9]{10}$')],
+      ],
       email: [
         this.keycloakService.email,
         [
@@ -57,7 +60,7 @@ export class ApplicationComponent implements OnInit {
         ],
       ],
       hopeAmount: [
-        '',
+        this.application?.hopeAmount,
         [Validators.required, Validators.pattern('^\\d+(\\.\\d{1,2})?$')],
       ],
     });
