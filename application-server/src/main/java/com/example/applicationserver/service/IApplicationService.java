@@ -22,4 +22,6 @@ public interface IApplicationService {
     ApplicationResponseDto contract(Long applicationId);
 
     void updateCommunicationStatus(Long applicationId, CommunicationStatus communicationStatus);
+
+    ApplicationResponseDto getByEmail(String email);
 }

@@ -27,6 +27,7 @@ public class Application extends BaseEntity {
 
     private String cellPhone;
 
+    @Column(unique = true)
     private String email;
 
     private BigDecimal interestRate;

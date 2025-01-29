@@ -44,6 +44,10 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public ApplicationResponseDto create(ApplicationRequestDto request) {
         logger.info("ApplicationServiceImpl - create invoked");
+        applicationRepository.findByEmail(request.getEmail())
+                .ifPresent(application -> {
+                    throw new BaseException(ResultType.CONFLICT, HttpStatus.CONFLICT);
+                });
         Application application = ApplicationMapper.mapToApplication(request);
         application.setAppliedAt(LocalDateTime.now());
         Application created = applicationRepository.save(application);
@@ -56,6 +60,25 @@ public class ApplicationServiceImpl implements IApplicationService {
     public ApplicationResponseDto get(Long applicationId) {
         logger.info("ApplicationServiceImpl - get invoked");
         Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> {
+                    logger.error("ApplicationServiceImpl - Application does not exist");
+                    return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
+                });
+
+        ResponseDTO<CounselResponseDto> counselResponse = counselClient.getByEmail(application.getEmail());
+
+        ApplicationResponseDto responseDto = ApplicationMapper.mapToApplicationResponseDto(application);
+        if (counselResponse != null && counselResponse.getData() != null) {
+            responseDto.setCounselInfo(counselResponse.getData());
+        }
+        return responseDto;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ApplicationResponseDto getByEmail(String email) {
+        logger.info("ApplicationServiceImpl - getByEmail invoked");
+        Application application = applicationRepository.findByEmail(email)
                 .orElseThrow(() -> {
                     logger.error("ApplicationServiceImpl - Application does not exist");
                     return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);

@@ -102,6 +102,39 @@ public class ApplicationController {
     }
 
     @Operation(
+            summary = "Get Application REST API By Email",
+            description = "REST API to get application by email"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status Bad Request",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @RateLimiter(name = "getRateLimiter")
+    @Retry(name = "getRetry")
+    @GetMapping("/email")
+    public ResponseDTO<ApplicationResponseDto> getByEmail(@RequestParam("email") String email) {
+        logger.info("ApplicationController - get started");
+        logger.debug("ApplicationController - applicationID: {}", email);
+        ApplicationResponseDto applicationResponseDto = applicationService.getByEmail(email);
+        logger.info("ApplicationController - get finished");
+        return ok(applicationResponseDto);
+    }
+
+    @Operation(
             summary = "Update Application REST API",
             description = "REST API to update application"
     )

@@ -131,7 +131,20 @@ class ApplicationServerApplicationTests {
                 .body("data.firstname", equalTo("firstname"));
     }
 
-    @Order(3)
+    @Order(2)
+    @Test
+    void should_get_application_by_email() {
+        String email = "email@email.com";
+        RestAssured.given()
+                .queryParam("email", email)
+                .get("/api/email")
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("data.firstname", equalTo("firstname"));
+    }
+
+    @Order(4)
     @Test
     void should_throw_exception_when_request_non_exist_application_id() {
         RestAssured.given()
@@ -140,7 +153,7 @@ class ApplicationServerApplicationTests {
                 .statusCode(404);
     }
 
-    @Order(4)
+    @Order(5)
     @Test
     void should_throw_exception_when_request_update_application_with_invalid_data() {
         String invalidRequestDto = """
@@ -162,7 +175,7 @@ class ApplicationServerApplicationTests {
                 .body("data.firstname", equalTo("First name must contain only letters"));
     }
 
-    @Order(5)
+    @Order(6)
     @Test
     void should_update_application() {
         String requestDto = """
@@ -192,7 +205,7 @@ class ApplicationServerApplicationTests {
 
     }
 
-    @Order(6)
+    @Order(7)
     @Test
     void should_throw_exception_when_request_update_non_exist_application() {
         String requestDto = """
@@ -212,7 +225,7 @@ class ApplicationServerApplicationTests {
                 .statusCode(404);
     }
 
-    @Order(7)
+    @Order(8)
     @Test
     void should_accept_terms() throws JsonProcessingException {
         Long applicationId = 1L;
@@ -235,7 +248,7 @@ class ApplicationServerApplicationTests {
                 .statusCode(200);
     }
 
-    @Order(8)
+    @Order(9)
     @Test
     void should_update_grant() {
         Long applicationId = 1L;
@@ -259,7 +272,7 @@ class ApplicationServerApplicationTests {
                 .contentType("application/json");
     }
 
-    @Order(9)
+    @Order(10)
     @Test
     void should_contract_application() {
         Long applicationId = 1L;
@@ -271,7 +284,7 @@ class ApplicationServerApplicationTests {
                 .statusCode(200);
     }
 
-    @Order(10)
+    @Order(11)
     @Test
     void should_delete_application() {
         RestAssured.given()
@@ -281,7 +294,7 @@ class ApplicationServerApplicationTests {
                 .statusCode(200);
     }
 
-    @Order(11)
+    @Order(12)
     @Test
     void should_throw_exception_when_request_delete_non_exist_application() {
         RestAssured.given()

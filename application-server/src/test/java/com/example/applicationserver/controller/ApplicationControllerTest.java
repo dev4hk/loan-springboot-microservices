@@ -58,6 +58,17 @@ public class ApplicationControllerTest {
     }
 
     @Test
+    public void getApplicationByEmail() throws TimeoutException {
+        String email = "email@email.com";
+        when(applicationService.getByEmail(email)).thenReturn(response);
+
+        ResponseDTO<ApplicationResponseDto> result = applicationController.getByEmail(email);
+
+        assertEquals(response, result.getData());
+        verify(applicationService, times(1)).getByEmail(email);
+    }
+
+    @Test
     public void updateApplication() {
         when(applicationService.update(any(Long.class), any(ApplicationRequestDto.class))).thenReturn(response);
 

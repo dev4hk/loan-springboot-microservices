@@ -61,11 +61,12 @@ class ApplicationServiceImplTest {
     @DisplayName("Create Application")
     @Test
     void Should_ReturnResponseOfNewApplicationEntity_When_RequestCreateApplication() {
+        String email = "mail@abcd.efg";
         Application entity = Application.builder()
                 .firstname("firstname")
                 .lastname("lastname")
                 .cellPhone("1234567890")
-                .email("mail@abcd.efg")
+                .email(email)
                 .hopeAmount(BigDecimal.valueOf(50000))
                 .build();
 
@@ -73,15 +74,40 @@ class ApplicationServiceImplTest {
                 .firstname("firstname")
                 .lastname("lastname")
                 .cellPhone("1234567890")
-                .email("mail@abcd.efg")
+                .email(email)
                 .hopeAmount(BigDecimal.valueOf(50000))
                 .build();
 
+        when(applicationRepository.findByEmail(eq(email))).thenReturn(Optional.empty());
         when(applicationRepository.save(ArgumentMatchers.any(Application.class))).thenReturn(entity);
         ApplicationResponseDto actual = applicationService.create(request);
         assertThat(actual).isNotNull();
         assertThat(actual.getHopeAmount()).isSameAs(entity.getHopeAmount());
         assertThat(actual.getFirstname()).isSameAs(entity.getFirstname());
+    }
+
+    @DisplayName("Create Application throw exception with application already exists")
+    @Test
+    void Should_Throws_Exception_When_RequestCreateApplication_With_Existing_Email() {
+        String email = "mail@abcd.efg";
+        Application entity = Application.builder()
+                .firstname("firstname")
+                .lastname("lastname")
+                .cellPhone("1234567890")
+                .email(email)
+                .hopeAmount(BigDecimal.valueOf(50000))
+                .build();
+
+        ApplicationRequestDto request = ApplicationRequestDto.builder()
+                .firstname("firstname")
+                .lastname("lastname")
+                .cellPhone("1234567890")
+                .email(email)
+                .hopeAmount(BigDecimal.valueOf(50000))
+                .build();
+
+        when(applicationRepository.findByEmail(eq(email))).thenReturn(Optional.of(entity));
+        assertThrows(BaseException.class, () -> applicationService.create(request));
     }
 
     @DisplayName("Get An Application by ApplicationId")
@@ -109,6 +135,34 @@ class ApplicationServiceImplTest {
         ApplicationResponseDto actual = applicationService.get(applicationId);
         assertThat(actual).isNotNull();
         assertThat(actual.getApplicationId()).isSameAs(applicationId);
+    }
+
+    @DisplayName("Get An Application by email")
+    @Test
+    void Should_ReturnResponseOfExistApplicationEntity_When_RequestExistEmail() {
+        String email = "email@email.com";
+        Application entity = Application.builder()
+                .applicationId(1L)
+                .email(email)
+                .build();
+        when(applicationRepository.findByEmail(email)).thenReturn(Optional.ofNullable(entity));
+        when(counselClient.getByEmail(entity.getEmail())).thenReturn(
+                new ResponseDTO<>(
+                        CounselResponseDto.builder()
+                                .firstname("firstname")
+                                .lastname("lastname")
+                                .cellPhone("0123456789")
+                                .email("email@email.com")
+                                .address("address")
+                                .appliedAt(LocalDateTime.now())
+                                .counselId(1L)
+                                .memo("memo")
+                                .build()
+                )
+        );
+        ApplicationResponseDto actual = applicationService.getByEmail(email);
+        assertThat(actual).isNotNull();
+        assertThat(actual.getEmail()).isSameAs(email);
     }
 
     @DisplayName("Get non-existing Application by id")

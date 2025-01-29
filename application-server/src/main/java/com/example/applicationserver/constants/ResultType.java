@@ -11,7 +11,8 @@ public enum ResultType {
     SYSTEM_ERROR("0500", "system error"),
     RESOURCE_NOT_FOUND("0404", "resource not found"),
     BAD_REQUEST("0400", "bad request"),
-    SERVICE_UNAVAILABLE("0503", "service unavailable");
+    SERVICE_UNAVAILABLE("0503", "service unavailable"),
+    CONFLICT("0409", "resource already exists");
 
     private final String code;
     private final String desc;
