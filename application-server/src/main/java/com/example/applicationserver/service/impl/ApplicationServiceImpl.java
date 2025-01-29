@@ -46,8 +46,14 @@ public class ApplicationServiceImpl implements IApplicationService {
         Application application = ApplicationMapper.mapToApplication(request);
         application.setAppliedAt(LocalDateTime.now());
         Application created = applicationRepository.save(application);
+
+        ApplicationResponseDto responseDto = ApplicationMapper.mapToApplicationResponseDto(created);
+        ResponseDTO<CounselResponseDto> counselResponse = counselClient.getByEmail(application.getEmail());
+        if (counselResponse != null) {
+            responseDto.setCounselInfo(counselResponse.getData());
+        }
         sendCommunication(created, CommunicationStatus.APPLICATION_RECEIVED);
-        return ApplicationMapper.mapToApplicationResponseDto(created);
+        return responseDto;
     }
 
     @Transactional(readOnly = true)

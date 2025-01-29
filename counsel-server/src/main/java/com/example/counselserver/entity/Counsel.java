@@ -28,6 +28,7 @@ public class Counsel extends BaseEntity {
 
     private String cellPhone;
 
+    @Column(unique = true)
     private String email;
 
     private String memo;

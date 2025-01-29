@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `counsel` (
     `state` varchar(50) NOT NULL,
     `zip_code` varchar(10) NOT NULL,
     `cell_phone` varchar(10) NOT NULL,
-    `email` varchar(100) NOT NULL,
+    `email` varchar(100) NOT NULL UNIQUE,
     `memo` text NOT NULL,
     `applied_at` date NOT NULL,
     `communication_status` VARCHAR(50) DEFAULT NULL,
