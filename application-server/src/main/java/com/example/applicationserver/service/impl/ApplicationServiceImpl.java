@@ -1,13 +1,7 @@
 package com.example.applicationserver.service.impl;
 
-import com.example.applicationserver.client.AcceptTermsClient;
-import com.example.applicationserver.client.CounselClient;
-import com.example.applicationserver.client.JudgementClient;
-import com.example.applicationserver.client.TermsClient;
-import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
-import com.example.applicationserver.client.dto.CounselResponseDto;
-import com.example.applicationserver.client.dto.JudgementResponseDto;
-import com.example.applicationserver.client.dto.TermsResponseDto;
+import com.example.applicationserver.client.*;
+import com.example.applicationserver.client.dto.*;
 import com.example.applicationserver.constants.CommunicationStatus;
 import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.*;
@@ -39,6 +33,7 @@ public class ApplicationServiceImpl implements IApplicationService {
     private final AcceptTermsClient acceptTermsClient;
     private final CounselClient counselClient;
     private final JudgementClient judgementClient;
+    private final FileStorageClient fileStorageClient;
     private final StreamBridge streamBridge;
 
     @Override
@@ -66,10 +61,14 @@ public class ApplicationServiceImpl implements IApplicationService {
                 });
 
         ResponseDTO<CounselResponseDto> counselResponse = counselClient.getByEmail(application.getEmail());
+        ResponseDTO<List<FileResponseDto>> fileStorageResponse = fileStorageClient.getFilesInfo(applicationId);
 
         ApplicationResponseDto responseDto = ApplicationMapper.mapToApplicationResponseDto(application);
-        if (counselResponse != null && counselResponse.getData() != null) {
+        if (counselResponse != null) {
             responseDto.setCounselInfo(counselResponse.getData());
+        }
+        if (fileStorageResponse != null) {
+            responseDto.setFileInfo(fileStorageResponse.getData());
         }
         return responseDto;
     }
@@ -85,10 +84,14 @@ public class ApplicationServiceImpl implements IApplicationService {
                 });
 
         ResponseDTO<CounselResponseDto> counselResponse = counselClient.getByEmail(application.getEmail());
+        ResponseDTO<List<FileResponseDto>> fileStorageResponse = fileStorageClient.getFilesInfo(application.getApplicationId());
 
         ApplicationResponseDto responseDto = ApplicationMapper.mapToApplicationResponseDto(application);
-        if (counselResponse != null && counselResponse.getData() != null) {
+        if (counselResponse != null) {
             responseDto.setCounselInfo(counselResponse.getData());
+        }
+        if (fileStorageResponse != null) {
+            responseDto.setFileInfo(fileStorageResponse.getData());
         }
         return responseDto;
     }
@@ -127,12 +130,15 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public void acceptTerms(Long applicationId, AcceptTermsRequestDto request) {
         logger.info("ApplicationServiceImpl - acceptTerms invoked");
-        get(applicationId);
+        applicationRepository.findById(applicationId)
+                .orElseThrow(() -> {
+                    logger.error("ApplicationServiceImpl - Application does not exist");
+                    return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
+                });
+
         ResponseDTO<List<TermsResponseDto>> termsResponse = termClient.getAll();
 
         List<TermsResponseDto> terms = termsResponse.getData();
-
-
         List<Long> requestTermsIds = request.getTermsIds();
 
         if (terms.size() != requestTermsIds.size()) {

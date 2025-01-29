@@ -1,9 +1,6 @@
 package com.example.applicationserver.service.impl;
 
-import com.example.applicationserver.client.AcceptTermsClient;
-import com.example.applicationserver.client.CounselClient;
-import com.example.applicationserver.client.JudgementClient;
-import com.example.applicationserver.client.TermsClient;
+import com.example.applicationserver.client.*;
 import com.example.applicationserver.client.dto.*;
 import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.ApplicationRequestDto;
@@ -14,7 +11,6 @@ import com.example.applicationserver.entity.Application;
 import com.example.applicationserver.exception.BaseException;
 import com.example.applicationserver.exception.CustomFeignException;
 import com.example.applicationserver.repository.ApplicationRepository;
-import feign.FeignException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -54,6 +50,9 @@ class ApplicationServiceImplTest {
 
     @Mock
     CounselClient counselClient;
+
+    @Mock
+    FileStorageClient fileStorageClient;
 
     @Mock
     StreamBridge streamBridge;
@@ -125,11 +124,16 @@ class ApplicationServiceImplTest {
                                 .lastname("lastname")
                                 .cellPhone("0123456789")
                                 .email("email@email.com")
-                                .address("address")
+                                .address1("address")
                                 .appliedAt(LocalDateTime.now())
                                 .counselId(1L)
                                 .memo("memo")
                                 .build()
+                )
+        );
+        when(fileStorageClient.getFilesInfo(anyLong())).thenReturn(
+                new ResponseDTO<>(
+                        List.of(FileResponseDto.builder().build())
                 )
         );
         ApplicationResponseDto actual = applicationService.get(applicationId);
@@ -153,11 +157,16 @@ class ApplicationServiceImplTest {
                                 .lastname("lastname")
                                 .cellPhone("0123456789")
                                 .email("email@email.com")
-                                .address("address")
+                                .address1("address")
                                 .appliedAt(LocalDateTime.now())
                                 .counselId(1L)
                                 .memo("memo")
                                 .build()
+                )
+        );
+        when(fileStorageClient.getFilesInfo(anyLong())).thenReturn(
+                new ResponseDTO<>(
+                        List.of(FileResponseDto.builder().build())
                 )
         );
         ApplicationResponseDto actual = applicationService.getByEmail(email);
@@ -171,6 +180,14 @@ class ApplicationServiceImplTest {
         Long applicationId = 1L;
         when(applicationRepository.findById(applicationId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
         assertThrows(BaseException.class, () -> applicationService.get(applicationId));
+    }
+
+    @DisplayName("Get non-existing Application by email")
+    @Test
+    void Should_ThrowException_When_RequestNonExistEmail() {
+        String email = "email@email.com";
+        when(applicationRepository.findByEmail(email)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+        assertThrows(BaseException.class, () -> applicationService.getByEmail(email));
     }
 
     @DisplayName("Update an Application")

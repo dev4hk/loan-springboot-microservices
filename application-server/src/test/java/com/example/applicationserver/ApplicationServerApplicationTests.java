@@ -85,7 +85,7 @@ class ApplicationServerApplicationTests {
                 .lastname("lastname")
                 .cellPhone("0123456789")
                 .email("email@email.com")
-                .address("address")
+                .address1("address")
                 .appliedAt(LocalDateTime.now())
                 .counselId(1L)
                 .memo("memo")
