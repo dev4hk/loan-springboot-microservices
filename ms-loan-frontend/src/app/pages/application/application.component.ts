@@ -9,6 +9,9 @@ import { ApplicationService } from '../../services/application.service';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
 import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { ApplicationResponseDto } from '../../dtos/application-response-dto';
+import { KeycloakService } from '../../utils/keycloak/keycloak.service';
+import { RouterModule } from '@angular/router';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -18,27 +21,35 @@ const snackbarConfig: MatSnackBarConfig = {
 
 @Component({
   selector: 'app-application',
-  imports: [ReactiveFormsModule, CommonModule, MatSnackBarModule],
+  imports: [ReactiveFormsModule, CommonModule, MatSnackBarModule, RouterModule],
   templateUrl: './application.component.html',
   styleUrl: './application.component.scss',
 })
 export class ApplicationComponent implements OnInit {
   form: FormGroup = new FormGroup({});
+  application?: ApplicationResponseDto;
 
   constructor(
     private formBuilder: FormBuilder,
     private applicationService: ApplicationService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private keycloakService: KeycloakService
   ) {}
 
   ngOnInit(): void {
     this.addToggleFunctionality();
     this.form = this.formBuilder.group({
-      firstname: ['', [Validators.required, Validators.pattern('^[a-zA-Z]+$')]],
-      lastname: ['', [Validators.required, Validators.pattern('^[a-zA-Z]+$')]],
+      firstname: [
+        this.keycloakService.firstName,
+        [Validators.required, Validators.pattern('^[a-zA-Z]+$')],
+      ],
+      lastname: [
+        this.keycloakService.lastName,
+        [Validators.required, Validators.pattern('^[a-zA-Z]+$')],
+      ],
       cellPhone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
       email: [
-        '',
+        this.keycloakService.email,
         [
           Validators.required,
           Validators.email,
@@ -50,6 +61,7 @@ export class ApplicationComponent implements OnInit {
         [Validators.required, Validators.pattern('^\\d+(\\.\\d{1,2})?$')],
       ],
     });
+    this.getApplication();
   }
 
   addToggleFunctionality(): void {
@@ -98,6 +110,7 @@ export class ApplicationComponent implements OnInit {
           this.snackBar.open('Application submitted successfully!', 'Close', {
             ...snackbarConfig,
           });
+          this.application = res.data;
         },
         error: (res) => {
           this.snackBar.open(
@@ -112,5 +125,13 @@ export class ApplicationComponent implements OnInit {
     } else {
       this.form.markAllAsTouched();
     }
+  }
+
+  getApplication() {
+    console.log('Called');
+    this.applicationService.getApplicationByEmail().subscribe({
+      next: (res) => (this.application = res.data),
+      error: (res) => console.log(res.error),
+    });
   }
 }

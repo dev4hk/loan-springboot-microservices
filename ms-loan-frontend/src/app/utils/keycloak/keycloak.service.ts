@@ -38,8 +38,20 @@ export class KeycloakService {
     return !this.keycloak.isTokenExpired();
   }
 
+  get firstName(): string {
+    return this.keycloak.tokenParsed?.['given_name'] as string;
+  }
+
+  get lastName(): string {
+    return this.keycloak.tokenParsed?.['family_name'] as string;
+  }
+
   get fullName(): string {
     return this.keycloak.tokenParsed?.['name'] as string;
+  }
+
+  get email(): string {
+    return this.keycloak.tokenParsed?.['email'] as string;
   }
 
   logout() {

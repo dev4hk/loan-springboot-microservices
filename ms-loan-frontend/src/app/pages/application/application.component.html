@@ -2,7 +2,9 @@
   <div
     class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
   >
-    <h1 class="display-4">Apply for a Loan</h1>
+    <h1 class="display-4">
+      {{ application ? "Application Details" : "Apply for a Loan" }}
+    </h1>
     <p class="lead">
       Please fill out the form below to submit your loan application.
     </p>
@@ -10,6 +12,8 @@
 
   <div class="row my-5">
     <div class="col-md-7 slide-right">
+      @if (!application) {
+
       <h2>Loan Application Form</h2>
       <form [formGroup]="form" (ngSubmit)="onSubmit()">
         <div class="row">
@@ -22,6 +26,7 @@
                 id="firstname"
                 placeholder="Enter your first name"
                 formControlName="firstname"
+                readonly
               />
               <div
                 *ngIf="
@@ -46,6 +51,7 @@
                 id="lastname"
                 placeholder="Enter your last name"
                 formControlName="lastname"
+                readonly
               />
               <div
                 *ngIf="
@@ -96,6 +102,7 @@
                 id="email"
                 placeholder="Enter your email"
                 formControlName="email"
+                readonly
               />
               <div
                 *ngIf="
@@ -118,7 +125,7 @@
                 type="text"
                 class="form-control my-1"
                 id="hopeAmount"
-                placeholder="Enter the amount you hope to borrow"
+                placeholder="Enter hope amount"
                 formControlName="hopeAmount"
               />
               <div
@@ -140,6 +147,90 @@
           Submit Application
         </button>
       </form>
+      } @else {
+      <div class="card bg-dark text-white" *ngIf="application">
+        <div class="card-header px-3 header-color">
+          Loan Application Details
+        </div>
+        <div class="card-body d-flex justify-content-between">
+          <div>
+            <p class="card-text">
+              Application ID: {{ application.applicationId }}
+            </p>
+            <p class="card-text">First Name: {{ application.firstname }}</p>
+            <p class="card-text">Last Name: {{ application.lastname }}</p>
+            <p class="card-text">Cell Phone: {{ application.cellPhone }}</p>
+            <p class="card-text">Email: {{ application.email }}</p>
+          </div>
+          <div>
+            <p class="card-text">
+              Hope Amount: {{ application.hopeAmount | currency }}
+            </p>
+            <p class="card-text">
+              Approval Amount:
+              {{
+                application.approvalAmount
+                  ? (application.approvalAmount | currency)
+                  : "Not Available"
+              }}
+            </p>
+            <p class="card-text">
+              Applied At: {{ application.appliedAt | date : "yyyy-MM-dd" }}
+            </p>
+            <p class="card-text">
+              Contracted At:
+              {{
+                application.contractedAt
+                  ? (application.contractedAt | date : "yyyy-MM-dd")
+                  : "Not Available"
+              }}
+            </p>
+            <p class="card-text">
+              Communication Status: {{ application.communicationStatus }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="card bg-dark text-white mt-3" *ngIf="application">
+        <div class="card-header px-3 header-color">Counsel Information</div>
+        @if(application.counselInfo) {
+        <div class="card-body d-flex justify-content-between">
+          <div>
+            <p class="card-text">
+              Applied At:
+              {{ application.counselInfo.appliedAt | date : "yyyy-MM-dd" }}
+            </p>
+            <p class="card-text">
+              Communication Status:
+              {{ application.counselInfo.communicationStatus }}
+            </p>
+          </div>
+          <div>
+            <p class="card-text">
+              Created At:
+              {{ application.counselInfo.createdAt | date : "yyyy-MM-dd" }}
+            </p>
+            <p class="card-text">
+              Created By: {{ application.counselInfo?.createdBy }}
+            </p>
+          </div>
+        </div>
+        } @else {
+        <div class="card-body">
+          <h5 class="card-title">No Counsel Information Found</h5>
+          <p class="card-text">
+            It looks like there is no counsel information available at the
+            moment. If you would like to receive counsel, please click the link
+            below to get started.
+          </p>
+          <a [routerLink]="['/counsel']" class="btn btn-custom-inverse"
+            >Get Counsel</a
+          >
+        </div>
+        }
+      </div>
+
+      }
     </div>
     <div class="col-md-5 slide-left">
       <div class="faq-wrapper px-4">

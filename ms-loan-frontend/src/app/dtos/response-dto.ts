@@ -3,10 +3,10 @@ import { ResultObject } from './result-object';
 /**
  * Schema to hold response information
  */
-export interface Response {
+export interface ResponseDTO<T> {
   /**
    * Schema to hold data information
    */
-  data?: {};
+  data?: T;
   result?: ResultObject;
 }

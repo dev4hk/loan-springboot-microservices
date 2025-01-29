@@ -86,6 +86,15 @@
   }
 }
 
+.btn-custom-inverse {
+  background-color: #29d0b2;
+  color: #212529;
+  &:hover {
+    background-color: #212529;
+    color: #29d0b2;
+  }
+}
+
 .faq-wrapper {
   border-left: 2px solid #29d0b2;
 }

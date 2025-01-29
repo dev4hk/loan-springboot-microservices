@@ -12,6 +12,8 @@ import {
 } from '@angular/material/snack-bar';
 import { CommonModule } from '@angular/common';
 import { CounselService } from '../../services/counsel.service';
+import { KeycloakService } from '../../utils/keycloak/keycloak.service';
+import { CounselResponseDto } from '../../dtos/counsel-response-dto';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -27,21 +29,29 @@ const snackbarConfig: MatSnackBarConfig = {
 })
 export class CounselComponent implements OnInit {
   form: FormGroup = new FormGroup({});
+  counsel?: CounselResponseDto;
 
   constructor(
     private formBuilder: FormBuilder,
     private counselService: CounselService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private keycloakService: KeycloakService
   ) {}
 
   ngOnInit(): void {
     this.addToggleFunctionality();
     this.form = this.formBuilder.group({
-      firstname: ['', [Validators.required, Validators.pattern('^[a-zA-Z]+$')]],
-      lastname: ['', [Validators.required, Validators.pattern('^[a-zA-Z]+$')]],
+      firstname: [
+        this.keycloakService.firstName,
+        [Validators.required, Validators.pattern('^[a-zA-Z]+$')],
+      ],
+      lastname: [
+        this.keycloakService.lastName,
+        [Validators.required, Validators.pattern('^[a-zA-Z]+$')],
+      ],
       cellPhone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
       email: [
-        '',
+        this.keycloakService.email,
         [
           Validators.required,
           Validators.email,
@@ -135,5 +145,12 @@ export class CounselComponent implements OnInit {
     } else {
       this.form.markAllAsTouched();
     }
+  }
+
+  getCounsel() {
+    this.counselService.getCounselByEmail().subscribe({
+      next: (res) => (this.counsel = res.data),
+      error: (res) => console.log(res.error),
+    });
   }
 }
