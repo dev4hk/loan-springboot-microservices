@@ -1,4 +1,10 @@
-import { Component } from '@angular/core';
+import {
+  Component,
+  Input,
+  OnChanges,
+  SimpleChanges,
+  OnInit,
+} from '@angular/core';
 import { ApexLegend, NgApexchartsModule } from 'ng-apexcharts';
 import {
   ApexNonAxisChartSeries,
@@ -8,6 +14,7 @@ import {
   ApexTooltip,
   ApexPlotOptions,
 } from 'ng-apexcharts';
+import { DonutChartInterface } from './donut-chart-interface';
 
 @Component({
   selector: 'app-donut-chart',
@@ -15,8 +22,11 @@ import {
   templateUrl: './donut-chart.component.html',
   styleUrl: './donut-chart.component.scss',
 })
-export class DonutChartComponent {
-  public chartOptions: {
+export class DonutChartComponent implements OnChanges {
+  @Input() data: Array<DonutChartInterface> = [];
+  @Input() title: string = '';
+
+  public chartOptions!: {
     series: ApexNonAxisChartSeries;
     chart: ApexChart;
     responsive: ApexResponsive[];
@@ -28,21 +38,22 @@ export class DonutChartComponent {
     legend: ApexLegend;
   };
 
-  constructor() {
-    const totalBalance = 100;
-    const repayment = 30;
+  ngOnChanges(changes: SimpleChanges): void {
+    if (changes['data'] && this.data.length) {
+      this.updateChart();
+    }
+  }
 
+  private updateChart() {
     this.chartOptions = {
       title: {
-        text: 'Title',
-        style: {
-          color: '#29D0B2',
-        },
+        text: this.title,
+        style: { color: '#29D0B2' },
         margin: 20,
       },
       legend: { show: false },
-      series: [repayment, totalBalance - repayment],
-      labels: ['Repayment', 'Remaining Balance'],
+      series: this.data.map((item) => item.number),
+      labels: this.data.map((item) => item.label),
       chart: {
         type: 'donut',
         width: 330,
@@ -52,24 +63,16 @@ export class DonutChartComponent {
         {
           breakpoint: 480,
           options: {
-            chart: {
-              width: 200,
-            },
-            legend: {
-              position: 'bottom',
-            },
+            chart: { width: 200 },
+            legend: { position: 'bottom' },
           },
         },
       ],
-      fill: {
-        type: 'gradient',
-      },
+      fill: { type: 'gradient' },
       tooltip: {
         y: {
           formatter: (val: number) => `${val}%`,
-          title: {
-            formatter: (seriesName: string) => `${seriesName}:`,
-          },
+          title: { formatter: (seriesName: string) => `${seriesName}:` },
         },
       },
       plotOptions: {
@@ -77,11 +80,7 @@ export class DonutChartComponent {
           donut: {
             labels: {
               show: true,
-              name: {
-                show: true,
-                offsetY: -10,
-                color: '#29D0B2',
-              },
+              name: { show: true, offsetY: -10, color: '#29D0B2' },
               value: {
                 show: true,
                 formatter: (data) => `${data}%`,
