@@ -1,6 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
-import { ImageSlideInterface } from '../../interfaces/image-slide-interface';
+import { ImageSlideInterface } from './image-slide-interface';
 import { slideAnimation } from './animations';
 
 @Component({

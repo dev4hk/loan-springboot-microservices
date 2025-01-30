@@ -1,4 +1,4 @@
-import { ImageSlideInterface } from '../../interfaces/image-slide-interface';
+import { ImageSlideInterface } from './image-slide-interface';
 
 export const loanProcessSlides: ImageSlideInterface[] = [
   {
