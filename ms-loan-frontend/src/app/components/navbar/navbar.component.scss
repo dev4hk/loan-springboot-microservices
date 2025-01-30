@@ -2,3 +2,13 @@
   padding-left: 20px;
   padding-right: 20px;
 }
+
+.btn-custom {
+  background-color: #212529;
+  color: #29d0b2;
+
+  &:hover {
+    background-color: #29d0b2;
+    color: #212529;
+  }
+}

@@ -10,4 +10,8 @@ import { KeycloakService } from '../../utils/keycloak/keycloak.service';
 })
 export class NavbarComponent {
   constructor(private keycloakService: KeycloakService) {}
+
+  logout() {
+    this.keycloakService.logout();
+  }
 }
