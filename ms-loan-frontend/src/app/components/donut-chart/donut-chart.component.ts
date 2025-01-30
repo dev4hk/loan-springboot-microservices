@@ -1,10 +1,4 @@
-import {
-  Component,
-  Input,
-  OnChanges,
-  SimpleChanges,
-  OnInit,
-} from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { ApexLegend, NgApexchartsModule } from 'ng-apexcharts';
 import {
   ApexNonAxisChartSeries,
@@ -13,18 +7,22 @@ import {
   ApexFill,
   ApexTooltip,
   ApexPlotOptions,
+  ApexTitleSubtitle,
 } from 'ng-apexcharts';
 import { DonutChartInterface } from './donut-chart-interface';
 
 @Component({
   selector: 'app-donut-chart',
+  standalone: true,
   imports: [NgApexchartsModule],
   templateUrl: './donut-chart.component.html',
   styleUrl: './donut-chart.component.scss',
 })
 export class DonutChartComponent implements OnChanges {
-  @Input() data: Array<DonutChartInterface> = [];
-  @Input() title: string = '';
+  @Input() data: DonutChartInterface = {
+    title: '',
+    data: [],
+  };
 
   public chartOptions!: {
     series: ApexNonAxisChartSeries;
@@ -39,7 +37,7 @@ export class DonutChartComponent implements OnChanges {
   };
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['data'] && this.data.length) {
+    if (changes['data'] && this.data.data.length) {
       this.updateChart();
     }
   }
@@ -47,13 +45,13 @@ export class DonutChartComponent implements OnChanges {
   private updateChart() {
     this.chartOptions = {
       title: {
-        text: this.title,
+        text: this.data.title, // Use title from the input data
         style: { color: '#29D0B2' },
         margin: 20,
       },
       legend: { show: false },
-      series: this.data.map((item) => item.number),
-      labels: this.data.map((item) => item.label),
+      series: this.data.data.map((item) => item.number), // Accessing the array inside `data`
+      labels: this.data.data.map((item) => item.label),
       chart: {
         type: 'donut',
         width: 330,
