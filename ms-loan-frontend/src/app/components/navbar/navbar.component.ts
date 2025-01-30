@@ -14,4 +14,12 @@ export class NavbarComponent {
   logout() {
     this.keycloakService.logout();
   }
+
+  get fullname() {
+    return this.keycloakService.fullName;
+  }
+
+  get isManager() {
+    return this.keycloakService.isManager;
+  }
 }

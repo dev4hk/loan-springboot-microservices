@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import Keycloak from 'keycloak-js';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -7,7 +8,7 @@ import Keycloak from 'keycloak-js';
 export class KeycloakService {
   private _keycloak: Keycloak | undefined;
 
-  constructor() {}
+  constructor(private router: Router) {}
 
   get keycloak() {
     if (!this._keycloak) {
@@ -24,6 +25,10 @@ export class KeycloakService {
     const authenticated = await this.keycloak.init({
       onLoad: 'login-required',
     });
+
+    if (authenticated) {
+      this.handleRedirect();
+    }
   }
 
   async login() {
@@ -54,6 +59,10 @@ export class KeycloakService {
     return this.keycloak.tokenParsed?.['email'] as string;
   }
 
+  get isManager() {
+    return this.keycloak.hasRealmRole('MANAGER');
+  }
+
   logout() {
     return this.keycloak.logout({
       redirectUri: 'http://localhost:4200',
@@ -62,5 +71,13 @@ export class KeycloakService {
 
   accountManagement() {
     return this.keycloak.accountManagement();
+  }
+
+  private handleRedirect() {
+    if (this.isManager) {
+      this.router.navigate(['/admin-home']);
+    } else {
+      this.router.navigate(['/']);
+    }
   }
 }
