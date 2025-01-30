@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ApplicationRequestDto } from '../dtos/application-request-dto';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { ResponseDTO } from '../dtos/response-dto';
+import { ResponseDTO } from '../dtos/response';
 import { KeycloakService } from '../utils/keycloak/keycloak.service';
 import { ApplicationResponseDto } from '../dtos/application-response-dto';
 

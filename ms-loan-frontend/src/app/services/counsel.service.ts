@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CounselRequestDto } from '../dtos/counsel-request-dto';
-import { ResponseDTO } from '../dtos/response-dto';
+import { ResponseDTO } from '../dtos/response';
 import { CounselResponseDto } from '../dtos/counsel-response-dto';
 import { KeycloakService } from '../utils/keycloak/keycloak.service';
 
@@ -18,6 +18,13 @@ export class CounselService {
   createCounsel(request: CounselRequestDto) {
     return this.http.post<ResponseDTO<CounselResponseDto>>(
       this.BASE_URL,
+      request
+    );
+  }
+
+  updateCounsel(counselId: number, request: CounselRequestDto) {
+    return this.http.put<ResponseDTO<CounselResponseDto>>(
+      `${this.BASE_URL}/${counselId}}`,
       request
     );
   }

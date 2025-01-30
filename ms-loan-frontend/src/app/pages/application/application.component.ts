@@ -12,6 +12,9 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApplicationResponseDto } from '../../dtos/application-response-dto';
 import { KeycloakService } from '../../utils/keycloak/keycloak.service';
 import { RouterModule } from '@angular/router';
+import { ImageSlideInterface } from '../../interfaces/image-slide-interface';
+import { ImageSliderComponent } from '../../components/image-slider/image-slider.component';
+import { loanProcessSlides } from '../../components/image-slider/loan-process-slides';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -21,13 +24,20 @@ const snackbarConfig: MatSnackBarConfig = {
 
 @Component({
   selector: 'app-application',
-  imports: [ReactiveFormsModule, CommonModule, MatSnackBarModule, RouterModule],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    MatSnackBarModule,
+    RouterModule,
+    ImageSliderComponent,
+  ],
   templateUrl: './application.component.html',
   styleUrl: './application.component.scss',
 })
 export class ApplicationComponent implements OnInit {
   form: FormGroup = new FormGroup({});
   application?: ApplicationResponseDto;
+  slides: Array<ImageSlideInterface> = loanProcessSlides;
 
   constructor(
     private formBuilder: FormBuilder,

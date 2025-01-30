@@ -14,6 +14,8 @@ import { CommonModule } from '@angular/common';
 import { CounselService } from '../../services/counsel.service';
 import { KeycloakService } from '../../utils/keycloak/keycloak.service';
 import { CounselResponseDto } from '../../dtos/counsel-response-dto';
+import { ImageSlideInterface } from '../../interfaces/image-slide-interface';
+import { ImageSliderComponent } from '../../components/image-slider/image-slider.component';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -23,7 +25,12 @@ const snackbarConfig: MatSnackBarConfig = {
 
 @Component({
   selector: 'app-counsel',
-  imports: [ReactiveFormsModule, CommonModule, MatSnackBarModule],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    MatSnackBarModule,
+    ImageSliderComponent,
+  ],
   templateUrl: './counsel.component.html',
   styleUrl: './counsel.component.scss',
 })
@@ -31,6 +38,7 @@ export class CounselComponent implements OnInit {
   form: FormGroup = new FormGroup({});
   counsel?: CounselResponseDto;
   showMemo = false;
+  isUpdate = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -41,38 +49,46 @@ export class CounselComponent implements OnInit {
 
   ngOnInit(): void {
     this.addToggleFunctionality();
+    this.initializeForm();
+    this.getCounsel().then(() => {
+      this.updateFormWithCounselData();
+    });
+  }
+  initializeForm() {
     this.form = this.formBuilder.group({
-      firstname: [
-        this.keycloakService.firstName,
-        [Validators.required, Validators.pattern('^[a-zA-Z]+$')],
-      ],
-      lastname: [
-        this.keycloakService.lastName,
-        [Validators.required, Validators.pattern('^[a-zA-Z]+$')],
-      ],
-      cellPhone: [
-        this.counsel?.cellPhone,
-        [Validators.required, Validators.pattern('^[0-9]{10}$')],
-      ],
+      firstname: ['', [Validators.required, Validators.pattern('^[a-zA-Z]+$')]],
+      lastname: ['', [Validators.required, Validators.pattern('^[a-zA-Z]+$')]],
+      cellPhone: ['', [Validators.required, Validators.pattern('^[0-9]{10}$')]],
       email: [
-        this.keycloakService.email,
+        '',
         [
           Validators.required,
           Validators.email,
           Validators.pattern('^[a-zA-Z0-9._]+@[a-zA-Z]+\\.[a-zA-Z]{2,}$'),
         ],
       ],
-      memo: [this.counsel?.memo, [Validators.required]],
-      address1: [this.counsel?.address1, [Validators.required]],
-      address2: [this.counsel?.address2],
-      city: [this.counsel?.city, [Validators.required]],
-      state: [this.counsel?.state, [Validators.required]],
-      zipCode: [
-        this.counsel?.zipCode,
-        [Validators.required, Validators.pattern('^[0-9]{5}$')],
-      ],
+      memo: ['', [Validators.required]],
+      address1: ['', [Validators.required]],
+      address2: [''],
+      city: ['', [Validators.required]],
+      state: ['', [Validators.required]],
+      zipCode: ['', [Validators.required, Validators.pattern('^[0-9]{5}$')]],
     });
-    this.getCounsel();
+  }
+
+  updateFormWithCounselData() {
+    this.form.patchValue({
+      firstname: this.keycloakService.firstName,
+      lastname: this.keycloakService.lastName,
+      cellPhone: this.counsel?.cellPhone?.toString(),
+      email: this.keycloakService.email,
+      memo: this.counsel?.memo,
+      address1: this.counsel?.address1,
+      address2: this.counsel?.address2,
+      city: this.counsel?.city,
+      state: this.counsel?.state,
+      zipCode: this.counsel?.zipCode?.toString(),
+    });
   }
 
   addToggleFunctionality(): void {
@@ -96,7 +112,6 @@ export class CounselComponent implements OnInit {
   }
 
   toggleMemo() {
-    console.log('clicked');
     this.showMemo = !this.showMemo;
   }
 
@@ -136,37 +151,64 @@ export class CounselComponent implements OnInit {
 
   onSubmit() {
     if (this.form.valid) {
-      this.counselService.createCounsel(this.form.value).subscribe({
-        next: (res) => {
-          this.form.reset();
-          this.snackBar.open('Counsel submitted successfully!', 'Close', {
-            ...snackbarConfig,
+      if (this.isUpdate && this.counsel) {
+        this.counselService
+          .updateCounsel(this.counsel.counselId!, this.form.value)
+          .subscribe({
+            next: (res) => {
+              this.form.reset();
+              this.snackBar.open('Counsel updated successfully!', 'Close', {
+                ...snackbarConfig,
+              });
+              this.counsel = res.data;
+              this.toggleUpdate();
+            },
           });
-          this.counsel = res.data;
-        },
-        error: (res) => {
-          console.log(res.error);
-          this.snackBar.open(
-            'Counsel submission failed. Please try again.',
-            'Close',
-            {
+      } else {
+        this.counselService.createCounsel(this.form.value).subscribe({
+          next: (res) => {
+            this.form.reset();
+            this.snackBar.open('Counsel submitted successfully!', 'Close', {
               ...snackbarConfig,
-            }
-          );
-        },
-      });
+            });
+            this.counsel = res.data;
+          },
+          error: (res) => {
+            console.log(res.error);
+            this.snackBar.open(
+              'Counsel submission failed. Please try again.',
+              'Close',
+              {
+                ...snackbarConfig,
+              }
+            );
+          },
+        });
+      }
     } else {
       this.form.markAllAsTouched();
     }
   }
 
-  getCounsel() {
-    this.counselService.getCounselByEmail().subscribe({
-      next: (res) => {
-        console.log(res);
-        this.counsel = res.data;
-      },
-      error: (res) => console.log(res.error),
+  getCounsel(): Promise<void> {
+    return new Promise((resolve) => {
+      this.counselService.getCounselByEmail().subscribe({
+        next: (res) => {
+          this.counsel = res.data;
+          resolve();
+        },
+        error: (res) => {
+          console.log(res.error);
+          resolve();
+        },
+      });
     });
+  }
+
+  toggleUpdate() {
+    this.isUpdate = !this.isUpdate;
+    if (this.isUpdate && this.counsel) {
+      this.form.patchValue(this.counsel);
+    }
   }
 }
