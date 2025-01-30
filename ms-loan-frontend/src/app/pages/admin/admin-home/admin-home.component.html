@@ -1,0 +1,50 @@
+<div class="container mt-5 text-light">
+  <h1 class="display-4">Admin Dashboard</h1>
+  <p class="lead">Monitor all loan applications and repayments.</p>
+
+  <div class="row my-5">
+    <div class="col-md-4 d-flex flex-column slide-right">
+      <h4>Application Summary</h4>
+      <app-donut-chart
+        class="d-flex justify-content-center mb-4"
+        [data]="data1"
+      ></app-donut-chart>
+
+      <h4>Entry Summary</h4>
+      <app-donut-chart
+        class="d-flex justify-content-center mb-4"
+        [data]="data2"
+      ></app-donut-chart>
+    </div>
+
+    <div class="col-md-4 d-flex flex-column slide-left">
+      <h4>Repayment Summary</h4>
+      <app-donut-chart
+        class="d-flex justify-content-center mb-4"
+        [data]="data3"
+      ></app-donut-chart>
+
+      <h4>Counsel Summary</h4>
+      <app-donut-chart
+        class="d-flex justify-content-center mb-4"
+        [data]="data4"
+      ></app-donut-chart>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card bg-dark text-white mb-4">
+        <div class="card-header header-color">New Applications</div>
+        <div class="card-body">
+          <p class="card-text">New Applications: 5</p>
+        </div>
+      </div>
+
+      <div class="card bg-dark text-white mb-4">
+        <div class="card-header header-color">New Counsel Requests</div>
+        <div class="card-body">
+          <p class="card-text">New Requests: 3</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
