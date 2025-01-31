@@ -10,11 +10,14 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.*;
 
+import java.util.List;
 import java.util.concurrent.TimeoutException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -55,6 +58,37 @@ public class ApplicationControllerTest {
 
         assertEquals(response, result.getData());
         verify(applicationService, times(1)).get(applicationId);
+    }
+
+    @Test
+    void shouldReturnPaginatedApplications() {
+        List<ApplicationResponseDto> applicationList = List.of(
+                ApplicationResponseDto.builder()
+                        .applicationId(1L)
+                        .firstname("John")
+                        .lastname("Doe")
+                        .email("john.doe@example.com")
+                        .build(),
+                ApplicationResponseDto.builder()
+                        .applicationId(2L)
+                        .firstname("Jane")
+                        .lastname("Smith")
+                        .email("jane.smith@example.com")
+                        .build()
+        );
+
+        Page<ApplicationResponseDto> applicationPage = new PageImpl<>(applicationList);
+
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("applicationId").ascending());
+        when(applicationService.getAll(pageable)).thenReturn(applicationPage);
+
+        ResponseDTO<Page<ApplicationResponseDto>> result = applicationController.getAll(pageable);
+
+        assertNotNull(result);
+        assertNotNull(result.getData());
+        assertEquals(2, result.getData().getTotalElements());
+
+        verify(applicationService, times(1)).getAll(pageable);
     }
 
     @Test

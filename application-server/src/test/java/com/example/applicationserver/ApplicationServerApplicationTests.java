@@ -131,7 +131,7 @@ class ApplicationServerApplicationTests {
                 .body("data.firstname", equalTo("firstname"));
     }
 
-    @Order(2)
+    @Order(3)
     @Test
     void should_get_application_by_email() {
         String email = "email@email.com";

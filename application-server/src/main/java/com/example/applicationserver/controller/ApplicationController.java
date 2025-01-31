@@ -18,6 +18,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -132,6 +134,16 @@ public class ApplicationController {
         ApplicationResponseDto applicationResponseDto = applicationService.getByEmail(email);
         logger.info("ApplicationController - get finished");
         return ok(applicationResponseDto);
+    }
+
+    @RateLimiter(name = "getAllRateLimiter")
+    @Retry(name = "getAllRetry")
+    @GetMapping
+    public ResponseDTO<Page<ApplicationResponseDto>> getAll(Pageable pageable) {
+        logger.info("ApplicationController - getAll started");
+        Page<ApplicationResponseDto> response = applicationService.getAll(pageable);
+        logger.info("ApplicationController - getAll finished");
+        return ok(response);
     }
 
     @Operation(

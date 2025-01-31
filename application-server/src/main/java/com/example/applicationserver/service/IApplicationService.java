@@ -5,6 +5,8 @@ import com.example.applicationserver.constants.CommunicationStatus;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.GrantAmountDto;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface IApplicationService {
     ApplicationResponseDto create(ApplicationRequestDto request);
@@ -24,4 +26,6 @@ public interface IApplicationService {
     void updateCommunicationStatus(Long applicationId, CommunicationStatus communicationStatus);
 
     ApplicationResponseDto getByEmail(String email);
+
+    Page<ApplicationResponseDto> getAll(Pageable pageable);
 }

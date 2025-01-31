@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
@@ -188,6 +189,29 @@ class ApplicationServiceImplTest {
         String email = "email@email.com";
         when(applicationRepository.findByEmail(email)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
         assertThrows(BaseException.class, () -> applicationService.getByEmail(email));
+    }
+
+    @DisplayName("Should return paginated application response when requested")
+    @Test
+    void should_Return_Paginated_Application_Response() {
+        Pageable pageable = PageRequest.of(0, 2, Sort.by("appliedAt").descending());
+        List<Application> applications = List.of(
+                Application.builder().applicationId(1L).firstname("John").lastname("Doe").email("john@example.com").build(),
+                Application.builder().applicationId(2L).firstname("Jane").lastname("Doe").email("jane@example.com").build()
+        );
+        Page<Application> applicationPage = new PageImpl<>(applications, pageable, applications.size());
+
+        when(applicationRepository.findAll(pageable)).thenReturn(applicationPage);
+
+        Page<ApplicationResponseDto> result = applicationService.getAll(pageable);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getTotalElements()).isEqualTo(2);
+        assertThat(result.getContent().get(0).getApplicationId()).isEqualTo(1L);
+        assertThat(result.getContent().get(1).getApplicationId()).isEqualTo(2L);
+
+        verify(applicationRepository, times(1)).findAll(pageable);
     }
 
     @DisplayName("Update an Application")

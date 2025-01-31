@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -100,6 +102,13 @@ public class ApplicationServiceImpl implements IApplicationService {
             responseDto.setFileInfo(fileStorageResponse.getData());
         }
         return responseDto;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<ApplicationResponseDto> getAll(Pageable pageable) {
+        return applicationRepository.findAll(pageable)
+                .map(ApplicationMapper::mapToApplicationResponseDto);
     }
 
     @Override
