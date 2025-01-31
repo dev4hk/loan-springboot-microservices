@@ -15,6 +15,8 @@ import { RouterModule } from '@angular/router';
 import { ImageSlideInterface } from '../../components/image-slider/image-slide-interface';
 import { ImageSliderComponent } from '../../components/image-slider/image-slider.component';
 import { loanProcessSlides } from '../../components/image-slider/loan-process-slides';
+import { FileStorageService } from '../../services/file-storage.service';
+import { FileResponseDto } from '../../dtos/file-response-dto';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -38,12 +40,15 @@ export class ApplicationComponent implements OnInit {
   form: FormGroup = new FormGroup({});
   application?: ApplicationResponseDto;
   slides: Array<ImageSlideInterface> = loanProcessSlides;
+  selectedFile?: File;
+  filesInfo?: Array<FileResponseDto>;
 
   constructor(
     private formBuilder: FormBuilder,
     private applicationService: ApplicationService,
     private snackBar: MatSnackBar,
-    private keycloakService: KeycloakService
+    private keycloakService: KeycloakService,
+    private fileStorageService: FileStorageService
   ) {}
 
   ngOnInit(): void {
@@ -141,13 +146,175 @@ export class ApplicationComponent implements OnInit {
   }
 
   getApplication() {
-    console.log('Called');
+    console.log('Fetching application...');
     this.applicationService.getApplicationByEmail().subscribe({
       next: (res) => {
-        console.log(res);
+        console.log('Application fetched:', res);
         this.application = res.data;
+
+        if (this.application?.applicationId) {
+          this.getFilesInfo();
+        }
       },
-      error: (res) => console.log(res.error),
+      error: (error) => {
+        console.error('Error fetching application:', error);
+      },
+    });
+  }
+
+  onFileSelected(event: any) {
+    if (event.target.files.length > 0) {
+      this.selectedFile = event.target.files[0];
+    }
+  }
+
+  getFilesInfo() {
+    if (!this.application?.applicationId) {
+      console.error('Application ID is undefined. Cannot upload file.');
+      this.snackBar.open(
+        'Application ID is missing. Cannot upload file.',
+        'Close',
+        { ...snackbarConfig }
+      );
+      return;
+    }
+
+    this.fileStorageService
+      .getFilesInfo(this.application.applicationId)
+      .subscribe({
+        next: (res) => (this.filesInfo = res.data),
+        error: (res) => console.log(res.error),
+      });
+  }
+
+  uploadFile() {
+    if (!this.application?.applicationId) {
+      console.error('Application ID is undefined. Cannot upload file.');
+      this.snackBar.open(
+        'Application ID is missing. Cannot upload file.',
+        'Close',
+        { ...snackbarConfig }
+      );
+      return;
+    }
+
+    if (!this.selectedFile) {
+      console.error('No file selected.');
+      this.snackBar.open('Please select a file before uploading.', 'Close', {
+        ...snackbarConfig,
+      });
+      return;
+    }
+
+    this.fileStorageService
+      .uploadFile(this.application.applicationId, this.selectedFile)
+      .subscribe({
+        next: () => {
+          this.getFilesInfo();
+          this.snackBar.open('File uploaded successfully!', 'Close', {
+            ...snackbarConfig,
+          });
+        },
+        error: (error) => {
+          console.error('File upload failed:', error);
+          this.snackBar.open('File upload failed. Please try again.', 'Close', {
+            ...snackbarConfig,
+          });
+        },
+      });
+  }
+
+  private checkApplicationAndFile(fileName?: string): boolean {
+    if (!this.application?.applicationId) {
+      console.error('Application ID is undefined.');
+      this.snackBar.open(
+        'Application ID is missing. Cannot perform action.',
+        'Close',
+        snackbarConfig
+      );
+      return false;
+    }
+
+    if (!fileName) {
+      console.error('Filename is undefined.');
+      this.snackBar.open(
+        'Filename is missing. Cannot perform action.',
+        'Close',
+        snackbarConfig
+      );
+      return false;
+    }
+
+    return true;
+  }
+
+  downloadFile(fileName?: string) {
+    if (!this.checkApplicationAndFile(fileName)) {
+      return;
+    }
+
+    const applicationId = this.application?.applicationId;
+
+    if (applicationId === undefined) {
+      console.error('Application ID is missing. Cannot download file.');
+      return;
+    }
+
+    this.fileStorageService.getFile(applicationId, fileName!).subscribe({
+      next: (blob) => {
+        const downloadUrl = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = downloadUrl;
+        a.download = fileName!;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      },
+      error: (error) => {
+        console.error('File download failed:', error);
+        this.snackBar.open(
+          'File download failed. Please try again.',
+          'Close',
+          snackbarConfig
+        );
+      },
+    });
+  }
+
+  deleteFile(fileName?: string) {
+    if (!this.checkApplicationAndFile(fileName)) {
+      return;
+    }
+
+    const applicationId = this.application?.applicationId;
+
+    if (applicationId === undefined) {
+      console.error('Application ID is missing. Cannot delete file.');
+      this.snackBar.open(
+        'Application ID is missing. Cannot delete file.',
+        'Close',
+        snackbarConfig
+      );
+      return;
+    }
+
+    this.fileStorageService.deleteFile(applicationId, fileName!).subscribe({
+      next: (res) => {
+        this.filesInfo = this.filesInfo?.filter(
+          (file) => file.name !== fileName
+        );
+        this.snackBar.open(
+          'File deleted successfully!',
+          'Close',
+          snackbarConfig
+        );
+      },
+      error: (error) => {
+        console.error('File deletion failed:', error);
+        this.snackBar.open('File deletion failed. Please try again.', 'Close', {
+          ...snackbarConfig,
+        });
+      },
     });
   }
 }

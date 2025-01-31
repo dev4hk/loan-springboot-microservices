@@ -123,3 +123,29 @@
 .header-color {
   color: #29d0b2;
 }
+
+.file-select {
+  color: #29d0b2;
+
+  &:hover {
+    color: #fff;
+    transition: all 0.15s ease-in-out;
+  }
+}
+
+.file-download {
+  color: #29d0b2;
+
+  &:hover {
+    color: #fff;
+    transition: all 0.15s ease-in-out;
+  }
+}
+
+.fa-regular {
+  color: #e84118;
+  &:hover {
+    color: #fff;
+    transition: all 0.15s ease-in-out;
+  }
+}

@@ -245,21 +245,59 @@
             <ul>
               <li
                 class="list-group-item bg-dark text-white"
-                *ngFor="let doc of ['document1', 'document2', 'document3']"
+                *ngFor="
+                  let doc of ['Valid ID', 'Proof of Income', 'Back Statement']
+                "
               >
                 {{ doc }}
               </li>
             </ul>
-            <button class="btn btn-custom-inverse">Upload Document</button>
+            <div>
+              <div class="d-flex align-items-center">
+                <input
+                  type="file"
+                  #fileInput
+                  (change)="onFileSelected($event)"
+                  class="d-none"
+                />
+                <span
+                  (click)="fileInput.click()"
+                  class="file-select cursor-pointer"
+                >
+                  Select File
+                </span>
+                @if (selectedFile) {
+                <span class="ms-2">{{ selectedFile.name }}</span>
+                }
+              </div>
+              <button
+                class="btn btn-custom-inverse mt-2"
+                (click)="uploadFile()"
+                [ngClass]="selectedFile ? '' : 'd-none'"
+                [disabled]="!selectedFile"
+              >
+                Submit Document
+              </button>
+            </div>
           </div>
           <div class="col">
             <h5 class="card-title">Submitted Documents</h5>
+
             <ul>
               <li
                 class="list-group-item bg-dark text-white"
-                *ngFor="let doc of ['document1', 'document2', 'document3']"
+                *ngFor="let file of filesInfo"
               >
-                {{ doc }}
+                <span
+                  class="file-download cursor-pointer me-2"
+                  (click)="downloadFile(file.name)"
+                >
+                  {{ file.name }}
+                </span>
+                <i
+                  class="fa-regular fa-circle-xmark cursor-pointer icon"
+                  (click)="deleteFile(file.name)"
+                ></i>
               </li>
             </ul>
           </div>
