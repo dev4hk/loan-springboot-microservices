@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { ApplicationRequestDto } from '../dtos/application-request-dto';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { ResponseDTO } from '../dtos/response';
+import { ResponseDTO } from '../dtos/response-dto';
 import { KeycloakService } from '../utils/keycloak/keycloak.service';
 import { ApplicationResponseDto } from '../dtos/application-response-dto';
+import { Page } from '../dtos/page-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -35,6 +36,16 @@ export class ApplicationService {
   getApplicationById(applicationId: number) {
     return this.http.get<ResponseDTO<ApplicationResponseDto>>(
       `${this.BASE_URL}/${applicationId}`
+    );
+  }
+
+  getApplications(page: number, size: number) {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    return this.http.get<ResponseDTO<Page<ApplicationResponseDto>>>(
+      `${this.BASE_URL}`,
+      { params: params }
     );
   }
 }

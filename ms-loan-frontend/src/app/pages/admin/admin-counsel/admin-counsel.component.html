@@ -59,4 +59,22 @@
       </tbody>
     </table>
   </div>
+
+  <div class="pagination-container mt-3 d-flex justify-content-center">
+    <button
+      (click)="prevPage()"
+      [disabled]="currentPage === 0"
+      class="btn btn-custom"
+    >
+      Previous
+    </button>
+    <span class="mx-3"> Page {{ currentPage + 1 }} of {{ totalPages }} </span>
+    <button
+      (click)="nextPage()"
+      [disabled]="(currentPage + 1) * pageSize >= totalElements"
+      class="btn btn-custom"
+    >
+      Next
+    </button>
+  </div>
 </div>

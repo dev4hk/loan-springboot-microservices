@@ -36,10 +36,8 @@
             let app of applications
               | filter
                 : searchQuery
-                : ['applicationId', 'firstname', 'lastname', 'email'];
-            let i = index
+                : ['applicationId', 'firstname', 'lastname', 'email']
           "
-          class="table-row"
         >
           <td>{{ app.applicationId }}</td>
           <td>{{ app.firstname }}</td>
@@ -48,10 +46,33 @@
           <td>{{ app.appliedAt | date : "yyyy-MM-dd" }}</td>
           <td>{{ app.communicationStatus }}</td>
           <td>
-            <a [routerLink]="['1']" class="view-details-link"> View Details </a>
+            <a
+              [routerLink]="['/application', app.applicationId]"
+              class="view-details-link"
+            >
+              View Details
+            </a>
           </td>
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <div class="pagination-container mt-3 d-flex justify-content-center">
+    <button
+      (click)="prevPage()"
+      [disabled]="currentPage === 0"
+      class="btn btn-custom"
+    >
+      Previous
+    </button>
+    <span class="mx-3"> Page {{ currentPage + 1 }} of {{ totalPages }} </span>
+    <button
+      (click)="nextPage()"
+      [disabled]="(currentPage + 1) * pageSize >= totalElements"
+      class="btn btn-custom"
+    >
+      Next
+    </button>
   </div>
 </div>

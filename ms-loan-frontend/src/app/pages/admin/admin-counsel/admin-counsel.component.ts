@@ -3,6 +3,8 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FilterPipe } from '../filter-pipe';
 import { RouterModule } from '@angular/router';
+import { ApplicationService } from '../../../services/application.service';
+import { CounselService } from '../../../services/counsel.service';
 
 @Component({
   selector: 'app-admin-counsel',
@@ -12,14 +14,49 @@ import { RouterModule } from '@angular/router';
 })
 export class AdminCounselComponent {
   searchQuery: string = '';
-  tempId: number = 100;
+  counsels: Array<any> = [];
+  totalElements: number = 0;
+  currentPage: number = 0;
+  pageSize: number = 5;
 
-  counsels = Array.from({ length: 10 }).map((_, i) => ({
-    counselId: this.tempId++,
-    firstname: `Customer ${i + 1}`,
-    lastname: `Last ${i + 1}`,
-    email: `customer${i + 1}@email.com`,
-    createdAt: new Date(),
-    communicationStatus: Math.random() > 0.5 ? 'Pending' : 'Completed',
-  }));
+  constructor(private counselService: CounselService) {}
+
+  ngOnInit() {
+    this.loadCounsels();
+  }
+
+  loadCounsels() {
+    this.counselService.getCounsels(this.currentPage, this.pageSize).subscribe({
+      next: (res) => {
+        this.counsels = res?.data?.content ?? [];
+        this.totalElements = res?.data?.totalElements ?? 0;
+      },
+      error: (res) => {
+        console.error('Error loading counsels', res);
+      },
+    });
+  }
+
+  nextPage() {
+    if ((this.currentPage + 1) * this.pageSize < this.totalElements) {
+      this.currentPage++;
+      this.loadCounsels();
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.loadCounsels();
+    }
+  }
+
+  goToPage(page: number) {
+    this.currentPage = page;
+    this.loadCounsels();
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalElements / this.pageSize);
+  }
 }

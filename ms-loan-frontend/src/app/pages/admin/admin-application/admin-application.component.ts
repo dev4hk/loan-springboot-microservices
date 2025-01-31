@@ -1,29 +1,65 @@
-import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { FilterPipe } from '../filter-pipe';
+import { ApplicationService } from '../../../services/application.service';
+import { ApplicationResponseDto } from '../../../dtos/application-response-dto';
 import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
+import { FilterPipe } from '../filter-pipe';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-admin-application',
   templateUrl: './admin-application.component.html',
   styleUrls: ['./admin-application.component.scss'],
-  imports: [CommonModule, FormsModule, FilterPipe, RouterModule],
+  imports: [RouterModule, CommonModule, FilterPipe, FormsModule],
 })
 export class AdminApplicationComponent {
   searchQuery: string = '';
-  tempId: number = 1;
+  applications: Array<ApplicationResponseDto> = [];
+  totalElements: number = 0;
+  currentPage: number = 0;
+  pageSize: number = 5;
 
-  applications = Array.from({ length: 10 }).map((_, i) => ({
-    applicationId: this.tempId++,
-    firstname: `Customer ${i + 1}`,
-    lastname: `Last ${i + 1}`,
-    cellPhone: `1234567890`,
-    email: `customer${i + 1}@email.com`,
-    hopeAmount: Math.floor(Math.random() * 10000) + 5000,
-    approvalAmount:
-      Math.random() > 0.5 ? Math.floor(Math.random() * 8000) + 2000 : null,
-    appliedAt: new Date(),
-    communicationStatus: Math.random() > 0.5 ? 'Pending' : 'Approved',
-  }));
+  constructor(private applicationService: ApplicationService) {}
+
+  ngOnInit() {
+    this.loadApplications();
+  }
+
+  loadApplications() {
+    this.applicationService
+      .getApplications(this.currentPage, this.pageSize)
+      .subscribe({
+        next: (res) => {
+          this.applications = res?.data?.content ?? [];
+          this.totalElements = res?.data?.totalElements ?? 0;
+        },
+        error: (res) => {
+          console.error('Error loading applications', res);
+          alert('Failed to load applications. Please try again later.');
+        },
+      });
+  }
+
+  nextPage() {
+    if ((this.currentPage + 1) * this.pageSize < this.totalElements) {
+      this.currentPage++;
+      this.loadApplications();
+    }
+  }
+
+  prevPage() {
+    if (this.currentPage > 0) {
+      this.currentPage--;
+      this.loadApplications();
+    }
+  }
+
+  goToPage(page: number) {
+    this.currentPage = page;
+    this.loadApplications();
+  }
+
+  get totalPages(): number {
+    return Math.ceil(this.totalElements / this.pageSize);
+  }
 }

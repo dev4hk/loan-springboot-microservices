@@ -65,3 +65,31 @@ input.form-control {
   width: 250px;
   margin-bottom: 20px;
 }
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-container button {
+  padding: 8px 16px;
+  margin: 0 10px;
+  border: 1px solid #29d0b2;
+  background-color: #343a40;
+  color: #29d0b2;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.pagination-container button:disabled {
+  background-color: #495057;
+  cursor: not-allowed;
+}
+
+.pagination-container span {
+  color: #f8f9fa;
+  font-size: 1rem;
+  font-weight: bold;
+}

@@ -1,9 +1,10 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { CounselRequestDto } from '../dtos/counsel-request-dto';
-import { ResponseDTO } from '../dtos/response';
+import { ResponseDTO } from '../dtos/response-dto';
 import { CounselResponseDto } from '../dtos/counsel-response-dto';
 import { KeycloakService } from '../utils/keycloak/keycloak.service';
+import { Page } from '../dtos/page-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -42,6 +43,16 @@ export class CounselService {
       {
         params: params,
       }
+    );
+  }
+
+  getCounsels(page: number, size: number) {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    return this.http.get<ResponseDTO<Page<CounselResponseDto>>>(
+      `${this.BASE_URL}`,
+      { params: params }
     );
   }
 }
