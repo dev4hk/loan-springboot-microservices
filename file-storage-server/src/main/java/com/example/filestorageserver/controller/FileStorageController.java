@@ -180,4 +180,36 @@ public class FileStorageController {
         return ok();
     }
 
+    @Operation(
+            summary = "Delete file REST API",
+            description = "REST API to delete file"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status Bad Request",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @RateLimiter(name = "deleteFileRateLimiter")
+    @DeleteMapping("/{applicationId}/file")
+    public ResponseDTO<Void> deleteFile(@PathVariable Long applicationId, @RequestParam("fileName") String fileName) {
+        logger.info("FileStorageController - deleteFile started");
+        logger.debug("FileStorageController - applicationId: {}", applicationId);
+        logger.debug("FileStorageController - fileName: {}", fileName);
+        fileStorageService.deleteFile(applicationId, fileName);
+        logger.info("FileStorageController - deleteFile finished");
+        return ok();
+    }
 }

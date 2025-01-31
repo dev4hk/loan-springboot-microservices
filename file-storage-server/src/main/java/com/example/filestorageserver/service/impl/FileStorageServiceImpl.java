@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -113,6 +114,32 @@ public class FileStorageServiceImpl implements IFileStorageService {
         String applicationPath = uploadPath.concat("/" + applicationId);
         FileSystemUtils.deleteRecursively(Paths.get(applicationPath).toFile());
     }
+
+    @Override
+    public void deleteFile(Long applicationId, String fileName) {
+        logger.info("FileStorageServiceImpl - deleteFile invoked");
+
+        if (!checkIfApplicationPresent(applicationId)) {
+            logger.error("FileStorageServiceImpl - Application does not exist");
+            throw new BaseException(ResultType.BAD_REQUEST, "Application does not exist", HttpStatus.BAD_REQUEST);
+        }
+
+        String filePath = uploadPath + "/" + applicationId + "/" + fileName;
+        File file = new File(filePath);
+
+        if (!file.exists()) {
+            logger.error("FileStorageServiceImpl - File not found: {}", fileName);
+            throw new BaseException(ResultType.RESOURCE_NOT_FOUND, "File not found", HttpStatus.NOT_FOUND);
+        }
+
+        if (file.delete()) {
+            logger.info("FileStorageServiceImpl - File successfully deleted: {}", fileName);
+        } else {
+            logger.error("FileStorageServiceImpl - Failed to delete file: {}", fileName);
+            throw new BaseException(ResultType.SYSTEM_ERROR, "Failed to delete file", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
     public boolean checkIfApplicationPresent(Long applicationId) {
         logger.info("FileStorageServiceImpl - checkIfApplicationPresent invoked");
