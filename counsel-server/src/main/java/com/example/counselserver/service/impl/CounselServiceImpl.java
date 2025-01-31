@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -128,5 +130,12 @@ public class CounselServiceImpl implements ICounselService {
                 );
         return CounselMapper.mapToCounselResponseDto(counsel);
 
+    }
+
+    @Override
+    public Page<CounselResponseDto> getAll(Pageable pageable) {
+        logger.info("CounselServiceImpl - getAll invoked");
+        return counselRepository.findAll(pageable)
+                .map(CounselMapper::mapToCounselResponseDto);
     }
 }

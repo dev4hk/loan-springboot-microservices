@@ -15,6 +15,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -97,6 +99,28 @@ public class CounselController {
         return ok(counselResponseDto);
     }
 
+    @Operation(
+            summary = "Get Counsel by Email REST API",
+            description = "REST API to get counsel by email"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status Bad Request",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
     @RateLimiter(name = "getByEmailRateLimiter")
     @GetMapping("/email")
     public ResponseDTO<CounselResponseDto> getByEmail(@RequestParam("email") String email) {
@@ -105,6 +129,30 @@ public class CounselController {
         CounselResponseDto counselResponseDto = counselService.getByEmail(email);
         logger.info("CounselController - getByEmail finished");
         return ok(counselResponseDto);
+    }
+
+    @Operation(
+            summary = "Get All Counsel REST API",
+            description = "REST API to get all counsel"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @RateLimiter(name = "getAllRateLimiter")
+    @GetMapping
+    public ResponseDTO<Page<CounselResponseDto>> getAll(Pageable pageable) {
+        logger.info("CounselController - getAll started");
+        Page<CounselResponseDto> response = counselService.getAll(pageable);
+        logger.info("CounselController - getAll finished");
+        return ok(response);
     }
 
     @Operation(

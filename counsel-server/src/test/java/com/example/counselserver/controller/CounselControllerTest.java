@@ -9,8 +9,15 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public class CounselControllerTest {
@@ -50,6 +57,37 @@ public class CounselControllerTest {
 
         assertEquals(response, result.getData());
         verify(counselService, times(1)).get(counselId);
+    }
+
+    @Test
+    public void getAllCounsel() {
+        Pageable pageable = PageRequest.of(0, 5);
+        CounselResponseDto counsel1 = CounselResponseDto.builder()
+                .counselId(1L)
+                .firstname("John")
+                .lastname("Doe")
+                .build();
+        CounselResponseDto counsel2 = CounselResponseDto.builder()
+                .counselId(2L)
+                .firstname("Jane")
+                .lastname("Smith")
+                .build();
+
+        List<CounselResponseDto> counselList = List.of(counsel1, counsel2);
+        Page<CounselResponseDto> counselPage = new PageImpl<>(counselList, pageable, counselList.size());
+
+        when(counselService.getAll(pageable)).thenReturn(counselPage);
+
+        ResponseDTO<Page<CounselResponseDto>> responseDTO = counselController.getAll(pageable);
+
+        assertNotNull(responseDTO);
+        assertEquals(2, responseDTO.getData().getContent().size());  // Check if the list size is correct
+        assertEquals(1L, responseDTO.getData().getContent().get(0).getCounselId());
+        assertEquals("John", responseDTO.getData().getContent().get(0).getFirstname());
+        assertEquals(2L, responseDTO.getData().getContent().get(1).getCounselId());
+        assertEquals("Jane", responseDTO.getData().getContent().get(1).getFirstname());
+
+        verify(counselService, times(1)).getAll(pageable);
     }
 
     @Test
