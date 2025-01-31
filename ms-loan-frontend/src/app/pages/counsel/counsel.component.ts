@@ -14,7 +14,6 @@ import { CommonModule } from '@angular/common';
 import { CounselService } from '../../services/counsel.service';
 import { KeycloakService } from '../../utils/keycloak/keycloak.service';
 import { CounselResponseDto } from '../../dtos/counsel-response-dto';
-import { ImageSliderComponent } from '../../components/image-slider/image-slider.component';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -24,12 +23,7 @@ const snackbarConfig: MatSnackBarConfig = {
 
 @Component({
   selector: 'app-counsel',
-  imports: [
-    ReactiveFormsModule,
-    CommonModule,
-    MatSnackBarModule,
-    ImageSliderComponent,
-  ],
+  imports: [ReactiveFormsModule, CommonModule, MatSnackBarModule],
   templateUrl: './counsel.component.html',
   styleUrl: './counsel.component.scss',
 })
