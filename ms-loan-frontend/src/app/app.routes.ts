@@ -9,6 +9,8 @@ import { authGuard } from './auth/auth.guard';
 import { AdminRepaymentComponent } from './pages/admin/admin-repayment/admin-repayment.component';
 import { AdminEntryComponent } from './pages/admin/admin-entry/admin-entry.component';
 import { AdminCounselComponent } from './pages/admin/admin-counsel/admin-counsel.component';
+import { AdminApplicationDetailComponent } from './pages/admin/admin-application-detail/admin-application-detail.component';
+import { AdminCounselDetailComponent } from './pages/admin/admin-counsel-detail/admin-counsel-detail.component';
 
 export const routes: Routes = [
   {
@@ -64,5 +66,18 @@ export const routes: Routes = [
     component: AdminHomeComponent,
     canActivate: [authGuard],
     data: { expectedRole: 'MANAGER' },
+  },
+
+  {
+    path: 'admin-application/:applicationId',
+    canActivate: [authGuard],
+    data: { expectedRole: 'MANAGER' },
+    component: AdminApplicationDetailComponent,
+  },
+  {
+    path: 'admin-counsel/:counselId',
+    canActivate: [authGuard],
+    data: { expectedRole: 'MANAGER' },
+    component: AdminCounselDetailComponent,
   },
 ];

@@ -1,1 +1,57 @@
-<p>admin-application works!</p>
+<div class="container mt-5 text-light">
+  <div
+    class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
+  >
+    <h1 class="display-4">Applications</h1>
+    <p class="lead">
+      Review all loan applications submitted by customers below.
+    </p>
+  </div>
+
+  <div class="mb-4">
+    <input
+      type="text"
+      class="form-control form-control-sm"
+      placeholder="Search applications..."
+      [(ngModel)]="searchQuery"
+    />
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          <th>Application ID</th>
+          <th>First Name</th>
+          <th>Last Name</th>
+          <th>Email</th>
+          <th>Applied At</th>
+          <th>Communication Status</th>
+          <th>Details</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr
+          *ngFor="
+            let app of applications
+              | filter
+                : searchQuery
+                : ['applicationId', 'firstname', 'lastname', 'email'];
+            let i = index
+          "
+          class="table-row"
+        >
+          <td>{{ app.applicationId }}</td>
+          <td>{{ app.firstname }}</td>
+          <td>{{ app.lastname }}</td>
+          <td>{{ app.email }}</td>
+          <td>{{ app.appliedAt | date : "yyyy-MM-dd" }}</td>
+          <td>{{ app.communicationStatus }}</td>
+          <td>
+            <a [routerLink]="['1']" class="view-details-link"> View Details </a>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -76,6 +76,28 @@
   padding: 0.5rem 0;
 }
 
+.memo-button {
+  background: none;
+  border: none;
+  color: #29d0b2;
+  cursor: pointer;
+  text-align: left;
+  width: 100%;
+  padding: 0;
+}
+
+.memo-detail {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.5s ease, opacity 0.5s ease;
+  opacity: 0;
+}
+
+.memo-detail.open {
+  max-height: 200px;
+  opacity: 1;
+}
+
 .btn-custom {
   background-color: #212529;
   color: #29d0b2;
@@ -86,34 +108,8 @@
   }
 }
 
-.btn-custom-inverse {
-  background-color: #29d0b2;
-  color: #212529;
-  &:hover {
-    background-color: #212529;
-    color: #29d0b2;
-  }
-}
-
 .faq-wrapper {
   border-left: 2px solid #29d0b2;
-  position: sticky;
-  top: 50px;
-  z-index: 1000;
-  padding: 20px;
-}
-
-.current-info h5 {
-  margin-bottom: 1rem;
-}
-
-.current-info ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-.current-info li {
-  margin-bottom: 0.5rem;
 }
 
 .card-header {

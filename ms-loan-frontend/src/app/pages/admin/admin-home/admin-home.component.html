@@ -3,46 +3,117 @@
   <p class="lead">Monitor all loan applications and repayments.</p>
 
   <div class="row my-5">
-    <div class="col-md-4 d-flex flex-column slide-right">
-      <h4>Application Summary</h4>
-      <app-donut-chart
-        class="d-flex justify-content-center mb-4"
-        [data]="data1"
-      ></app-donut-chart>
+    <div class="col-md-8 slide-right">
+      <div class="row">
+        <div class="col-md-6 d-flex flex-column">
+          <app-donut-chart
+            class="d-flex justify-content-center mb-4"
+            [data]="data1"
+          ></app-donut-chart>
 
-      <h4>Entry Summary</h4>
-      <app-donut-chart
-        class="d-flex justify-content-center mb-4"
-        [data]="data2"
-      ></app-donut-chart>
+          <app-donut-chart
+            class="d-flex justify-content-center mb-4"
+            [data]="data2"
+          ></app-donut-chart>
+        </div>
+
+        <div class="col-md-6 d-flex flex-column">
+          <app-donut-chart
+            class="d-flex justify-content-center mb-4"
+            [data]="data3"
+          ></app-donut-chart>
+
+          <app-donut-chart
+            class="d-flex justify-content-center mb-4"
+            [data]="data4"
+          ></app-donut-chart>
+        </div>
+      </div>
     </div>
 
-    <div class="col-md-4 d-flex flex-column slide-left">
-      <h4>Repayment Summary</h4>
-      <app-donut-chart
-        class="d-flex justify-content-center mb-4"
-        [data]="data3"
-      ></app-donut-chart>
-
-      <h4>Counsel Summary</h4>
-      <app-donut-chart
-        class="d-flex justify-content-center mb-4"
-        [data]="data4"
-      ></app-donut-chart>
-    </div>
-
-    <div class="col-md-4">
+    <div class="col-md-4 slide-left">
       <div class="card bg-dark text-white mb-4">
-        <div class="card-header header-color">New Applications</div>
+        <div class="card-header header-color">Counsels to review</div>
         <div class="card-body">
-          <p class="card-text">New Applications: 5</p>
+          <h5 class="card-title">Number of Counsels to Review</h5>
+          <p class="card-text">10</p>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center w-100">
+            <h5 class="card-title mb-0">Review List</h5>
+            <a
+              [routerLink]="['/admin-counsel']"
+              class="text-decoration-none view-more-link"
+              >View More</a
+            >
+          </div>
+
+          <div class="d-flex flex-column my-2">
+            <div class="d-flex justify-content-between my-1">
+              <div>Firstname1 Lastname1</div>
+              <div>XXXX-XX-XX</div>
+            </div>
+            <div class="d-flex justify-content-between my-1">
+              <div>Firstname1 Lastname1</div>
+              <div>XXXX-XX-XX</div>
+            </div>
+            <div class="d-flex justify-content-between my-1">
+              <div>Firstname1 Lastname1</div>
+              <div>XXXX-XX-XX</div>
+            </div>
+            <div class="d-flex justify-content-between my-1">
+              <div>Firstname1 Lastname1</div>
+              <div>XXXX-XX-XX</div>
+            </div>
+            <div class="d-flex justify-content-between my-1">
+              <div>Firstname1 Lastname1</div>
+              <div>XXXX-XX-XX</div>
+            </div>
+          </div>
         </div>
       </div>
 
       <div class="card bg-dark text-white mb-4">
-        <div class="card-header header-color">New Counsel Requests</div>
+        <div class="card-header header-color">Applications to review</div>
         <div class="card-body">
-          <p class="card-text">New Requests: 3</p>
+          <h5 class="card-title">Number of Applications to Review</h5>
+          <p class="card-text">10</p>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center w-100">
+            <h5 class="card-title mb-0">Review List</h5>
+            <a
+              [routerLink]="['/admin-application']"
+              class="text-decoration-none view-more-link"
+              >View More</a
+            >
+          </div>
+          <div class="d-flex flex-column">
+            <div class="d-flex justify-content-between my-1">
+              <div>Applicant's Name:</div>
+              <div>User ABC</div>
+            </div>
+            <div class="d-flex justify-content-between my-1">
+              <div>Applied At:</div>
+              <div>XXXX-XX-XX</div>
+            </div>
+            <div class="d-flex justify-content-between my-1">
+              <div>Hope Amount:</div>
+              <div>$XXXX.XX</div>
+            </div>
+            <div class="d-flex justify-content-between my-1">
+              <div>Contracted At:</div>
+              <div>XXXX-XX-XX</div>
+            </div>
+            <div class="d-flex justify-content-between my-1">
+              <div>Approved Amount:</div>
+              <div>$XXXX.XX</div>
+            </div>
+            <div class="d-flex justify-content-between my-1">
+              <div>Fee:</div>
+              <div>$XXXX.XX</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

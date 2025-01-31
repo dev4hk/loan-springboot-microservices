@@ -29,6 +29,12 @@ export class CounselService {
     );
   }
 
+  getCounselById(counselId: number) {
+    return this.http.get<ResponseDTO<CounselResponseDto>>(
+      `${this.BASE_URL}/${counselId}`
+    );
+  }
+
   getCounselByEmail() {
     const params = new HttpParams().set('email', this.keycloakService.email);
     return this.http.get<ResponseDTO<CounselResponseDto>>(

@@ -44,38 +44,6 @@
   animation: slideDown 1s ease-out;
 }
 
-.faq-item {
-  margin-bottom: 1rem;
-}
-
-.faq-question {
-  background: none;
-  border: none;
-  color: #29d0b2;
-  cursor: pointer;
-  font-size: 1.25rem;
-  text-align: left;
-  width: 100%;
-  padding: 0;
-}
-
-.faq-answer {
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.5s ease, opacity 0.5s ease;
-  opacity: 0;
-}
-
-.faq-answer.open {
-  max-height: 200px;
-  opacity: 1;
-}
-
-.faq-answer p {
-  margin: 0;
-  padding: 0.5rem 0;
-}
-
 .btn-custom {
   background-color: #212529;
   color: #29d0b2;
@@ -97,10 +65,6 @@
 
 .faq-wrapper {
   border-left: 2px solid #29d0b2;
-  position: sticky;
-  top: 50px;
-  z-index: 1000;
-  padding: 20px;
 }
 
 .current-info h5 {
@@ -122,4 +86,9 @@
 
 .header-color {
   color: #29d0b2;
+}
+
+.card .form-control {
+  background-color: #343a40;
+  color: white;
 }

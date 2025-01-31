@@ -12,7 +12,7 @@ import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { ApplicationResponseDto } from '../../dtos/application-response-dto';
 import { KeycloakService } from '../../utils/keycloak/keycloak.service';
 import { RouterModule } from '@angular/router';
-import { ImageSlideInterface } from '../../interfaces/image-slide-interface';
+import { ImageSlideInterface } from '../../components/image-slider/image-slide-interface';
 import { ImageSliderComponent } from '../../components/image-slider/image-slider.component';
 import { loanProcessSlides } from '../../components/image-slider/loan-process-slides';
 

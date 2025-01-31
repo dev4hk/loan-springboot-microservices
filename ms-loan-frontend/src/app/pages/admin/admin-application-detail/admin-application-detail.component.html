@@ -1,0 +1,146 @@
+<div class="container mt-5 text-light">
+  <div
+    class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
+  >
+    <h1 class="display-4">Application Details</h1>
+    <p class="lead">Here are the details for the selected loan application.</p>
+  </div>
+
+  <div class="row my-5">
+    <div class="col-md-7 slide-right">
+      <div class="card bg-dark text-white">
+        <div class="card-header px-3 header-color">
+          Loan Application Details
+        </div>
+        <div class="card-body row">
+          <div class="col">
+            <p class="card-text">
+              Application ID: {{ application?.applicationId }}
+            </p>
+            <p class="card-text">First Name: {{ application?.firstname }}</p>
+            <p class="card-text">Last Name: {{ application?.lastname }}</p>
+            <p class="card-text">Cell Phone: {{ application?.cellPhone }}</p>
+            <p class="card-text">Email: {{ application?.email }}</p>
+          </div>
+          <div class="col">
+            <p class="card-text">
+              Hope Amount: {{ application?.hopeAmount | currency }}
+            </p>
+            <p class="card-text">
+              Approval Amount:
+              {{
+                application?.approvalAmount
+                  ? (application?.approvalAmount | currency)
+                  : "Not Available"
+              }}
+            </p>
+            <p class="card-text">
+              Applied At: {{ application?.appliedAt | date : "yyyy-MM-dd" }}
+            </p>
+            <p class="card-text">
+              Contracted At:
+              {{
+                application?.contractedAt
+                  ? (application?.contractedAt | date : "yyyy-MM-dd")
+                  : "Not Available"
+              }}
+            </p>
+            <p class="card-text">
+              Communication Status: {{ application?.communicationStatus }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="card bg-dark text-white my-2">
+        <div class="card-header px-3 header-color">Document Section</div>
+        <div class="card-body row">
+          <div class="col">
+            <h5 class="card-title">Mandatory Documents</h5>
+            <ul>
+              <li
+                class="list-group-item bg-dark text-white"
+                *ngFor="let doc of ['document1', 'document2', 'document3']"
+              >
+                {{ doc }}
+              </li>
+            </ul>
+          </div>
+          <div class="col">
+            <h5 class="card-title">Submitted Documents</h5>
+            <ul>
+              <li
+                class="list-group-item bg-dark text-white"
+                *ngFor="let doc of ['document1', 'document2', 'document3']"
+              >
+                {{ doc }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-5 slide-left">
+      <div class="card bg-dark text-white">
+        <div class="card-header px-3 header-color">Application Judgment</div>
+        <div class="card-body">
+          <form (submit)="submitJudgment()">
+            <div class="mb-3">
+              <label for="appId" class="form-label">Application ID</label>
+              <input
+                type="text"
+                id="appId"
+                class="form-control bg-secondary text-white"
+                [value]="application?.applicationId"
+                readonly
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="judgeFirstname" class="form-label"
+                >Judge Firstname</label
+              >
+              <input
+                type="text"
+                id="judgeFirstname"
+                class="form-control bg-secondary text-white"
+                [value]="judgeFirstname"
+                readonly
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="judgeLastname" class="form-label"
+                >Judge Lastname</label
+              >
+              <input
+                type="text"
+                id="judgeLastname"
+                class="form-control bg-secondary text-white"
+                [value]="judgeLastname"
+                readonly
+              />
+            </div>
+
+            <div class="mb-3">
+              <label for="approvalAmount" class="form-label"
+                >Approval Amount</label
+              >
+              <input
+                type="number"
+                id="approvalAmount"
+                class="form-control"
+                [(ngModel)]="approvalAmount"
+                name="approvalAmount"
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn btn-custom-inverse w-100">
+              Submit Judgment
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

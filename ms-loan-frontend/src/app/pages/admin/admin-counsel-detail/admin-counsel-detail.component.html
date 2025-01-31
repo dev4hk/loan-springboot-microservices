@@ -1,0 +1,57 @@
+<div class="container mt-5 text-light">
+  <div
+    class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
+  >
+    <h1 class="display-4">Counsel Request Details</h1>
+    <p class="lead">Here are the details for the selected counsel request.</p>
+  </div>
+
+  <div class="row my-5">
+    <div class="col-md-7 slide-right">
+      <div class="card bg-dark text-white">
+        <div
+          class="card-header px-3 header-color d-flex justify-content-between align-items-center"
+        >
+          <span> Loan Counsel Details </span>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <p class="card-text">
+                Applied At:
+                {{ (counsel?.appliedAt | date : "yyyy-MM-dd") || "No data" }}
+              </p>
+              <p class="card-text">
+                Communication Status:
+                {{ counsel?.communicationStatus || "No data" }}
+              </p>
+              <p class="card-text">
+                Cell Phone:
+                {{ counsel?.cellPhone || "No data" }}
+              </p>
+              <p class="card-text">
+                Memo:
+                <span class="memo-button" (click)="toggleMemo()">{{
+                  showMemo ? "close details" : "open details"
+                }}</span>
+              </p>
+            </div>
+            <div class="col">
+              <p class="card-text">Email: {{ counsel?.email || "No data" }}</p>
+              <p class="card-text">
+                Created At:
+                {{ (counsel?.createdAt | date : "yyyy-MM-dd") || "No data" }}
+              </p>
+              <p class="card-text">
+                Created By: {{ counsel?.createdBy || "No data" }}
+              </p>
+            </div>
+          </div>
+          <div class="memo-detail" [class.open]="showMemo">
+            {{ counsel?.memo || "No data" }}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

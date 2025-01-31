@@ -31,4 +31,10 @@ export class ApplicationService {
       }
     );
   }
+
+  getApplicationById(applicationId: number) {
+    return this.http.get<ResponseDTO<ApplicationResponseDto>>(
+      `${this.BASE_URL}/${applicationId}`
+    );
+  }
 }

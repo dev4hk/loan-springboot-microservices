@@ -1,4 +1,4 @@
-<div class="container mt-5 text-light">
+<div class="container mt-4 text-light">
   <div
     class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
   >
@@ -9,8 +9,14 @@
     <div class="col-md-6 d-flex flex-column slide-right">
       <app-donut-chart
         class="d-flex justify-content-center mb-4"
+        [data]="data1"
+        [title]="'title1'"
       ></app-donut-chart>
-      <app-donut-chart class="d-flex justify-content-center"></app-donut-chart>
+      <app-donut-chart
+        class="d-flex justify-content-center"
+        [data]="data2"
+        [title]="'title2'"
+      ></app-donut-chart>
     </div>
     <div class="col-md-6 slide-left">
       <div class="row">

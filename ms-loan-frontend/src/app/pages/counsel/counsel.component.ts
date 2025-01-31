@@ -14,7 +14,6 @@ import { CommonModule } from '@angular/common';
 import { CounselService } from '../../services/counsel.service';
 import { KeycloakService } from '../../utils/keycloak/keycloak.service';
 import { CounselResponseDto } from '../../dtos/counsel-response-dto';
-import { ImageSlideInterface } from '../../interfaces/image-slide-interface';
 import { ImageSliderComponent } from '../../components/image-slider/image-slider.component';
 
 const snackbarConfig: MatSnackBarConfig = {
