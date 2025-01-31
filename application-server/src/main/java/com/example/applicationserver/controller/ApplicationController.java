@@ -136,6 +136,21 @@ public class ApplicationController {
         return ok(applicationResponseDto);
     }
 
+    @Operation(
+            summary = "Get All Applications REST API",
+            description = "REST API to get all applications"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
     @RateLimiter(name = "getAllRateLimiter")
     @Retry(name = "getAllRetry")
     @GetMapping
