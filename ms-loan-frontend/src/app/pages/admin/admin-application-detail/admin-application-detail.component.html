@@ -59,7 +59,9 @@
             <ul>
               <li
                 class="list-group-item bg-dark text-white"
-                *ngFor="let doc of ['document1', 'document2', 'document3']"
+                *ngFor="
+                  let doc of ['Valid ID', 'Proof of Income', 'Bank Statement']
+                "
               >
                 {{ doc }}
               </li>
@@ -70,20 +72,61 @@
             <ul>
               <li
                 class="list-group-item bg-dark text-white"
-                *ngFor="let doc of ['document1', 'document2', 'document3']"
+                *ngFor="let file of filesInfo"
               >
-                {{ doc }}
+                <span
+                  class="file-download cursor-pointer me-2"
+                  (click)="downloadFile(file.name)"
+                >
+                  {{ file.name }}
+                </span>
               </li>
             </ul>
           </div>
         </div>
       </div>
+      <div class="card bg-dark text-white">
+        <div class="card-header px-3 header-color">Judgement Details</div>
+        @if(judgement) {
+
+        <div class="card-body row">
+          <div class="col">
+            <p class="card-text">Judgement ID: {{ judgement.judgementId }}</p>
+            <p class="card-text">Judge First Name: {{ judgement.firstname }}</p>
+            <p class="card-text">Judge Last Name: {{ judgement.lastname }}</p>
+          </div>
+          <div class="col">
+            <p class="card-text">
+              Application ID: {{ judgement.applicationId }}
+            </p>
+            <p class="card-text">
+              Approval Amount:
+              {{ judgement.approvalAmount }}
+            </p>
+            <p class="card-text">
+              Created At: {{ judgement.createdAt | date : "yyyy-MM-dd" }}
+            </p>
+          </div>
+          <span (click)="grant()" class="grant-button cursor-pointer mt-3">
+            Grant Approval Amount
+          </span>
+        </div>
+        } @else {
+        <div class="card-body">
+          <p class="card-text">Judgement not available</p>
+        </div>
+        }
+      </div>
     </div>
     <div class="col-md-5 slide-left">
+      @if (!application?.approvalAmount) {
+
       <div class="card bg-dark text-white">
-        <div class="card-header px-3 header-color">Application Judgment</div>
+        <div class="card-header px-3 header-color">
+          {{ judgement ? "Update Judgement" : "Create Judgement" }}
+        </div>
         <div class="card-body">
-          <form (submit)="submitJudgment()">
+          <form (submit)="judgement ? updateJudgement() : submitJudgement()">
             <div class="mb-3">
               <label for="appId" class="form-label">Application ID</label>
               <input
@@ -136,11 +179,12 @@
             </div>
 
             <button type="submit" class="btn btn-custom-inverse w-100">
-              Submit Judgment
+              {{ judgement ? "Update" : "Submit Judgment" }}
             </button>
           </form>
         </div>
       </div>
+      }
     </div>
   </div>
 </div>

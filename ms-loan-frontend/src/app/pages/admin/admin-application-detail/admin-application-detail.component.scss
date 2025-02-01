@@ -92,3 +92,21 @@
   background-color: #343a40;
   color: white;
 }
+
+.file-download {
+  color: #29d0b2;
+
+  &:hover {
+    color: #fff;
+    transition: all 0.15s ease-in-out;
+  }
+}
+
+.grant-button {
+  color: #29d0b2;
+
+  &:hover {
+    color: #fff;
+    transition: all 0.15s ease-in-out;
+  }
+}

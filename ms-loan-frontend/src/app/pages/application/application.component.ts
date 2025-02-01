@@ -288,7 +288,7 @@ export class ApplicationComponent implements OnInit {
 
     const applicationId = this.application?.applicationId;
 
-    if (applicationId === undefined) {
+    if (!applicationId) {
       console.error('Application ID is missing. Cannot delete file.');
       this.snackBar.open(
         'Application ID is missing. Cannot delete file.',
@@ -312,6 +312,37 @@ export class ApplicationComponent implements OnInit {
       error: (error) => {
         console.error('File deletion failed:', error);
         this.snackBar.open('File deletion failed. Please try again.', 'Close', {
+          ...snackbarConfig,
+        });
+      },
+    });
+  }
+
+  contract() {
+    const applicationId = this.application?.applicationId;
+
+    if (!applicationId) {
+      console.error('Application ID is missing. Cannot delete file.');
+      this.snackBar.open(
+        'Application ID is missing. Cannot delete file.',
+        'Close',
+        snackbarConfig
+      );
+      return;
+    }
+
+    this.applicationService.contract(applicationId).subscribe({
+      next: (res) => {
+        this.application!.contractedAt = res.data?.contractedAt;
+        this.snackBar.open(
+          'Application contracted successfully!',
+          'Close',
+          snackbarConfig
+        );
+      },
+      error: (error) => {
+        console.error('Contract failed:', error);
+        this.snackBar.open('Contract failed. Please try again.', 'Close', {
           ...snackbarConfig,
         });
       },

@@ -48,4 +48,11 @@ export class ApplicationService {
       { params: params }
     );
   }
+
+  contract(applicationId: number) {
+    return this.http.put<ResponseDTO<ApplicationResponseDto>>(
+      `${this.BASE_URL}/${applicationId}/contract`,
+      {}
+    );
+  }
 }

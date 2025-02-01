@@ -185,13 +185,15 @@
               Applied At: {{ application.appliedAt | date : "yyyy-MM-dd" }}
             </p>
             <p class="card-text">
-              Contracted At:
-              {{
-                application.contractedAt
-                  ? (application.contractedAt | date : "yyyy-MM-dd")
-                  : "Not Available"
-              }}
+              Contracted At: @if (application.contractedAt) {
+              {{ application.contractedAt | date : "yyyy-MM-dd" }}
+              } @else if (application.approvalAmount) {
+              <span class="contract-button cursor-pointer" (click)="contract()"
+                >Click to Contract</span
+              >
+              } @else { <span>Not Available</span> }
             </p>
+
             <p class="card-text">
               Communication Status: {{ application.communicationStatus }}
             </p>
@@ -246,7 +248,7 @@
               <li
                 class="list-group-item bg-dark text-white"
                 *ngFor="
-                  let doc of ['Valid ID', 'Proof of Income', 'Back Statement']
+                  let doc of ['Valid ID', 'Proof of Income', 'Bank Statement']
                 "
               >
                 {{ doc }}
@@ -295,7 +297,7 @@
                   {{ file.name }}
                 </span>
                 <i
-                  class="fa-regular fa-circle-xmark cursor-pointer icon"
+                  class="fa-regular fa-circle-xmark cursor-pointer delete-icon"
                   (click)="deleteFile(file.name)"
                 ></i>
               </li>
