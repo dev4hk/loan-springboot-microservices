@@ -66,13 +66,12 @@ resilience4j.circuitbreaker:
     default:
       slidingWindowSize: 10
       permittedNumberOfCallsInHalfOpenState: 2
-      failureRateThreshold: 50
+      failureRateThreshold: 40
       waitDurationInOpenState: 10000
-
 resilience4j.retry:
   configs:
     default:
-      maxRetryAttempts: 3
+      maxRetryAttempts: 2
       waitDuration: 500
       enableExponentialBackoff: true
       exponentialBackoffMultiplier: 2
@@ -83,4 +82,4 @@ resilience4j.ratelimiter:
     default:
       timeoutDuration: 1000
       limitRefreshPeriod: 5000
-      limitForPeriod: 1
+      limitForPeriod: 5
