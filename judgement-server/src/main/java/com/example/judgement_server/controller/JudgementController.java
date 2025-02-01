@@ -148,7 +148,9 @@ public class JudgementController {
     public ResponseDTO<JudgementResponseDto> getJudgmentOfApplication(@PathVariable Long applicationId) {
         logger.info("JudgementController - getJudgmentOfApplication started");
         logger.debug("JudgementController - applicationId: {}", applicationId);
-        return ok(judgementService.getJudgementOfApplication(applicationId));
+        JudgementResponseDto response = judgementService.getJudgementOfApplication(applicationId);
+        logger.info("JudgementController - getJudgmentOfApplication finished");
+        return ok(response);
     }
 
     @Operation(
