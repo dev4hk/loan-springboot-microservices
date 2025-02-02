@@ -15,6 +15,10 @@ import { EntryResponseDto } from '../../../dtos/entry-response-dto';
 import { EntryRequestDto } from '../../../dtos/entry-request-dto';
 import { EntryService } from '../../../services/entry.service';
 import { CommunicationStatus } from '../../../dtos/communitation-status';
+import { RepaymentResponseDto } from '../../../dtos/repayment-response-dto';
+import { BalanceResponseDto } from '../../../dtos/balance-response-dto';
+import { BalanceService } from '../../../services/balance.service';
+import { RepaymentService } from '../../../services/repayment.service';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -38,14 +42,18 @@ export class AdminApplicationDetailComponent implements OnInit {
   judgement?: JudgementResponseDto;
   entry?: EntryResponseDto;
   entryAmount?: number;
+  repayments?: Array<RepaymentResponseDto>;
+  balance?: BalanceResponseDto;
 
   constructor(
     private route: ActivatedRoute,
     private applicationService: ApplicationService,
+    private balanceService: BalanceService,
     private keyclockService: KeycloakService,
     private fileStorageService: FileStorageService,
     private judgementService: JudgementService,
     private entryService: EntryService,
+    private repaymentService: RepaymentService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -67,6 +75,8 @@ export class AdminApplicationDetailComponent implements OnInit {
           this.getFilesInfo();
           if (this.application.contractedAt) {
             this.getEntry();
+            this.getBalance(this.application.applicationId);
+            this.getRepayments(this.application.applicationId);
           }
         }
       },
@@ -375,6 +385,38 @@ export class AdminApplicationDetailComponent implements OnInit {
         complete: () => (this.entryAmount = undefined),
       });
     }
+  }
+
+  getBalance(applicationId: number): void {
+    console.log('Fetching balance...');
+    this.balanceService.get(applicationId).subscribe({
+      next: (res) => {
+        console.log('Balance fetched:', res);
+        this.balance = res.data;
+      },
+      error: (error) => {
+        console.error('Error fetching balance:', error);
+        this.snackBar.open('Error fetching balance.', 'Close', snackbarConfig);
+      },
+    });
+  }
+
+  getRepayments(applicationId: number): void {
+    console.log('Fetching repayments...');
+    this.repaymentService.getRepayments(applicationId).subscribe({
+      next: (res) => {
+        console.log('Repayments fetched:', res);
+        this.repayments = res.data;
+      },
+      error: (error) => {
+        console.error('Error fetching repayments:', error);
+        this.snackBar.open(
+          'Error fetching repayment history.',
+          'Close',
+          snackbarConfig
+        );
+      },
+    });
   }
 
   deleteEntry() {

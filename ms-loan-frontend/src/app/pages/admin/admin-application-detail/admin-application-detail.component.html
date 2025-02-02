@@ -188,6 +188,40 @@
           </div>
         </div>
       </div>
+      <div class="card bg-dark text-white mb-2">
+        <div class="card-header header-color">Loan Balance</div>
+        <div class="card-body">
+          <p class="card-text">
+            Outstanding Balance:
+            <strong>{{ balance?.balance | currency }}</strong>
+          </p>
+        </div>
+      </div>
+
+      <div class="card bg-dark text-white">
+        <div class="card-header header-color">Repayment History</div>
+        <div class="card-body">
+          @if (repayments && repayments.length > 0) {
+          <div>
+            <ul>
+              <li
+                class="list-group-item bg-dark text-white"
+                *ngFor="let repayment of repayments"
+              >
+                <div class="d-flex justify-content-between">
+                  <span>{{ repayment.createdAt | date : "yyyy-MM-dd" }}</span>
+                  <span>{{ repayment.repaymentAmount | currency }}</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          } @else {
+          <div>
+            <p class="card-text">No repayment history available.</p>
+          </div>
+          }
+        </div>
+      </div>
       } @if (!application?.approvalAmount) {
       <div class="card bg-dark text-white">
         <div class="card-header px-3 header-color">

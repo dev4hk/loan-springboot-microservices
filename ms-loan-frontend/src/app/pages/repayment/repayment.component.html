@@ -2,62 +2,92 @@
   <div
     class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
   >
-    <h1 class="display-4">Submit Your Loan Repayment</h1>
+    <h1 class="display-4">Loan Repayment</h1>
     <p class="lead">
-      Please fill out the form below to submit your loan repayment.
+      Manage your loan balance, view repayment history, and submit your
+      repayments below.
     </p>
   </div>
 
   <div class="row my-5">
     <div class="col-md-7 slide-right">
-      <div class="row">
-        <div class="col-md-6">
-          <h5>Current Balance:</h5>
-          <p>$0.00</p>
-          <h5>Last Loan Entry Amount:</h5>
-          $0.00 on MM/DD/YYYY
-        </div>
-        <div class="col-md-6">
-          <h5>Last 3 Loan Repayments:</h5>
-          <ul>
-            <li>
-              $<span id="repayment1">0.00</span> on
-              <span id="repaymentDate1">MM/DD/YYYY</span>
-            </li>
-            <li>
-              $<span id="repayment2">0.00</span> on
-              <span id="repaymentDate2">MM/DD/YYYY</span>
-            </li>
-            <li>
-              $<span id="repayment3">0.00</span> on
-              <span id="repaymentDate3">MM/DD/YYYY</span>
-            </li>
-            <li>
-              $<span id="repayment3">0.00</span> on
-              <span id="repaymentDate3">MM/DD/YYYY</span>
-            </li>
-            <li>
-              $<span id="repayment3">0.00</span> on
-              <span id="repaymentDate3">MM/DD/YYYY</span>
-            </li>
-          </ul>
+      <div class="card bg-dark text-white mb-4">
+        <div class="card-header header-color">Loan Balance</div>
+        <div class="card-body">
+          <p class="card-text">
+            Outstanding Balance:
+            <strong>{{ balance?.balance | currency }}</strong>
+          </p>
         </div>
       </div>
-      <form>
-        <div class="form-group my-3">
-          <label for="repaymentAmount">Repayment Amount</label>
-          <input
-            type="text"
-            class="form-control my-1"
-            id="repaymentAmount"
-            placeholder="Enter repayment amount"
-            pattern="^\d+(\.\d{1,2})?$"
-            required
-          />
+
+      <div class="card bg-dark text-white mb-4">
+        <div class="card-header header-color">Repayment History</div>
+        <div class="card-body">
+          <div *ngIf="repayments && repayments.length > 0; else noRepayment">
+            <ul class="list-group list-group-flush">
+              <li
+                class="list-group-item bg-dark text-white"
+                *ngFor="let repayment of repayments"
+              >
+                <div class="d-flex justify-content-between">
+                  <span>{{ repayment.createdAt | date : "yyyy-MM-dd" }}</span>
+                  <span>{{ repayment.repaymentAmount | currency }}</span>
+                </div>
+              </li>
+            </ul>
+          </div>
+          <ng-template #noRepayment>
+            <p class="card-text">No repayment history available.</p>
+          </ng-template>
         </div>
-        <button type="submit" class="btn btn-custom my-3">Submit</button>
-      </form>
+      </div>
+
+      <div class="card bg-dark text-white">
+        <div class="card-header header-color">Submit Repayment</div>
+        <div class="card-body">
+          <form [formGroup]="repaymentForm" (ngSubmit)="onSubmitRepayment()">
+            <div class="form-group my-3">
+              <label for="repaymentAmount">Repayment Amount</label>
+              <input
+                type="number"
+                id="repaymentAmount"
+                class="form-control repayment-input my-1"
+                formControlName="repaymentAmount"
+                placeholder="Enter repayment amount"
+              />
+              <div
+                *ngIf="
+                  repaymentForm.get('repaymentAmount')?.invalid &&
+                  (repaymentForm.get('repaymentAmount')?.dirty ||
+                    repaymentForm.get('repaymentAmount')?.touched)
+                "
+                class="text-danger"
+              >
+                <small
+                  *ngIf="repaymentForm.get('repaymentAmount')?.errors?.['required']"
+                >
+                  Amount is required.
+                </small>
+                <small
+                  *ngIf="repaymentForm.get('repaymentAmount')?.errors?.['min']"
+                >
+                  Amount must be greater than 0.
+                </small>
+              </div>
+            </div>
+            <button
+              type="submit"
+              class="btn btn-custom my-3 cursor-pointer"
+              [disabled]="repaymentForm.invalid"
+            >
+              Submit Repayment
+            </button>
+          </form>
+        </div>
+      </div>
     </div>
+
     <div class="col-md-5 slide-left">
       <div class="faq-wrapper px-4">
         <div>
@@ -65,40 +95,41 @@
         </div>
         <div class="faq p-4">
           <div class="faq-item">
-            <button class="faq-question">How do I submit a repayment?</button>
+            <button class="faq-question">How do I make a repayment?</button>
             <div class="faq-answer">
               <p>
-                You can submit your repayment through this form. Ensure all
-                details are correct before submitting.
+                Simply enter the amount you wish to repay in the form and click
+                "Submit Repayment."
+              </p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">When is my next repayment due?</button>
+            <div class="faq-answer">
+              <p>
+                Please check your repayment schedule or contact our support for
+                more details.
               </p>
             </div>
           </div>
           <div class="faq-item">
             <button class="faq-question">
-              What payment methods are accepted?
+              How is my outstanding balance calculated?
             </button>
             <div class="faq-answer">
               <p>
-                We accept bank transfers, credit/debit cards, and online payment
-                gateways.
+                Your outstanding balance is calculated based on your total loan
+                payout minus all repayments made.
               </p>
             </div>
           </div>
           <div class="faq-item">
-            <button class="faq-question">Can I make partial repayments?</button>
+            <button class="faq-question">
+              Can I repay more than the outstanding balance?
+            </button>
             <div class="faq-answer">
               <p>
-                Yes, partial repayments are allowed. Contact our support team
-                for more details.
-              </p>
-            </div>
-          </div>
-          <div class="faq-item">
-            <button class="faq-question">Is there a late payment fee?</button>
-            <div class="faq-answer">
-              <p>
-                Late payments may incur a fee. Please refer to your loan
-                agreement for more information.
+                No, you cannot repay more than your current outstanding balance.
               </p>
             </div>
           </div>
