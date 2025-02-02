@@ -110,3 +110,11 @@
     transition: all 0.15s ease-in-out;
   }
 }
+
+.delete-icon {
+  color: #e84118;
+  &:hover {
+    color: #fff;
+    transition: all 0.15s ease-in-out;
+  }
+}

@@ -141,6 +141,7 @@ class EntryServiceImplTest {
                 .build();
 
         when(entryRepository.findById(entryId)).thenReturn(Optional.of(entry));
+        when(entryRepository.save(any(Entry.class))).thenReturn(entry);
         when(balanceClient.update(eq(1L), any(BalanceUpdateRequestDto.class))).thenReturn(
                 new ResponseDTO<>(
                         ResultObject.builder()

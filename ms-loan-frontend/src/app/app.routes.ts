@@ -6,8 +6,6 @@ import { ApplicationComponent } from './pages/application/application.component'
 import { AdminHomeComponent } from './pages/admin/admin-home/admin-home.component';
 import { AdminApplicationComponent } from './pages/admin/admin-application/admin-application.component';
 import { authGuard } from './auth/auth.guard';
-import { AdminRepaymentComponent } from './pages/admin/admin-repayment/admin-repayment.component';
-import { AdminEntryComponent } from './pages/admin/admin-entry/admin-entry.component';
 import { AdminCounselComponent } from './pages/admin/admin-counsel/admin-counsel.component';
 import { AdminApplicationDetailComponent } from './pages/admin/admin-application-detail/admin-application-detail.component';
 import { AdminCounselDetailComponent } from './pages/admin/admin-counsel-detail/admin-counsel-detail.component';
@@ -42,18 +40,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { expectedRole: 'MANAGER' },
     component: AdminApplicationComponent,
-  },
-  {
-    path: 'admin-repayment',
-    canActivate: [authGuard],
-    data: { expectedRole: 'MANAGER' },
-    component: AdminRepaymentComponent,
-  },
-  {
-    path: 'admin-entry',
-    canActivate: [authGuard],
-    data: { expectedRole: 'MANAGER' },
-    component: AdminEntryComponent,
   },
   {
     path: 'admin-counsel',

@@ -101,15 +101,17 @@
             </p>
             <p class="card-text">
               Approval Amount:
-              {{ judgement.approvalAmount }}
+              {{ judgement.approvalAmount | currency }}
             </p>
             <p class="card-text">
               Created At: {{ judgement.createdAt | date : "yyyy-MM-dd" }}
             </p>
           </div>
+          @if(!application?.approvalAmount) {
           <span (click)="grant()" class="grant-button cursor-pointer mt-3">
             Grant Approval Amount
           </span>
+          }
         </div>
         } @else {
         <div class="card-body">
@@ -119,8 +121,74 @@
       </div>
     </div>
     <div class="col-md-5 slide-left">
-      @if (!application?.approvalAmount) {
+      @if(application?.contractedAt) {
+      <div class="card bg-dark text-white mb-2">
+        <div class="card-header px-3 header-color">Payout Details</div>
+        <div class="card-body row">
+          <div class="col">
+            <div
+              class="d-flex align-items-center"
+              [ngStyle]="{ 'margin-bottom': '16px' }"
+            >
+              <p class="card-text my-auto me-2">
+                Entry ID: {{ entry?.entryId || "No data" }}
+              </p>
+              @if (entry) {
+              <i
+                class="fa-regular fa-circle-xmark cursor-pointer delete-icon"
+                (click)="deleteEntry()"
+              ></i>
+              }
+            </div>
+            <p class="card-text">
+              Entry Amount: {{ (entry?.entryAmount | currency) || "No data" }}
+            </p>
+            <p class="card-text">
+              Communication Status:
+              {{ entry?.communicationStatus || "No data" }}
+            </p>
+          </div>
+          <div class="col">
+            <p class="card-text">
+              Created At:
+              {{ (entry?.createdAt | date : "yyyy-MM-dd") || "No data" }}
+            </p>
+            <p class="card-text">
+              Created By: {{ entry?.createdBy || "No data" }}
+            </p>
+            <p class="card-text">
+              Updated At:
+              {{ (entry?.updatedAt | date : "yyyy-MM-dd") || "No data" }}
+            </p>
+            <p class="card-text">
+              Updated By: {{ entry?.updatedBy || "No data" }}
+            </p>
+          </div>
+        </div>
+      </div>
 
+      <div class="card bg-dark text-white mb-2">
+        <div class="card-header px-3 header-color">Create/Update Payout</div>
+        <div class="card-body row">
+          <div class="col">
+            <input
+              type="number"
+              class="form-control bg-secondary text-white"
+              placeholder="Entry Payout Amount."
+              [(ngModel)]="entryAmount"
+            />
+          </div>
+          <div class="col">
+            <button
+              class="btn btn-custom-inverse"
+              (click)="createUpdatePayout()"
+            >
+              {{ entry ? "Update Payout" : "Create Payout" }}
+            </button>
+          </div>
+        </div>
+      </div>
+      } @if (!application?.approvalAmount) {
       <div class="card bg-dark text-white">
         <div class="card-header px-3 header-color">
           {{ judgement ? "Update Judgement" : "Create Judgement" }}
@@ -184,7 +252,7 @@
           </form>
         </div>
       </div>
-      }
+      } @if(application?.contractedAt) { }
     </div>
   </div>
 </div>

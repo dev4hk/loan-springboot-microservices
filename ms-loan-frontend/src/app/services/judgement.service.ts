@@ -19,6 +19,13 @@ export class JudgementService {
     );
   }
 
+  update(judgementId: number, request: JudgementRequestDto) {
+    return this.http.put<ResponseDTO<JudgementResponseDto>>(
+      `${this.BASE_URL}/${judgementId}`,
+      request
+    );
+  }
+
   getJudgementOfApplication(applicationId: number) {
     return this.http.get<ResponseDTO<JudgementResponseDto>>(
       `${this.BASE_URL}/applications/${applicationId}`

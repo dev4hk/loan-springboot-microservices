@@ -1,3 +1,4 @@
+import { CommunicationStatus } from './communitation-status';
 import { CounselResponseDto } from './counsel-response-dto';
 import { FileResponseDto } from './file-response-dto';
 
@@ -11,7 +12,7 @@ export interface ApplicationResponseDto {
   approvalAmount?: number | string;
   appliedAt?: string;
   contractedAt?: string;
-  communicationStatus?: string;
+  communicationStatus?: CommunicationStatus;
   createdAt?: string;
   createdBy?: string;
   updatedAt?: string;

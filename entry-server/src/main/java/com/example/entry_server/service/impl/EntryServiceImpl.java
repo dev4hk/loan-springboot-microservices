@@ -98,6 +98,7 @@ public class EntryServiceImpl implements IEntryService {
                 );
         BigDecimal beforeEntryAmount = entry.getEntryAmount();
         entry.setEntryAmount(request.getEntryAmount());
+        Entry updated = entryRepository.save(entry);
         Long applicationId = entry.getApplicationId();
 
         ApplicationResponseDto applicationResponseDto = getApplication(applicationId);
@@ -110,13 +111,15 @@ public class EntryServiceImpl implements IEntryService {
                         .build()
         );
 
-        sendCommunication(entry, applicationResponseDto, CommunicationStatus.ENTRY_CREATED);
+        sendCommunication(entry, applicationResponseDto, CommunicationStatus.ENTRY_UPDATED);
 
         return EntryUpdateResponseDto.builder()
                 .entryId(entryId)
                 .applicationId(applicationId)
                 .beforeEntryAmount(beforeEntryAmount)
                 .afterEntryAmount(request.getEntryAmount())
+                .updatedAt(updated.getUpdatedAt())
+                .updatedBy(updated.getUpdatedBy())
                 .build();
     }
 

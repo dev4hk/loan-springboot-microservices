@@ -11,6 +11,10 @@ import { FileResponseDto } from '../../../dtos/file-response-dto';
 import { JudgementRequestDto } from '../../../dtos/judgement-request-dto';
 import { JudgementService } from '../../../services/judgement.service';
 import { JudgementResponseDto } from '../../../dtos/judgement-response-dto';
+import { EntryResponseDto } from '../../../dtos/entry-response-dto';
+import { EntryRequestDto } from '../../../dtos/entry-request-dto';
+import { EntryService } from '../../../services/entry.service';
+import { CommunicationStatus } from '../../../dtos/communitation-status';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -32,6 +36,8 @@ export class AdminApplicationDetailComponent implements OnInit {
   approvalAmount?: number;
   filesInfo?: Array<FileResponseDto>;
   judgement?: JudgementResponseDto;
+  entry?: EntryResponseDto;
+  entryAmount?: number;
 
   constructor(
     private route: ActivatedRoute,
@@ -39,6 +45,7 @@ export class AdminApplicationDetailComponent implements OnInit {
     private keyclockService: KeycloakService,
     private fileStorageService: FileStorageService,
     private judgementService: JudgementService,
+    private entryService: EntryService,
     private snackBar: MatSnackBar
   ) {}
 
@@ -58,6 +65,9 @@ export class AdminApplicationDetailComponent implements OnInit {
         if (this.application?.applicationId) {
           this.getJudgement();
           this.getFilesInfo();
+          if (this.application.contractedAt) {
+            this.getEntry();
+          }
         }
       },
       error: (res) => console.log(res.error),
@@ -136,6 +146,7 @@ export class AdminApplicationDetailComponent implements OnInit {
     };
     this.judgementService.create(judgementRequest).subscribe({
       next: (res) => {
+        this.judgement = res.data;
         this.snackBar.open('Approval amount created.', 'Close', snackbarConfig);
       },
       error: (res) => {
@@ -145,6 +156,9 @@ export class AdminApplicationDetailComponent implements OnInit {
           'Close',
           snackbarConfig
         );
+      },
+      complete: () => {
+        this.approvalAmount = undefined;
       },
     });
   }
@@ -158,6 +172,49 @@ export class AdminApplicationDetailComponent implements OnInit {
         snackbarConfig
       );
       return;
+    }
+    if (!this.approvalAmount) {
+      console.error('Approval amount is undefined');
+      this.snackBar.open(
+        'Approval amount is missing. Cannot perform action.',
+        'close',
+        snackbarConfig
+      );
+      return;
+    }
+
+    const judgementRequest: JudgementRequestDto = {
+      applicationId: +this.applicationId,
+      approvalAmount: +this.approvalAmount,
+      firstname: this.keyclockService.firstName,
+      lastname: this.keyclockService.lastName,
+    };
+    if (this.judgement?.judgementId) {
+      this.judgementService
+        .update(+this.judgement?.judgementId, judgementRequest)
+        .subscribe({
+          next: (res) => {
+            this.judgement = res.data;
+            this.snackBar.open(
+              'Approval amount created.',
+              'Close',
+              snackbarConfig
+            );
+            this.application!.communicationStatus =
+              CommunicationStatus.APPLICATION_GRANT_UPDATED;
+          },
+          error: (res) => {
+            console.error('Create judgement failed.');
+            this.snackBar.open(
+              'Create judgement failed. Please try again.',
+              'Close',
+              snackbarConfig
+            );
+          },
+          complete: () => {
+            this.approvalAmount = undefined;
+          },
+        });
     }
   }
 
@@ -189,6 +246,8 @@ export class AdminApplicationDetailComponent implements OnInit {
     this.judgementService.grant(judgementId).subscribe({
       next: (res) => {
         this.application!.approvalAmount = res.data?.approvalAmount;
+        this.application!.communicationStatus =
+          CommunicationStatus.APPLICATION_GRANT_UPDATED;
         this.snackBar.open(
           'Approval amount has been granted.',
           'Close',
@@ -196,8 +255,30 @@ export class AdminApplicationDetailComponent implements OnInit {
         );
       },
       error: (res) => {
-        console.log(res);
+        this.snackBar.open(
+          'Failed to grant approval amount.',
+          'Close',
+          snackbarConfig
+        );
       },
+    });
+  }
+
+  getEntry() {
+    const applicationId = this.application?.applicationId;
+
+    if (!applicationId) {
+      console.error('Application ID is missing. Cannot download file.');
+      return;
+    }
+
+    if (!this.application?.contractedAt) {
+      return;
+    }
+
+    this.entryService.getEntry(applicationId).subscribe({
+      next: (res) => (this.entry = res.data),
+      error: (res) => console.log(res.error),
     });
   }
 
@@ -223,5 +304,97 @@ export class AdminApplicationDetailComponent implements OnInit {
     }
 
     return true;
+  }
+
+  createUpdatePayout() {
+    if (!this.application?.applicationId) {
+      this.snackBar.open(
+        'Application ID is missing. Cannot perform action.',
+        'Close',
+        snackbarConfig
+      );
+      return;
+    }
+
+    if (!this.entryAmount) {
+      this.snackBar.open(
+        'Payout amount is missing. Cannot perform action.',
+        'Close',
+        snackbarConfig
+      );
+      return;
+    }
+
+    const request: EntryRequestDto = {
+      entryAmount: this.entryAmount,
+    };
+
+    if (!this.entry) {
+      this.entryService.createEntry(+this.applicationId, request).subscribe({
+        next: (res) => {
+          this.entry = res.data;
+          this.snackBar.open(
+            'Payout has been created.',
+            'Close',
+            snackbarConfig
+          );
+        },
+        error: (res) => {
+          this.snackBar.open(
+            'Failed to create payout.',
+            'Close',
+            snackbarConfig
+          );
+        },
+        complete: () => {
+          this.entryAmount = undefined;
+        },
+      });
+    } else {
+      const entryId = this.entry.entryId;
+      this.entryService.updateEntry(entryId, request).subscribe({
+        next: (res) => {
+          if (res.data) {
+            this.entry!.entryAmount = res.data.afterEntryAmount!;
+            this.entry!.updatedAt = res.data.updatedAt!;
+            this.entry!.updatedBy = res.data.updatedBy!;
+          }
+          this.snackBar.open(
+            'Payout has been updated.',
+            'Close',
+            snackbarConfig
+          );
+        },
+        error: (res) => {
+          this.snackBar.open(
+            'Failed to update payout.',
+            'Close',
+            snackbarConfig
+          );
+        },
+        complete: () => (this.entryAmount = undefined),
+      });
+    }
+  }
+
+  deleteEntry() {
+    if (!this.entry?.entryId) {
+      this.snackBar.open(
+        'Payout ID is missing. Cannot perform action.',
+        'Close',
+        snackbarConfig
+      );
+      return;
+    }
+
+    this.entryService.deleteEntry(this.entry.entryId).subscribe({
+      next: (res) => {
+        this.snackBar.open('Payout has been deleted.', 'Close', snackbarConfig);
+        this.entry = undefined;
+      },
+      error: (res) => {
+        this.snackBar.open('Failed to delete payout.', 'Close', snackbarConfig);
+      },
+    });
   }
 }
