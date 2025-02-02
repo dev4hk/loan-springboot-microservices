@@ -70,10 +70,8 @@
           <div class="col">
             <h5 class="card-title">Submitted Documents</h5>
             <ul>
-              <li
-                class="list-group-item bg-dark text-white"
-                *ngFor="let file of filesInfo"
-              >
+              @for(file of filesInfo; track file.url) {
+              <li class="list-group-item bg-dark text-white">
                 <span
                   class="file-download cursor-pointer me-2"
                   (click)="downloadFile(file.name)"
@@ -81,6 +79,7 @@
                   {{ file.name }}
                 </span>
               </li>
+              }
             </ul>
           </div>
         </div>
@@ -204,20 +203,19 @@
           @if (repayments && repayments.length > 0) {
           <div>
             <ul>
-              <li
-                class="list-group-item bg-dark text-white"
-                *ngFor="let repayment of repayments"
-              >
+              @for(repayment of repayments; track repayment.repaymentId) {
+              <li class="list-group-item bg-dark text-white">
                 <div class="d-flex justify-content-between">
                   <span>{{ repayment.createdAt | date : "yyyy-MM-dd" }}</span>
                   <span>{{ repayment.repaymentAmount | currency }}</span>
                 </div>
               </li>
+              } @empty {
+              <li class="list-group-item bg-dark text-white">
+                No repayment history available.
+              </li>
+              }
             </ul>
-          </div>
-          } @else {
-          <div>
-            <p class="card-text">No repayment history available.</p>
           </div>
           }
         </div>
