@@ -9,6 +9,20 @@ export interface JudgementResponseDto {
 
   approvalAmount?: number;
 
+  startDate?: string;
+
+  endDate?: string;
+
+  payDay?: number;
+
+  monthlyPayment?: number;
+
+  numberOfPayments?: number;
+
+  interest?: number;
+
+  total?: number;
+
   createdAt?: string;
 
   createdBy?: string;

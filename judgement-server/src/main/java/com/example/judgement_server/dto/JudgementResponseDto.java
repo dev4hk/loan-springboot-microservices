@@ -22,6 +22,20 @@ public class JudgementResponseDto {
 
     private BigDecimal approvalAmount;
 
+    private LocalDateTime startDate;
+
+    private LocalDateTime endDate;
+
+    private Integer payDay;
+
+    private BigDecimal monthlyPayment;
+
+    private Integer numberOfPayments;
+
+    private BigDecimal interest;
+
+    private BigDecimal total;
+
     private LocalDateTime createdAt;
 
     private String createdBy;

@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -27,5 +28,18 @@ public class Judgement extends BaseEntity {
 
     private BigDecimal approvalAmount;
 
+    private LocalDateTime startDate;
+
+    private LocalDateTime endDate;
+
+    private Integer payDay;
+
+    private BigDecimal monthlyPayment;
+
+    private Integer numberOfPayments;
+
+    private BigDecimal interest;
+
+    private BigDecimal total;
 
 }
