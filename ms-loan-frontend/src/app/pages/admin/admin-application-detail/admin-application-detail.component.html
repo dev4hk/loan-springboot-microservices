@@ -214,6 +214,7 @@
             <button
               class="btn btn-custom-inverse"
               (click)="createUpdatePayout()"
+              [disabled]="entryForm.invalid"
             >
               {{ entry ? "Update Payout" : "Create Payout" }}
             </button>

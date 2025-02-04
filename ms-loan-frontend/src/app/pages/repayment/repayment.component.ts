@@ -19,6 +19,8 @@ import {
   MatSnackBarConfig,
   MatSnackBarModule,
 } from '@angular/material/snack-bar';
+import { JudgementService } from '../../services/judgement.service';
+import { JudgementResponseDto } from '../../dtos/judgement-response-dto';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -35,6 +37,7 @@ const snackbarConfig: MatSnackBarConfig = {
 export class RepaymentComponent implements OnInit {
   application?: ApplicationResponseDto;
   balance?: BalanceResponseDto;
+  judgement?: JudgementResponseDto;
   repayments?: Array<RepaymentResponseDto>;
   repaymentForm: FormGroup = new FormGroup({});
 
@@ -42,6 +45,7 @@ export class RepaymentComponent implements OnInit {
     private applicationService: ApplicationService,
     private balanceService: BalanceService,
     private repaymentService: RepaymentService,
+    private judgementService: JudgementService,
     private formBuilder: FormBuilder,
     private snackBar: MatSnackBar
   ) {}
@@ -68,6 +72,7 @@ export class RepaymentComponent implements OnInit {
           const applicationId = this.application.applicationId;
           this.getBalance(applicationId);
           this.getRepayments(applicationId);
+          this.getJudgement(applicationId);
         } else {
           console.error('Application data does not contain an applicationId.');
           this.snackBar.open(
@@ -81,6 +86,24 @@ export class RepaymentComponent implements OnInit {
         console.error('Error fetching application:', error);
         this.snackBar.open(
           'Error fetching application.',
+          'Close',
+          snackbarConfig
+        );
+      },
+    });
+  }
+
+  getJudgement(applicationId: number) {
+    console.log('Fetching judgement...');
+    this.judgementService.getJudgementOfApplication(applicationId).subscribe({
+      next: (res) => {
+        console.log('Judgement fetched:', res);
+        this.judgement = res.data;
+      },
+      error: (error) => {
+        console.error('Error fetching judgement:', error);
+        this.snackBar.open(
+          'Error fetching judgement.',
           'Close',
           snackbarConfig
         );
@@ -120,7 +143,30 @@ export class RepaymentComponent implements OnInit {
     });
   }
 
+  getRepaymentErrorMessage(controlName: string): string {
+    const control = this.repaymentForm.get(controlName);
+
+    if (control?.errors) {
+      if (control.errors['required']) {
+        return `${
+          controlName.charAt(0).toUpperCase() + controlName.slice(1)
+        } cannot be null or empty.`;
+      }
+      if (control.errors['min']) {
+        switch (controlName) {
+          case 'repaymentAmount':
+            return 'Repayment Amount must be at least 1.';
+          default:
+            return 'Invalid format.';
+        }
+      }
+    }
+
+    return '';
+  }
+
   onSubmitRepayment(): void {
+    console.log('clicked');
     if (this.repaymentForm.valid && this.application?.applicationId) {
       const repaymentRequest: RepaymentRequestDto = {
         repaymentAmount: this.repaymentForm.value.repaymentAmount,

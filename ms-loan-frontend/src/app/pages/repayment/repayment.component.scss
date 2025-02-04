@@ -51,9 +51,7 @@
 }
 
 .card-header {
-  background-color: transparent;
-  border-bottom: 1px solid #29d0b2;
-  font-size: 1.25rem;
+  border-color: #29d0b2;
 }
 
 .header-color {
@@ -68,14 +66,6 @@
     background-color: #29d0b2;
     color: #212529;
   }
-}
-
-.list-group-item {
-  border: none;
-  padding: 0.75rem 1.25rem;
-  background-color: #212529;
-  margin-bottom: 0.5rem;
-  border-radius: 0.25rem;
 }
 
 .faq-wrapper {
@@ -116,4 +106,13 @@
 
 .repayment-input {
   width: 300px;
+}
+
+.btn-custom-inverse {
+  background-color: #29d0b2;
+  color: #212529;
+  &:hover {
+    background-color: #212529;
+    color: #29d0b2;
+  }
 }

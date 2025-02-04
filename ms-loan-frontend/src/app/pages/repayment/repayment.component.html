@@ -11,79 +11,100 @@
 
   <div class="row my-5">
     <div class="col-md-7 slide-right">
-      <div class="card bg-dark text-white mb-4">
-        <div class="card-header header-color">Loan Balance</div>
-        <div class="card-body">
-          <p class="card-text">
-            Outstanding Balance:
-            <strong>{{ balance?.balance | currency }}</strong>
-          </p>
+      <div class="card bg-dark text-white mb-2">
+        <div class="card-header header-color">Loan Details</div>
+        <div class="card-body row">
+          <div class="col">
+            <p class="card-text">
+              Start Date:
+              <strong>{{ judgement?.startDate | date : "yyyy-MM-dd" }}</strong>
+            </p>
+            <p class="card-text">
+              End Date:
+              <strong>{{ judgement?.endDate | date : "yyyy-MM-dd" }}</strong>
+            </p>
+            <p class="card-text">
+              Pay Day:
+              <strong>{{ judgement?.payDay }}</strong>
+            </p>
+            <p class="card-text">
+              Outstanding Balance:
+              <strong>{{ balance?.balance | currency }}</strong>
+            </p>
+          </div>
+          <div class="col">
+            <p class="card-text">
+              Total:
+              <strong>{{ judgement?.total | currency }}</strong>
+            </p>
+            <p class="card-text">
+              Monthly Payment:
+              <strong>{{ judgement?.monthlyPayment | currency }}</strong>
+            </p>
+            <p class="card-text">
+              Number of Payments:
+              <strong>{{ judgement?.numberOfPayments }}</strong>
+            </p>
+          </div>
         </div>
       </div>
 
-      <div class="card bg-dark text-white mb-4">
+      <div class="card bg-dark text-white mb-2">
+        <div class="card-header px-3 header-color">Submit Repayment</div>
+        <div class="card-body">
+          <form [formGroup]="repaymentForm" (ngSubmit)="onSubmitRepayment()">
+            <div class="d-flex align-items-center">
+              <input
+                type="number"
+                id="repaymentAmount"
+                class="form-control bg-secondary text-white me-2 w-50"
+                formControlName="repaymentAmount"
+                placeholder="Enter repayment amount"
+              />
+
+              <button
+                type="submit"
+                class="btn btn-custom-inverse"
+                [disabled]="repaymentForm.invalid || balance?.balance == 0"
+              >
+                Submit
+              </button>
+            </div>
+
+            <div
+              *ngIf="
+                repaymentForm.get('repaymentAmount')?.invalid &&
+                (repaymentForm.get('repaymentAmount')?.dirty ||
+                  repaymentForm.get('repaymentAmount')?.touched)
+              "
+            >
+              <small class="text-danger">
+                {{ getRepaymentErrorMessage("repaymentAmount") }}
+              </small>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <div class="card bg-dark text-white">
         <div class="card-header header-color">Repayment History</div>
         <div class="card-body">
           <div *ngIf="repayments && repayments.length > 0; else noRepayment">
-            <ul class="list-group list-group-flush">
+            <ul>
               <li
                 class="list-group-item bg-dark text-white"
                 *ngFor="let repayment of repayments"
               >
-                <div class="d-flex justify-content-between">
-                  <span>{{ repayment.createdAt | date : "yyyy-MM-dd" }}</span>
-                  <span>{{ repayment.repaymentAmount | currency }}</span>
-                </div>
+                <span>{{ repayment.createdAt | date : "yyyy-MM-dd" }}</span>
+                <span class="ms-3">{{
+                  repayment.repaymentAmount | currency
+                }}</span>
               </li>
             </ul>
           </div>
           <ng-template #noRepayment>
             <p class="card-text">No repayment history available.</p>
           </ng-template>
-        </div>
-      </div>
-
-      <div class="card bg-dark text-white">
-        <div class="card-header header-color">Submit Repayment</div>
-        <div class="card-body">
-          <form [formGroup]="repaymentForm" (ngSubmit)="onSubmitRepayment()">
-            <div class="form-group my-3">
-              <label for="repaymentAmount">Repayment Amount</label>
-              <input
-                type="number"
-                id="repaymentAmount"
-                class="form-control repayment-input my-1"
-                formControlName="repaymentAmount"
-                placeholder="Enter repayment amount"
-              />
-              <div
-                *ngIf="
-                  repaymentForm.get('repaymentAmount')?.invalid &&
-                  (repaymentForm.get('repaymentAmount')?.dirty ||
-                    repaymentForm.get('repaymentAmount')?.touched)
-                "
-                class="text-danger"
-              >
-                <small
-                  *ngIf="repaymentForm.get('repaymentAmount')?.errors?.['required']"
-                >
-                  Amount is required.
-                </small>
-                <small
-                  *ngIf="repaymentForm.get('repaymentAmount')?.errors?.['min']"
-                >
-                  Amount must be greater than 0.
-                </small>
-              </div>
-            </div>
-            <button
-              type="submit"
-              class="btn btn-custom my-3 cursor-pointer"
-              [disabled]="repaymentForm.invalid"
-            >
-              Submit Repayment
-            </button>
-          </form>
         </div>
       </div>
     </div>
