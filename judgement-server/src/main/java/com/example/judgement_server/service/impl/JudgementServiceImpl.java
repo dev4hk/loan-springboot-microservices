@@ -49,7 +49,7 @@ public class JudgementServiceImpl implements IJudgementService {
 
     private void updatePayment(JudgementRequestDto request, Judgement judgement) {
         int numberOfPayments = getNumberOfPayments(request.getStartDate(), request.getEndDate(), request.getPayDay());
-        BigDecimal total = request.getApprovalAmount().multiply(request.getInterest());
+        BigDecimal total = request.getApprovalAmount().multiply(request.getInterest().add(BigDecimal.valueOf(100))).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
         BigDecimal monthlyPayment = total.divide(
                 BigDecimal.valueOf(numberOfPayments),
                 2,
@@ -126,6 +126,10 @@ public class JudgementServiceImpl implements IJudgementService {
         judgement.setFirstname(request.getFirstname());
         judgement.setLastname(request.getLastname());
         judgement.setApprovalAmount(request.getApprovalAmount());
+        judgement.setStartDate(request.getStartDate());
+        judgement.setEndDate(request.getEndDate());
+        judgement.setPayDay(request.getPayDay());
+        judgement.setInterest(request.getInterest());
         updatePayment(request, judgement);
         return JudgementMapper.mapToJudgementResponseDto(judgement);
     }

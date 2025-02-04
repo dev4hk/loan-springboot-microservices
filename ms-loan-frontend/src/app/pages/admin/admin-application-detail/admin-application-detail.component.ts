@@ -2,23 +2,32 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ApplicationService } from '../../../services/application.service';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
 import { ApplicationResponseDto } from '../../../dtos/application-response-dto';
 import { KeycloakService } from '../../../utils/keycloak/keycloak.service';
 import { FileStorageService } from '../../../services/file-storage.service';
-import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import {
+  MatSnackBar,
+  MatSnackBarConfig,
+  MatSnackBarModule,
+} from '@angular/material/snack-bar';
 import { FileResponseDto } from '../../../dtos/file-response-dto';
-import { JudgementRequestDto } from '../../../dtos/judgement-request-dto';
 import { JudgementService } from '../../../services/judgement.service';
 import { JudgementResponseDto } from '../../../dtos/judgement-response-dto';
 import { EntryResponseDto } from '../../../dtos/entry-response-dto';
-import { EntryRequestDto } from '../../../dtos/entry-request-dto';
 import { EntryService } from '../../../services/entry.service';
 import { CommunicationStatus } from '../../../dtos/communitation-status';
 import { RepaymentResponseDto } from '../../../dtos/repayment-response-dto';
 import { BalanceResponseDto } from '../../../dtos/balance-response-dto';
 import { BalanceService } from '../../../services/balance.service';
 import { RepaymentService } from '../../../services/repayment.service';
+import { JudgementRequestDto } from '../../../dtos/judgement-request-dto';
+import { OrdinalPipe } from '../../../utils/pipe/ordinal.pipe';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -30,38 +39,112 @@ const snackbarConfig: MatSnackBarConfig = {
   selector: 'app-admin-application-detail',
   templateUrl: './admin-application-detail.component.html',
   styleUrls: ['./admin-application-detail.component.scss'],
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, ReactiveFormsModule, MatSnackBarModule, OrdinalPipe],
 })
 export class AdminApplicationDetailComponent implements OnInit {
   applicationId!: string;
   application?: ApplicationResponseDto;
-  judgeFirstname?: string;
-  judgeLastname?: string;
-  approvalAmount?: number;
   filesInfo?: Array<FileResponseDto>;
   judgement?: JudgementResponseDto;
   entry?: EntryResponseDto;
-  entryAmount?: number;
   repayments?: Array<RepaymentResponseDto>;
   balance?: BalanceResponseDto;
+  judgementForm: FormGroup = new FormGroup({});
+  entryForm: FormGroup = new FormGroup({});
 
   constructor(
     private route: ActivatedRoute,
     private applicationService: ApplicationService,
     private balanceService: BalanceService,
-    private keyclockService: KeycloakService,
+    private keycloakService: KeycloakService,
     private fileStorageService: FileStorageService,
     private judgementService: JudgementService,
     private entryService: EntryService,
     private repaymentService: RepaymentService,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private formBuilder: FormBuilder
   ) {}
 
   ngOnInit(): void {
     this.applicationId = this.route.snapshot.paramMap.get('applicationId')!;
     this.getApplication();
-    this.judgeFirstname = this.keyclockService.firstName;
-    this.judgeLastname = this.keyclockService.lastName;
+    this.initializeForms();
+  }
+
+  initializeForms() {
+    this.judgementForm = this.formBuilder.group({
+      applicationId: [this.applicationId],
+      firstname: [this.keycloakService.firstName],
+      lastname: [this.keycloakService.lastName],
+      approvalAmount: ['', [Validators.required, Validators.min(1)]],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+      payDay: [
+        '',
+        [Validators.required, Validators.min(1), Validators.max(31)],
+      ],
+      interest: ['', [Validators.required, Validators.min(0)]],
+    });
+
+    this.entryForm = this.formBuilder.group({
+      entryAmount: ['', [Validators.required, Validators.min(1)]],
+    });
+  }
+
+  getEntryErrorMessage(controlName: string): string {
+    const control = this.judgementForm.get(controlName);
+
+    if (control?.errors) {
+      if (control.errors['required']) {
+        return `${
+          controlName.charAt(0).toUpperCase() + controlName.slice(1)
+        } cannot be null or empty.`;
+      }
+      if (control.errors['min']) {
+        switch (controlName) {
+          case 'entryAmount':
+            return 'Payout Amount must be at least 1.';
+          default:
+            return 'Invalid format.';
+        }
+      }
+    }
+
+    return '';
+  }
+
+  getJudgementErrorMessage(controlName: string): string {
+    const control = this.judgementForm.get(controlName);
+
+    if (control?.errors) {
+      if (control.errors['required']) {
+        return `${
+          controlName.charAt(0).toUpperCase() + controlName.slice(1)
+        } cannot be null or empty.`;
+      }
+      if (control.errors['min']) {
+        switch (controlName) {
+          case 'approvalAmount':
+            return 'Approval Amount must be at least 1.';
+          case 'payDay':
+            return 'Pay Day must be at least 1.';
+          case 'interest':
+            return 'Interest must be at least 0.';
+          default:
+            return 'Invalid format.';
+        }
+      }
+      if (control.errors['max']) {
+        switch (controlName) {
+          case 'payDay':
+            return 'PayDay must be at most 31.';
+          default:
+            return 'Invalid format.';
+        }
+      }
+    }
+
+    return '';
   }
 
   getApplication() {
@@ -139,72 +222,59 @@ export class AdminApplicationDetailComponent implements OnInit {
   }
 
   submitJudgement() {
-    if (!this.approvalAmount) {
-      console.error('Approval amount is undefined');
-      this.snackBar.open(
-        'Approval amount is missing. Cannot perform action.',
-        'close',
-        snackbarConfig
-      );
-      return;
+    if (this.judgementForm.valid) {
+      const request = this.getJudgementRequestDto();
+      this.judgementService.create(request).subscribe({
+        next: (res) => {
+          this.judgement = res.data;
+          this.judgementForm.patchValue({
+            approvalAmount: '',
+            startDate: '',
+            endDate: '',
+            payDay: '',
+            interest: '',
+          });
+          this.judgementForm.markAsPristine();
+          this.judgementForm.markAsUntouched();
+
+          this.snackBar.open(
+            'Approval amount created.',
+            'Close',
+            snackbarConfig
+          );
+        },
+        error: (res) => {
+          console.error('Create judgement failed.');
+          this.snackBar.open(
+            'Create judgement failed. Please try again.',
+            'Close',
+            snackbarConfig
+          );
+        },
+      });
+    } else {
+      this.judgementForm.markAllAsTouched();
     }
-    const judgementRequest: JudgementRequestDto = {
-      applicationId: +this.applicationId,
-      approvalAmount: +this.approvalAmount,
-      firstname: this.keyclockService.firstName,
-      lastname: this.keyclockService.lastName,
-    };
-    this.judgementService.create(judgementRequest).subscribe({
-      next: (res) => {
-        this.judgement = res.data;
-        this.snackBar.open('Approval amount created.', 'Close', snackbarConfig);
-      },
-      error: (res) => {
-        console.error('Create judgement failed.');
-        this.snackBar.open(
-          'Create judgement failed. Please try again.',
-          'Close',
-          snackbarConfig
-        );
-      },
-      complete: () => {
-        this.approvalAmount = undefined;
-      },
-    });
   }
 
   updateJudgement() {
-    if (this.approvalAmount === this.judgement?.approvalAmount) {
-      console.error('Approval amount cannot be the same');
-      this.snackBar.open(
-        'Approval amount cannot be the same as current approval amount.',
-        'close',
-        snackbarConfig
-      );
-      return;
-    }
-    if (!this.approvalAmount) {
-      console.error('Approval amount is undefined');
-      this.snackBar.open(
-        'Approval amount is missing. Cannot perform action.',
-        'close',
-        snackbarConfig
-      );
-      return;
-    }
-
-    const judgementRequest: JudgementRequestDto = {
-      applicationId: +this.applicationId,
-      approvalAmount: +this.approvalAmount,
-      firstname: this.keyclockService.firstName,
-      lastname: this.keyclockService.lastName,
-    };
-    if (this.judgement?.judgementId) {
+    if (this.judgementForm.valid) {
+      const request = this.getJudgementRequestDto();
       this.judgementService
-        .update(+this.judgement?.judgementId, judgementRequest)
+        .update(+this.judgement!.judgementId!, request)
         .subscribe({
           next: (res) => {
             this.judgement = res.data;
+            this.judgementForm.patchValue({
+              approvalAmount: '',
+              startDate: '',
+              endDate: '',
+              payDay: '',
+              interest: '',
+            });
+            this.judgementForm.markAsPristine();
+            this.judgementForm.markAsUntouched();
+
             this.snackBar.open(
               'Approval amount created.',
               'Close',
@@ -221,11 +291,25 @@ export class AdminApplicationDetailComponent implements OnInit {
               snackbarConfig
             );
           },
-          complete: () => {
-            this.approvalAmount = undefined;
-          },
         });
+    } else {
+      this.judgementForm.markAllAsTouched();
     }
+  }
+
+  private getJudgementRequestDto() {
+    return {
+      applicationId: Number(this.applicationId),
+      approvalAmount: parseFloat(
+        this.judgementForm.value.approvalAmount.toFixed(2)
+      ),
+      firstname: String(this.judgementForm.value.firstname),
+      lastname: String(this.judgementForm.value.lastname),
+      startDate: new Date(this.judgementForm.value.startDate).toISOString(),
+      endDate: new Date(this.judgementForm.value.endDate).toISOString(),
+      payDay: Number(this.judgementForm.value.payDay),
+      interest: parseFloat(this.judgementForm.value.interest.toFixed(2)),
+    };
   }
 
   getJudgement() {
@@ -326,64 +410,55 @@ export class AdminApplicationDetailComponent implements OnInit {
       return;
     }
 
-    if (!this.entryAmount) {
-      this.snackBar.open(
-        'Payout amount is missing. Cannot perform action.',
-        'Close',
-        snackbarConfig
-      );
-      return;
-    }
-
-    const request: EntryRequestDto = {
-      entryAmount: this.entryAmount,
-    };
-
-    if (!this.entry) {
-      this.entryService.createEntry(+this.applicationId, request).subscribe({
-        next: (res) => {
-          this.entry = res.data;
-          this.snackBar.open(
-            'Payout has been created.',
-            'Close',
-            snackbarConfig
-          );
-        },
-        error: (res) => {
-          this.snackBar.open(
-            'Failed to create payout.',
-            'Close',
-            snackbarConfig
-          );
-        },
-        complete: () => {
-          this.entryAmount = undefined;
-        },
-      });
+    if (this.entryForm.valid) {
+      if (!this.entry) {
+        this.entryService
+          .createEntry(+this.applicationId, this.entryForm.value)
+          .subscribe({
+            next: (res) => {
+              this.entry = res.data;
+              this.entryForm.reset();
+              this.snackBar.open(
+                'Payout has been created.',
+                'Close',
+                snackbarConfig
+              );
+            },
+            error: (res) => {
+              this.snackBar.open(
+                'Failed to create payout.',
+                'Close',
+                snackbarConfig
+              );
+            },
+          });
+      } else {
+        const entryId = this.entry.entryId;
+        this.entryService.updateEntry(entryId, this.entryForm.value).subscribe({
+          next: (res) => {
+            if (res.data) {
+              this.entry!.entryAmount = res.data.afterEntryAmount!;
+              this.entry!.updatedAt = res.data.updatedAt!;
+              this.entry!.updatedBy = res.data.updatedBy!;
+            }
+            this.entryForm.reset();
+            this.snackBar.open(
+              'Payout has been updated.',
+              'Close',
+              snackbarConfig
+            );
+          },
+          error: (res) => {
+            this.snackBar.open(
+              'Failed to update payout.',
+              'Close',
+              snackbarConfig
+            );
+          },
+        });
+      }
     } else {
-      const entryId = this.entry.entryId;
-      this.entryService.updateEntry(entryId, request).subscribe({
-        next: (res) => {
-          if (res.data) {
-            this.entry!.entryAmount = res.data.afterEntryAmount!;
-            this.entry!.updatedAt = res.data.updatedAt!;
-            this.entry!.updatedBy = res.data.updatedBy!;
-          }
-          this.snackBar.open(
-            'Payout has been updated.',
-            'Close',
-            snackbarConfig
-          );
-        },
-        error: (res) => {
-          this.snackBar.open(
-            'Failed to update payout.',
-            'Close',
-            snackbarConfig
-          );
-        },
-        complete: () => (this.entryAmount = undefined),
-      });
+      this.entryForm.markAllAsTouched();
     }
   }
 

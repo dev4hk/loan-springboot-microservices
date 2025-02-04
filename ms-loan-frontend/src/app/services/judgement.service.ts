@@ -13,6 +13,7 @@ export class JudgementService {
   constructor(private http: HttpClient) {}
 
   create(request: JudgementRequestDto) {
+    console.log(request);
     return this.http.post<ResponseDTO<JudgementResponseDto>>(
       `${this.BASE_URL}`,
       request

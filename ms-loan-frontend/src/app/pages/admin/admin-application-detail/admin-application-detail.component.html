@@ -93,8 +93,6 @@
             <p class="card-text">Judgement ID: {{ judgement.judgementId }}</p>
             <p class="card-text">Judge First Name: {{ judgement.firstname }}</p>
             <p class="card-text">Judge Last Name: {{ judgement.lastname }}</p>
-          </div>
-          <div class="col">
             <p class="card-text">
               Application ID: {{ judgement.applicationId }}
             </p>
@@ -105,6 +103,27 @@
             <p class="card-text">
               Created At: {{ judgement.createdAt | date : "yyyy-MM-dd" }}
             </p>
+          </div>
+          <div class="col">
+            <p class="card-text">
+              Loan Start Date: {{ judgement.startDate | date : "yyyy-MM-dd" }}
+            </p>
+            <p class="card-text">
+              Loan End Date: {{ judgement.endDate | date : "yyyy-MM-dd" }}
+            </p>
+            <p class="card-text">
+              Pay Day: {{ "Every " + (judgement.payDay! | ordinal) }}
+            </p>
+            <p class="card-text">
+              Monthly Payment: {{ judgement.monthlyPayment | currency }}
+            </p>
+            <p class="card-text">
+              Number of Payments: {{ judgement.numberOfPayments }}
+            </p>
+            <p class="card-text">
+              Interest: {{ judgement.interest | number : "1.2-2" }}%
+            </p>
+            <p class="card-text">Total: {{ judgement.total | currency }}</p>
           </div>
           @if(!application?.approvalAmount) {
           <span (click)="grant()" class="grant-button cursor-pointer mt-3">
@@ -170,12 +189,25 @@
         <div class="card-header px-3 header-color">Create/Update Payout</div>
         <div class="card-body row">
           <div class="col">
+            <form [formGroup]="entryForm"></form>
             <input
               type="number"
               class="form-control bg-secondary text-white"
               placeholder="Entry Payout Amount."
-              [(ngModel)]="entryAmount"
+              formControlName="entryAmount"
+              ;
             />
+            <div
+              *ngIf="
+                entryForm.controls['entryAmount'].invalid &&
+                (entryForm.controls['entryAmount'].dirty ||
+                  entryForm.controls['entryAmount'].touched)
+              "
+            >
+              <small class="text-danger">{{
+                getEntryErrorMessage("entryAmount")
+              }}</small>
+            </div>
           </div>
           <div class="col">
             <button
@@ -226,16 +258,30 @@
           {{ judgement ? "Update Judgement" : "Create Judgement" }}
         </div>
         <div class="card-body">
-          <form (submit)="judgement ? updateJudgement() : submitJudgement()">
+          <form
+            [formGroup]="judgementForm"
+            (ngSubmit)="judgement ? updateJudgement() : submitJudgement()"
+          >
             <div class="mb-3">
               <label for="appId" class="form-label">Application ID</label>
               <input
                 type="text"
                 id="appId"
                 class="form-control bg-secondary text-white"
-                [value]="application?.applicationId"
+                formControlName="applicationId"
                 readonly
               />
+              <div
+                *ngIf="
+                  judgementForm.controls['applicationId'].invalid &&
+                  (judgementForm.controls['applicationId'].dirty ||
+                    judgementForm.controls['applicationId'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("applicationId")
+                }}</small>
+              </div>
             </div>
 
             <div class="mb-3">
@@ -246,9 +292,20 @@
                 type="text"
                 id="judgeFirstname"
                 class="form-control bg-secondary text-white"
-                [value]="judgeFirstname"
+                formControlName="firstname"
                 readonly
               />
+              <div
+                *ngIf="
+                  judgementForm.controls['firstname'].invalid &&
+                  (judgementForm.controls['firstname'].dirty ||
+                    judgementForm.controls['firstname'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("firstname")
+                }}</small>
+              </div>
             </div>
 
             <div class="mb-3">
@@ -259,9 +316,20 @@
                 type="text"
                 id="judgeLastname"
                 class="form-control bg-secondary text-white"
-                [value]="judgeLastname"
+                formControlName="lastname"
                 readonly
               />
+              <div
+                *ngIf="
+                  judgementForm.controls['lastname'].invalid &&
+                  (judgementForm.controls['lastname'].dirty ||
+                    judgementForm.controls['lastname'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("lastname")
+                }}</small>
+              </div>
             </div>
 
             <div class="mb-3">
@@ -272,10 +340,113 @@
                 type="number"
                 id="approvalAmount"
                 class="form-control"
-                [(ngModel)]="approvalAmount"
+                formControlName="approvalAmount"
                 name="approvalAmount"
                 required
               />
+              <div
+                *ngIf="
+                  judgementForm.controls['approvalAmount'].invalid &&
+                  (judgementForm.controls['approvalAmount'].dirty ||
+                    judgementForm.controls['approvalAmount'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("approvalAmount")
+                }}</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="startDate" class="form-label">Start Date</label>
+              <input
+                type="date"
+                id="startDate"
+                class="form-control"
+                formControlName="startDate"
+                name="startDate"
+                required
+              />
+              <div
+                *ngIf="
+                  judgementForm.controls['startDate'].invalid &&
+                  (judgementForm.controls['startDate'].dirty ||
+                    judgementForm.controls['startDate'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("startDate")
+                }}</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="endDate" class="form-label">End Date</label>
+              <input
+                type="date"
+                id="endDate"
+                class="form-control"
+                formControlName="endDate"
+                name="endDate"
+                required
+              />
+              <div
+                *ngIf="
+                  judgementForm.controls['endDate'].invalid &&
+                  (judgementForm.controls['endDate'].dirty ||
+                    judgementForm.controls['endDate'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("endDate")
+                }}</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="payDay" class="form-label">Pay Day</label>
+              <input
+                type="number"
+                id="payDay"
+                class="form-control"
+                formControlName="payDay"
+                name="payDay"
+                required
+              />
+              <div
+                *ngIf="
+                  judgementForm.controls['payDay'].invalid &&
+                  (judgementForm.controls['payDay'].dirty ||
+                    judgementForm.controls['payDay'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("payDay")
+                }}</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="interest" class="form-label">Interest</label>
+              <input
+                type="number"
+                id="interest"
+                class="form-control"
+                formControlName="interest"
+                name="interest"
+                required
+              />
+              <div
+                *ngIf="
+                  judgementForm.controls['interest'].invalid &&
+                  (judgementForm.controls['interest'].dirty ||
+                    judgementForm.controls['interest'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("interest")
+                }}</small>
+              </div>
             </div>
 
             <button type="submit" class="btn btn-custom-inverse w-100">
