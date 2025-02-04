@@ -26,7 +26,6 @@ import { RepaymentResponseDto } from '../../../dtos/repayment-response-dto';
 import { BalanceResponseDto } from '../../../dtos/balance-response-dto';
 import { BalanceService } from '../../../services/balance.service';
 import { RepaymentService } from '../../../services/repayment.service';
-import { JudgementRequestDto } from '../../../dtos/judgement-request-dto';
 import { OrdinalPipe } from '../../../utils/pipe/ordinal.pipe';
 
 const snackbarConfig: MatSnackBarConfig = {
@@ -411,11 +410,13 @@ export class AdminApplicationDetailComponent implements OnInit {
     }
 
     if (this.entryForm.valid) {
+      console.log('called');
       if (!this.entry) {
         this.entryService
           .createEntry(+this.applicationId, this.entryForm.value)
           .subscribe({
             next: (res) => {
+              this.getBalance(+this.applicationId);
               this.entry = res.data;
               this.entryForm.reset();
               this.snackBar.open(

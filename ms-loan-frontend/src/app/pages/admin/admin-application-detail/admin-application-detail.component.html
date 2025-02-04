@@ -151,7 +151,7 @@
               <p class="card-text my-auto me-2">
                 Entry ID: {{ entry?.entryId || "No data" }}
               </p>
-              @if (entry) {
+              @if (entry && repayments?.length === 0) {
               <i
                 class="fa-regular fa-circle-xmark cursor-pointer delete-icon"
                 (click)="deleteEntry()"
@@ -185,29 +185,30 @@
         </div>
       </div>
 
+      @if(repayments?.length === 0) {
       <div class="card bg-dark text-white mb-2">
         <div class="card-header px-3 header-color">Create/Update Payout</div>
         <div class="card-body row">
           <div class="col">
-            <form [formGroup]="entryForm"></form>
-            <input
-              type="number"
-              class="form-control bg-secondary text-white"
-              placeholder="Entry Payout Amount."
-              formControlName="entryAmount"
-              ;
-            />
-            <div
-              *ngIf="
-                entryForm.controls['entryAmount'].invalid &&
-                (entryForm.controls['entryAmount'].dirty ||
-                  entryForm.controls['entryAmount'].touched)
-              "
-            >
-              <small class="text-danger">{{
-                getEntryErrorMessage("entryAmount")
-              }}</small>
-            </div>
+            <form [formGroup]="entryForm">
+              <input
+                type="number"
+                class="form-control bg-secondary text-white"
+                placeholder="Entry Payout Amount."
+                formControlName="entryAmount"
+              />
+              <div
+                *ngIf="
+                  entryForm.controls['entryAmount'].invalid &&
+                  (entryForm.controls['entryAmount'].dirty ||
+                    entryForm.controls['entryAmount'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getEntryErrorMessage("entryAmount")
+                }}</small>
+              </div>
+            </form>
           </div>
           <div class="col">
             <button
@@ -219,6 +220,7 @@
           </div>
         </div>
       </div>
+      }
       <div class="card bg-dark text-white mb-2">
         <div class="card-header header-color">Loan Balance</div>
         <div class="card-body">
@@ -229,29 +231,6 @@
         </div>
       </div>
 
-      <div class="card bg-dark text-white">
-        <div class="card-header header-color">Repayment History</div>
-        <div class="card-body">
-          @if (repayments && repayments.length > 0) {
-          <div>
-            <ul>
-              @for(repayment of repayments; track repayment.repaymentId) {
-              <li class="list-group-item bg-dark text-white">
-                <div class="d-flex justify-content-between">
-                  <span>{{ repayment.createdAt | date : "yyyy-MM-dd" }}</span>
-                  <span>{{ repayment.repaymentAmount | currency }}</span>
-                </div>
-              </li>
-              } @empty {
-              <li class="list-group-item bg-dark text-white">
-                No repayment history available.
-              </li>
-              }
-            </ul>
-          </div>
-          }
-        </div>
-      </div>
       } @if (!application?.approvalAmount) {
       <div class="card bg-dark text-white">
         <div class="card-header px-3 header-color">
@@ -455,7 +434,33 @@
           </form>
         </div>
       </div>
-      } @if(application?.contractedAt) { }
+      } @if(repayments) {
+      <div class="card bg-dark text-white">
+        <div class="card-header header-color">Repayment History</div>
+        <div class="card-body">
+          @if (repayments && repayments.length > 0) {
+          <div>
+            <ul>
+              @for(repayment of repayments; track repayment.repaymentId) {
+              <li class="list-group-item bg-dark text-white">
+                <div class="d-flex justify-content-between">
+                  <span>{{ repayment.createdAt | date : "yyyy-MM-dd" }}</span>
+                  <span>{{ repayment.repaymentAmount | currency }}</span>
+                </div>
+              </li>
+              } @empty {
+              <li class="list-group-item bg-dark text-white">
+                No repayment history available.
+              </li>
+              }
+            </ul>
+          </div>
+          } @else {
+          <p class="card-text">No History Available</p>
+          }
+        </div>
+      </div>
+      }
     </div>
   </div>
 </div>
