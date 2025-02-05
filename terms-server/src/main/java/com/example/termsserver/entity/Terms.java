@@ -21,6 +21,6 @@ public class Terms extends BaseEntity {
     @Column(columnDefinition = "varchar(255) NOT NULL COMMENT 'Terms'")
     private String name;
 
-    @Column(columnDefinition = "varchar(255) NOT NULL COMMENT 'Terms detail URL'")
-    private String termsDetailUrl;
+    @Column(columnDefinition = "TEXT NOT NULL COMMENT 'Terms detail URL'")
+    private String termsDetail;
 }

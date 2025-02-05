@@ -1,5 +1,6 @@
 package com.example.counselserver.controller;
 
+import com.example.counselserver.constants.CommunicationStatus;
 import com.example.counselserver.dto.CounselRequestDto;
 import com.example.counselserver.dto.CounselResponseDto;
 import com.example.counselserver.dto.ResponseDTO;
@@ -19,6 +20,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 import static com.example.counselserver.dto.ResponseDTO.ok;
 
@@ -218,6 +221,45 @@ public class CounselController {
         counselService.delete(counselId);
         logger.info("CounselController - delete finished");
         return ok();
+    }
+
+    @Operation(
+            summary = "Complete Counsel REST API",
+            description = "REST API to complete counsel"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status Bad Request",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @RateLimiter(name = "completeRateLimiter")
+    @PatchMapping("/{counselId}")
+    public ResponseDTO<Void> complete(@PathVariable Long counselId) {
+        logger.info("CounselController - complete started");
+        logger.debug("CounselController - counselId: {}", counselId);
+        counselService.complete(counselId);
+        logger.info("CounselController - complete finished");
+        return ok();
+    }
+
+    public ResponseDTO<Map<CommunicationStatus, Long>> getStats() {
+        logger.info("CounselController - getStats started");
+        Map<CommunicationStatus, Long> stats = counselService.getCounselStatistics();
+        logger.info("CounselController - getStats finished");
+        return ok(stats);
     }
 
 }

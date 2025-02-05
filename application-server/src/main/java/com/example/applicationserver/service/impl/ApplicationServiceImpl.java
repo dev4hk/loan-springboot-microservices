@@ -23,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
@@ -39,15 +41,16 @@ public class ApplicationServiceImpl implements IApplicationService {
     private final StreamBridge streamBridge;
 
     @Override
-    public ApplicationResponseDto create(ApplicationRequestDto request) {
+    public ApplicationResponseDto create(ApplicationRequestDto applicationRequestDto, AcceptTermsRequestDto acceptTermsRequestDto) {
         logger.info("ApplicationServiceImpl - create invoked");
-        applicationRepository.findByEmail(request.getEmail())
+        applicationRepository.findByEmail(applicationRequestDto.getEmail())
                 .ifPresent(application -> {
                     throw new BaseException(ResultType.CONFLICT, HttpStatus.CONFLICT);
                 });
-        Application application = ApplicationMapper.mapToApplication(request);
+        Application application = ApplicationMapper.mapToApplication(applicationRequestDto);
         application.setAppliedAt(LocalDateTime.now());
         Application created = applicationRepository.save(application);
+        acceptTerms(created.getApplicationId(), acceptTermsRequestDto);
 
         ApplicationResponseDto responseDto = ApplicationMapper.mapToApplicationResponseDto(created);
         ResponseDTO<CounselResponseDto> counselResponse = counselClient.getByEmail(application.getEmail());
@@ -107,8 +110,17 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Transactional(readOnly = true)
     @Override
     public Page<ApplicationResponseDto> getAll(Pageable pageable) {
+        logger.info("ApplicationServiceImpl - getAll invoked");
         return applicationRepository.findAll(pageable)
                 .map(ApplicationMapper::mapToApplicationResponseDto);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Map<CommunicationStatus, Long> getApplicationStatistics() {
+        logger.info("ApplicationServiceImpl - getApplicationStatistics invoked");
+        return applicationRepository.getCommunicationStatusStats()
+                .stream().collect(Collectors.toMap(CommunicationStatusStats::getCommunicationStatus, CommunicationStatusStats::getCount));
     }
 
     @Override
@@ -145,11 +157,6 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public void acceptTerms(Long applicationId, AcceptTermsRequestDto request) {
         logger.info("ApplicationServiceImpl - acceptTerms invoked");
-        applicationRepository.findById(applicationId)
-                .orElseThrow(() -> {
-                    logger.error("ApplicationServiceImpl - Application does not exist");
-                    return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
-                });
 
         ResponseDTO<List<TermsResponseDto>> termsResponse = termClient.getAll();
 
@@ -236,5 +243,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                 });
         application.setCommunicationStatus(communicationStatus);
     }
+
+
 
 }

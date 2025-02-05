@@ -9,6 +9,7 @@ public enum CommunicationStatus {
 
     COUNSEL_CREATED("COUNSEL_RECEIVED"),
     COUNSEL_UPDATED("COUNSEL_UPDATED"),
+    COUNSEL_COMPLETE("COUNSEL_COMPLETE"),
     COUNSEL_REMOVED("COUNSEL_REMOVED");
 
     private final String type;

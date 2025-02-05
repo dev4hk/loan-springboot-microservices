@@ -78,9 +78,52 @@ class ApplicationServiceImplTest {
                 .hopeAmount(BigDecimal.valueOf(50000))
                 .build();
 
+        AcceptTermsRequestDto acceptTermsRequestDto = AcceptTermsRequestDto.builder()
+                .applicationId(1L)
+                .termsIds(List.of(1L, 2L))
+                .build();
+
+        when(termsClient.getAll()).thenReturn(
+                new ResponseDTO<>(
+                        ResultObject.builder()
+                                .code(ResultType.SUCCESS.getCode())
+                                .desc(ResultType.SUCCESS.getDesc())
+                                .build(),
+                        List.of(
+                                TermsResponseDto
+                                        .builder()
+                                        .name("terms1")
+                                        .termsId(1L)
+                                        .build(),
+                                TermsResponseDto
+                                        .builder()
+                                        .name("terms2")
+                                        .termsId(2L)
+                                        .build()
+                        )
+                ));
+        when(acceptTermsClient.create(acceptTermsRequestDto)).thenReturn(new ResponseDTO<>(
+                ResultObject.builder()
+                        .code(ResultType.SUCCESS.getCode())
+                        .desc(ResultType.SUCCESS.getDesc())
+                        .build(),
+                List.of(
+                        AcceptTermsResponseDto
+                                .builder()
+                                .applicationId(1L)
+                                .termsId(1L)
+                                .build(),
+                        AcceptTermsResponseDto
+                                .builder()
+                                .applicationId(1L)
+                                .termsId(2L)
+                                .build()
+                )));
+
+
         when(applicationRepository.findByEmail(eq(email))).thenReturn(Optional.empty());
         when(applicationRepository.save(ArgumentMatchers.any(Application.class))).thenReturn(entity);
-        ApplicationResponseDto actual = applicationService.create(request);
+        ApplicationResponseDto actual = applicationService.create(request, acceptTermsRequestDto);
         assertThat(actual).isNotNull();
         assertThat(actual.getHopeAmount()).isSameAs(entity.getHopeAmount());
         assertThat(actual.getFirstname()).isSameAs(entity.getFirstname());
@@ -106,8 +149,13 @@ class ApplicationServiceImplTest {
                 .hopeAmount(BigDecimal.valueOf(50000))
                 .build();
 
+        AcceptTermsRequestDto acceptTermsRequestDto = AcceptTermsRequestDto.builder()
+                .applicationId(1L)
+                .termsIds(List.of(1L, 2L))
+                .build();
+
         when(applicationRepository.findByEmail(eq(email))).thenReturn(Optional.of(entity));
-        assertThrows(BaseException.class, () -> applicationService.create(request));
+        assertThrows(BaseException.class, () -> applicationService.create(request, acceptTermsRequestDto));
     }
 
     @DisplayName("Get An Application by ApplicationId")
@@ -276,7 +324,6 @@ class ApplicationServiceImplTest {
                 .applicationId(applicationId)
                 .termsIds(List.of(1L, 2L))
                 .build();
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(entity));
         when(termsClient.getAll()).thenReturn(
                 new ResponseDTO<>(
                         ResultObject.builder()
@@ -316,28 +363,34 @@ class ApplicationServiceImplTest {
 
         applicationService.acceptTerms(applicationId, request);
 
-        verify(applicationRepository, times(1)).findById(applicationId);
         verify(termsClient, times(1)).getAll();
         verify(acceptTermsClient, times(1)).create(request);
 
-    }
-
-    @DisplayName("accept terms throw exception with non-existing applicationId")
-    @Test
-    void Should_ThrowException_When_RequestAcceptTermsWithNonExistingApplicationId() {
-        Long applicationId = 1L;
-        AcceptTermsRequestDto request = AcceptTermsRequestDto.builder()
-                .applicationId(applicationId)
-                .termsIds(List.of(1L, 2L))
-                .build();
-        when(applicationRepository.findById(applicationId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
-        assertThrows(BaseException.class, () -> applicationService.acceptTerms(applicationId, request));
     }
 
     @DisplayName("accept terms throw exception with empty termsIds")
     @Test
     void Should_ThrowException_When_RequestAcceptTermsWithEmptyTermsIds() {
         Long applicationId = 1L;
+        when(termsClient.getAll()).thenReturn(
+                new ResponseDTO<>(
+                        ResultObject.builder()
+                                .code(ResultType.SUCCESS.getCode())
+                                .desc(ResultType.SUCCESS.getDesc())
+                                .build(),
+                        List.of(
+                                TermsResponseDto
+                                        .builder()
+                                        .name("terms1")
+                                        .termsId(1L)
+                                        .build(),
+                                TermsResponseDto
+                                        .builder()
+                                        .name("terms2")
+                                        .termsId(2L)
+                                        .build()
+                        )
+                ));
         AcceptTermsRequestDto request = AcceptTermsRequestDto.builder()
                 .applicationId(applicationId)
                 .termsIds(List.of())

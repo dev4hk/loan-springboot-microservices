@@ -20,10 +20,10 @@ public class TermsRequestDto {
     private String name;
 
     @Schema(
-            description = "Terms detail URL", example = "https://randomTermsPage"
+            description = "Terms detail", example = "Lorem...."
     )
     @NotBlank(message = "Terms detail URL cannot be empty")
     @Size(max = 255, message = "Terms detail URL must be less than 255 characters")
-    private String termsDetailUrl;
+    private String termsDetail;
 
 }

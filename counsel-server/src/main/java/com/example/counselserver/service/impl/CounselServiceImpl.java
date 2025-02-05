@@ -2,6 +2,7 @@ package com.example.counselserver.service.impl;
 
 import com.example.counselserver.constants.CommunicationStatus;
 import com.example.counselserver.constants.ResultType;
+import com.example.counselserver.dto.CommunicationStatusStats;
 import com.example.counselserver.dto.CounselMsgDto;
 import com.example.counselserver.dto.CounselRequestDto;
 import com.example.counselserver.dto.CounselResponseDto;
@@ -21,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -137,5 +140,25 @@ public class CounselServiceImpl implements ICounselService {
         logger.info("CounselServiceImpl - getAll invoked");
         return counselRepository.findAll(pageable)
                 .map(CounselMapper::mapToCounselResponseDto);
+    }
+
+    @Override
+    public void complete(Long counselId) {
+        logger.info("CounselServiceImpl - complete invoked");
+        Counsel counsel = counselRepository.findById(counselId)
+                .orElseThrow(() ->
+                        {
+                            logger.error("CounselServiceImpl - Counsel does not exist");
+                            return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Counsel does not exist", HttpStatus.NOT_FOUND);
+                        }
+                );
+        sendCommunication(counsel, CommunicationStatus.COUNSEL_COMPLETE);
+    }
+
+    @Override
+    public Map<CommunicationStatus, Long> getCounselStatistics() {
+        logger.info("CounselServiceImpl - getCounselStatistics invoked");
+        return counselRepository.getCommunicationStatusStats()
+                .stream().collect(Collectors.toMap(CommunicationStatusStats::getCommunicationStatus, CommunicationStatusStats::getCount));
     }
 }

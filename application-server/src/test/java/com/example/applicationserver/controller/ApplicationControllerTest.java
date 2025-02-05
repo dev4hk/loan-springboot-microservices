@@ -1,5 +1,6 @@
 package com.example.applicationserver.controller;
 
+import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.ResponseDTO;
@@ -32,22 +33,24 @@ public class ApplicationControllerTest {
 
     private ApplicationRequestDto request;
     private ApplicationResponseDto response;
+    private AcceptTermsRequestDto acceptTermsRequestDto;
     private Long applicationId = 1L;
 
     @BeforeEach
     public void setup() {
         request = new ApplicationRequestDto();
         response = new ApplicationResponseDto();
+        acceptTermsRequestDto = new AcceptTermsRequestDto();
     }
 
     @Test
     public void createApplication() {
-        when(applicationService.create(any(ApplicationRequestDto.class))).thenReturn(response);
+        when(applicationService.create(any(ApplicationRequestDto.class), any(AcceptTermsRequestDto.class))).thenReturn(response);
 
-        ResponseDTO<ApplicationResponseDto> result = applicationController.create(request);
+        ResponseDTO<ApplicationResponseDto> result = applicationController.create(request, acceptTermsRequestDto);
 
         assertEquals(response, result.getData());
-        verify(applicationService, times(1)).create(any(ApplicationRequestDto.class));
+        verify(applicationService, times(1)).create(any(ApplicationRequestDto.class), any(AcceptTermsRequestDto.class));
     }
 
     @Test

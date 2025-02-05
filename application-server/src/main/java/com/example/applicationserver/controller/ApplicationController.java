@@ -1,6 +1,8 @@
 package com.example.applicationserver.controller;
 
 import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.constants.CommunicationStatus;
+import com.example.applicationserver.dto.CommunicationStatusStats;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.GrantAmountDto;
@@ -22,6 +24,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 import static com.example.applicationserver.dto.ResponseDTO.ok;
 
@@ -62,10 +66,10 @@ public class ApplicationController {
     )
     @RateLimiter(name = "createRateLimiter")
     @PostMapping
-    public ResponseDTO<ApplicationResponseDto> create(@Valid @RequestBody ApplicationRequestDto request) {
+    public ResponseDTO<ApplicationResponseDto> create(@Valid @RequestBody ApplicationRequestDto applicationRequestDto, @RequestBody AcceptTermsRequestDto acceptTermsRequestDto) {
         logger.info("ApplicationController - create started");
-        logger.debug("ApplicationController - request: {}", request.toString());
-        ApplicationResponseDto applicationResponseDto = applicationService.create(request);
+        logger.debug("ApplicationController - request: {}", applicationRequestDto.toString());
+        ApplicationResponseDto applicationResponseDto = applicationService.create(applicationRequestDto, acceptTermsRequestDto);
         logger.info("ApplicationController - create finished");
         return ok(applicationResponseDto);
     }
@@ -343,6 +347,37 @@ public class ApplicationController {
         ApplicationResponseDto contract = applicationService.contract(applicationId);
         logger.info("ApplicationController - contract finished");
         return ok(contract);
+    }
+
+    @Operation(
+            summary = "getStats REST API",
+            description = "REST API to get stats"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "HTTP Not Found",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @RateLimiter(name = "contractRateLimiter")
+    @GetMapping("/stats")
+    public ResponseDTO<Map<CommunicationStatus, Long>> getStats() {
+        logger.info("ApplicationController - getStats started");
+        Map<CommunicationStatus, Long> stats = applicationService.getApplicationStatistics();
+        logger.info("ApplicationController - getStats finished");
+        return ok(stats);
     }
 
 }

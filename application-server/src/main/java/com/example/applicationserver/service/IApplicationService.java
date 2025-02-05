@@ -4,12 +4,16 @@ import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
 import com.example.applicationserver.constants.CommunicationStatus;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
+import com.example.applicationserver.dto.CommunicationStatusStats;
 import com.example.applicationserver.dto.GrantAmountDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import java.util.List;
+import java.util.Map;
+
 public interface IApplicationService {
-    ApplicationResponseDto create(ApplicationRequestDto request);
+    ApplicationResponseDto create(ApplicationRequestDto applicationRequestDto, AcceptTermsRequestDto acceptTermsRequestDto);
 
     ApplicationResponseDto get(Long findId);
 
@@ -28,4 +32,6 @@ public interface IApplicationService {
     ApplicationResponseDto getByEmail(String email);
 
     Page<ApplicationResponseDto> getAll(Pageable pageable);
+
+    Map<CommunicationStatus, Long> getApplicationStatistics();
 }

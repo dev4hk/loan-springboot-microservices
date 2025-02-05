@@ -53,7 +53,10 @@ public class SecurityConfig {
                                 .pathMatchers(HttpMethod.GET, REPAYMENT.getUri()).hasAnyRole(CUSTOMER.getRole(), MANAGER.getRole())
                                 .pathMatchers(HttpMethod.PUT, REPAYMENT.getUri()).hasRole(CUSTOMER.getRole())
                                 .pathMatchers(HttpMethod.DELETE, REPAYMENT.getUri()).hasAnyRole(CUSTOMER.getRole(), MANAGER.getRole())
-                                .pathMatchers(TERMS.getUri()).hasRole(MANAGER.getRole())
+                                .pathMatchers(HttpMethod.GET, TERMS.getUri()).hasAnyRole(CUSTOMER.getRole(), MANAGER.getRole())
+                                .pathMatchers(HttpMethod.POST, TERMS.getUri()).hasRole(MANAGER.getRole())
+                                .pathMatchers(HttpMethod.PUT, TERMS.getUri()).hasRole(MANAGER.getRole())
+                                .pathMatchers(HttpMethod.DELETE, TERMS.getUri()).hasRole(MANAGER.getRole())
                 )
                 .oauth2ResourceServer(oAuth2ResourceServerSpec -> oAuth2ResourceServerSpec
                         .jwt(jwtSpec -> jwtSpec.jwtAuthenticationConverter(grantedAuthoritiesExtractor())));
