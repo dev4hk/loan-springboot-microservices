@@ -17,6 +17,8 @@ import { ImageSliderComponent } from '../../components/image-slider/image-slider
 import { loanProcessSlides } from '../../components/image-slider/loan-process-slides';
 import { FileStorageService } from '../../services/file-storage.service';
 import { FileResponseDto } from '../../dtos/file-response-dto';
+import { TermsService } from '../../services/terms.service';
+import { TermsResponseDto } from '../../dtos/terms-response-dto';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -42,13 +44,15 @@ export class ApplicationComponent implements OnInit {
   slides: Array<ImageSlideInterface> = loanProcessSlides;
   selectedFile?: File;
   filesInfo?: Array<FileResponseDto>;
+  terms?: Array<TermsResponseDto>;
 
   constructor(
     private formBuilder: FormBuilder,
     private applicationService: ApplicationService,
     private snackBar: MatSnackBar,
     private keycloakService: KeycloakService,
-    private fileStorageService: FileStorageService
+    private fileStorageService: FileStorageService,
+    private termsService: TermsService
   ) {}
 
   ngOnInit(): void {
@@ -80,6 +84,7 @@ export class ApplicationComponent implements OnInit {
       ],
     });
     this.getApplication();
+    this.getAllTerms();
   }
 
   addToggleFunctionality(): void {
@@ -345,6 +350,18 @@ export class ApplicationComponent implements OnInit {
         this.snackBar.open('Contract failed. Please try again.', 'Close', {
           ...snackbarConfig,
         });
+      },
+    });
+  }
+
+  getAllTerms() {
+    this.termsService.getAll().subscribe({
+      next: (res) => {
+        console.log('Terms fetched.', res.data);
+        this.terms = res.data;
+      },
+      error: (res) => {
+        console.log('Failed to fetch terms', res.error);
       },
     });
   }

@@ -9,6 +9,7 @@ import { authGuard } from './auth/auth.guard';
 import { AdminCounselComponent } from './pages/admin/admin-counsel/admin-counsel.component';
 import { AdminApplicationDetailComponent } from './pages/admin/admin-application-detail/admin-application-detail.component';
 import { AdminCounselDetailComponent } from './pages/admin/admin-counsel-detail/admin-counsel-detail.component';
+import { AdminTermsComponent } from './pages/admin/admin-terms/admin-terms.component';
 
 export const routes: Routes = [
   {
@@ -53,7 +54,6 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { expectedRole: 'MANAGER' },
   },
-
   {
     path: 'admin-application/:applicationId',
     canActivate: [authGuard],
@@ -65,5 +65,11 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { expectedRole: 'MANAGER' },
     component: AdminCounselDetailComponent,
+  },
+  {
+    path: 'admin-terms',
+    component: AdminTermsComponent,
+    canActivate: [authGuard],
+    data: { expectedRole: 'MANAGER' },
   },
 ];

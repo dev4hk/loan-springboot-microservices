@@ -7,5 +7,5 @@ export interface TermsRequestDto {
   /**
    * Terms detail URL
    */
-  termsDetailUrl: string;
+  termsDetail: string;
 }

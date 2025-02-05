@@ -79,7 +79,7 @@ class TermsControllerTest {
     public void deleteTerms() {
         doNothing().when(termsService).delete(any(Long.class));
 
-        ResponseDTO<TermsResponseDto> result = termsController.delete(1L);
+        termsController.delete(1L);
 
         verify(termsService, times(1)).delete(any(Long.class));
     }

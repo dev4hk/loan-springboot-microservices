@@ -21,6 +21,7 @@ import {
 } from '@angular/material/snack-bar';
 import { JudgementService } from '../../services/judgement.service';
 import { JudgementResponseDto } from '../../dtos/judgement-response-dto';
+import { RouterModule } from '@angular/router';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -32,7 +33,13 @@ const snackbarConfig: MatSnackBarConfig = {
   selector: 'app-repayment',
   templateUrl: './repayment.component.html',
   styleUrls: ['./repayment.component.scss'],
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatSnackBarModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatSnackBarModule,
+    RouterModule,
+  ],
 })
 export class RepaymentComponent implements OnInit {
   application?: ApplicationResponseDto;
@@ -74,21 +81,11 @@ export class RepaymentComponent implements OnInit {
           this.getRepayments(applicationId);
           this.getJudgement(applicationId);
         } else {
-          console.error('Application data does not contain an applicationId.');
-          this.snackBar.open(
-            'Application data is missing.',
-            'Close',
-            snackbarConfig
-          );
+          console.log('Application data does not contain an applicationId.');
         }
       },
       error: (error) => {
-        console.error('Error fetching application:', error);
-        this.snackBar.open(
-          'Error fetching application.',
-          'Close',
-          snackbarConfig
-        );
+        console.log('Error fetching application:', error);
       },
     });
   }
@@ -101,12 +98,7 @@ export class RepaymentComponent implements OnInit {
         this.judgement = res.data;
       },
       error: (error) => {
-        console.error('Error fetching judgement:', error);
-        this.snackBar.open(
-          'Error fetching judgement.',
-          'Close',
-          snackbarConfig
-        );
+        console.log('Error fetching judgement:', error);
       },
     });
   }
@@ -119,8 +111,7 @@ export class RepaymentComponent implements OnInit {
         this.balance = res.data;
       },
       error: (error) => {
-        console.error('Error fetching balance:', error);
-        this.snackBar.open('Error fetching balance.', 'Close', snackbarConfig);
+        console.log('Error fetching balance:', error);
       },
     });
   }
@@ -133,12 +124,7 @@ export class RepaymentComponent implements OnInit {
         this.repayments = res.data;
       },
       error: (error) => {
-        console.error('Error fetching repayments:', error);
-        this.snackBar.open(
-          'Error fetching repayment history.',
-          'Close',
-          snackbarConfig
-        );
+        console.log('Error fetching repayments:', error);
       },
     });
   }

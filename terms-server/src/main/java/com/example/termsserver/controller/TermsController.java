@@ -186,7 +186,7 @@ public class TermsController {
     )
     @RateLimiter(name = "deleteRateLimiter")
     @DeleteMapping("/{termsId}")
-    public ResponseDTO<TermsResponseDto> delete(@PathVariable Long termsId) {
+    public ResponseDTO<Void> delete(@PathVariable Long termsId) {
         logger.info("TermsController - delete started");
         logger.debug("TermsController - termsId: {}", termsId);
         termsService.delete(termsId);

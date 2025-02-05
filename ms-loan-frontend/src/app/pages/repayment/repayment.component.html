@@ -11,6 +11,26 @@
 
   <div class="row my-5">
     <div class="col-md-7 slide-right">
+      @if (!application?.contractedAt) {
+      <div class="card bg-dark text-white mb-2">
+        <div class="card-header header-color">Loan Details</div>
+        <div class="card-body row">
+          <div class="col">
+            @if(application) {
+            <p class="card-text">Application hasn't been contracted yet</p>
+            } @else {
+            <p class="card-text">
+              Haven't applied for loan yet?
+              <a class="link ms-2" [routerLink]="['/application']"
+                >Click here to apply</a
+              >
+            </p>
+            }
+          </div>
+        </div>
+      </div>
+      } @else {
+
       <div class="card bg-dark text-white mb-2">
         <div class="card-header header-color">Loan Details</div>
         <div class="card-body row">
@@ -107,6 +127,7 @@
           </ng-template>
         </div>
       </div>
+      }
     </div>
 
     <div class="col-md-5 slide-left">

@@ -3,7 +3,6 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { FilterPipe } from '../filter-pipe';
 import { RouterModule } from '@angular/router';
-import { ApplicationService } from '../../../services/application.service';
 import { CounselService } from '../../../services/counsel.service';
 
 @Component({
