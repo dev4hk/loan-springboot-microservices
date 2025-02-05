@@ -10,6 +10,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { MatSnackBar, MatSnackBarConfig } from '@angular/material/snack-bar';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { TermDetailsDialogComponent } from '../../../components/term-details-dialog/term-details-dialog.component';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -19,7 +21,7 @@ const snackbarConfig: MatSnackBarConfig = {
 
 @Component({
   selector: 'app-admin-terms',
-  imports: [CommonModule, FormsModule, ReactiveFormsModule],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule, MatDialogModule],
   templateUrl: './admin-terms.component.html',
   styleUrl: './admin-terms.component.scss',
 })
@@ -32,7 +34,8 @@ export class AdminTermsComponent implements OnInit {
   constructor(
     private termsService: TermsService,
     private formBuilder: FormBuilder,
-    private snackBar: MatSnackBar
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -148,5 +151,15 @@ export class AdminTermsComponent implements OnInit {
       this.selectedTermId = undefined;
       this.form.reset();
     }
+  }
+
+  openTermDetails(term: TermsResponseDto) {
+    this.dialog.open(TermDetailsDialogComponent, {
+      width: '500px',
+      data: {
+        name: term.name,
+        termsDetail: term.termsDetail,
+      },
+    });
   }
 }

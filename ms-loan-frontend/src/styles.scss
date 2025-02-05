@@ -18,8 +18,32 @@ body {
 
 ul {
   list-style: none;
-  padding-left: 0; /* Optional: To remove default padding */
+  padding-left: 0;
 }
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2c3035;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #29d0b2;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1bb89b;
+}

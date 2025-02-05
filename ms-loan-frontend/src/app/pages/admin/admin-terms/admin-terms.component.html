@@ -78,7 +78,11 @@
       <tbody>
         <tr *ngFor="let term of terms; let i = index" class="table-row">
           <td>{{ term.termsId }}</td>
-          <td>{{ term.name }}</td>
+          <td>
+            <a class="view-details-link" (click)="openTermDetails(term)">{{
+              term.name
+            }}</a>
+          </td>
           <td>{{ term.termsDetail?.slice(0, 20) }}...</td>
           <td>
             <button
