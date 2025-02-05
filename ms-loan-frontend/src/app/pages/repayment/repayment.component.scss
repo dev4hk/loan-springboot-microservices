@@ -116,3 +116,12 @@
     color: #29d0b2;
   }
 }
+
+.link {
+  text-decoration: none;
+  color: #29d0b2;
+  transition: all 0.15s ease-in-out;
+  &:hover {
+    color: #fff;
+  }
+}

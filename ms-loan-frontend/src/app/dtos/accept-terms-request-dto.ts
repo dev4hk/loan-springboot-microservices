@@ -1,4 +1,4 @@
 export interface AcceptTermsRequestDto {
-  applicationId: number;
+  applicationId?: number;
   termsIds: Array<number>;
 }

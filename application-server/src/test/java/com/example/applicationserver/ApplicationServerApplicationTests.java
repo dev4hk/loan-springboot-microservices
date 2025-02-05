@@ -111,9 +111,28 @@ class ApplicationServerApplicationTests {
                 }
                 """;
 
+        String acceptTermsRequestDto = """
+                {
+                        "termsIds": [1, 2]
+                }
+                """;
+        String request = """
+                {
+                    {
+                            "firstname": "firstname",
+                            "lastname": "lastname",
+                            "cellPhone": "1111111111",
+                            "email": "email@email.com",
+                            "hopeAmount": 1000.00
+                    },
+                    {
+                        "termsIds": [1, 2]
+                    }
+                }
+                """;
         RestAssured.given()
                 .contentType("application/json")
-                .body(requestDto)
+                .body(request)
                 .post("/api")
                 .then()
                 .statusCode(200)
@@ -222,6 +241,7 @@ class ApplicationServerApplicationTests {
                 .body(requestDto)
                 .put("/api/2")
                 .then()
+                .log().all()
                 .statusCode(404);
     }
 

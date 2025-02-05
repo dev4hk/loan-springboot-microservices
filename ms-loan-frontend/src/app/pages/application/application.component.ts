@@ -19,6 +19,10 @@ import { FileStorageService } from '../../services/file-storage.service';
 import { FileResponseDto } from '../../dtos/file-response-dto';
 import { TermsService } from '../../services/terms.service';
 import { TermsResponseDto } from '../../dtos/terms-response-dto';
+import { TermsAgreementDialogComponent } from '../../components/terms-agreement-dialog/terms-agreement-dialog.component';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { AcceptTermsRequestDto } from '../../dtos/accept-terms-request-dto';
+import { ApplicationRequestDto } from '../../dtos/application-request-dto';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -34,6 +38,7 @@ const snackbarConfig: MatSnackBarConfig = {
     MatSnackBarModule,
     RouterModule,
     ImageSliderComponent,
+    MatDialogModule,
   ],
   templateUrl: './application.component.html',
   styleUrl: './application.component.scss',
@@ -52,7 +57,8 @@ export class ApplicationComponent implements OnInit {
     private snackBar: MatSnackBar,
     private keycloakService: KeycloakService,
     private fileStorageService: FileStorageService,
-    private termsService: TermsService
+    private termsService: TermsService,
+    private dialog: MatDialog
   ) {}
 
   ngOnInit(): void {
@@ -127,27 +133,56 @@ export class ApplicationComponent implements OnInit {
 
   onSubmit() {
     if (this.form.valid) {
-      this.applicationService.createApplication(this.form.value).subscribe({
+      this.termsService.getAll().subscribe({
         next: (res) => {
-          this.form.reset();
-          this.snackBar.open('Application submitted successfully!', 'Close', {
-            ...snackbarConfig,
+          const dialogRef = this.dialog.open(TermsAgreementDialogComponent, {
+            width: '500px',
+            data: { terms: res.data },
           });
-          this.application = res.data;
-        },
-        error: (res) => {
-          this.snackBar.open(
-            'Application submission failed. Please try again.',
-            'Close',
-            {
-              ...snackbarConfig,
+
+          dialogRef.afterClosed().subscribe((selectedTermsIds: number[]) => {
+            if (selectedTermsIds) {
+              this.submitApplication(selectedTermsIds);
             }
+          });
+        },
+        error: () => {
+          this.snackBar.open(
+            'Failed to fetch terms. Please try again.',
+            'Close',
+            snackbarConfig
           );
         },
       });
     } else {
       this.form.markAllAsTouched();
     }
+  }
+
+  submitApplication(termsIds: number[]) {
+    const applicationData: ApplicationRequestDto = this.form.value;
+    const acceptTermsData: AcceptTermsRequestDto = { termsIds };
+
+    this.applicationService
+      .createApplication(applicationData, acceptTermsData)
+      .subscribe({
+        next: (res) => {
+          this.form.reset();
+          this.snackBar.open(
+            'Application submitted successfully!',
+            'Close',
+            snackbarConfig
+          );
+          this.application = res.data;
+        },
+        error: () => {
+          this.snackBar.open(
+            'Application submission failed. Please try again.',
+            'Close',
+            snackbarConfig
+          );
+        },
+      });
   }
 
   getApplication() {

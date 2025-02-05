@@ -5,6 +5,7 @@ import { ResponseDTO } from '../dtos/response-dto';
 import { KeycloakService } from '../utils/keycloak/keycloak.service';
 import { ApplicationResponseDto } from '../dtos/application-response-dto';
 import { Page } from '../dtos/page-dto';
+import { AcceptTermsRequestDto } from '../dtos/accept-terms-request-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -16,11 +17,14 @@ export class ApplicationService {
     private keycloakService: KeycloakService
   ) {}
 
-  createApplication(request: ApplicationRequestDto) {
-    return this.http.post<ResponseDTO<ApplicationResponseDto>>(
-      this.BASE_URL,
-      request
-    );
+  createApplication(
+    applicationRequestDto: ApplicationRequestDto,
+    acceptTermsRequestDto: AcceptTermsRequestDto
+  ) {
+    return this.http.post<ResponseDTO<ApplicationResponseDto>>(this.BASE_URL, {
+      applicationRequestDto,
+      acceptTermsRequestDto,
+    });
   }
 
   getApplicationByEmail() {

@@ -1,6 +1,7 @@
 package com.example.applicationserver.controller;
 
 import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.client.dto.CombinedApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.ResponseDTO;
@@ -46,8 +47,11 @@ public class ApplicationControllerTest {
     @Test
     public void createApplication() {
         when(applicationService.create(any(ApplicationRequestDto.class), any(AcceptTermsRequestDto.class))).thenReturn(response);
-
-        ResponseDTO<ApplicationResponseDto> result = applicationController.create(request, acceptTermsRequestDto);
+        CombinedApplicationRequestDto requestDto = CombinedApplicationRequestDto.builder()
+                .applicationRequestDto(request)
+                .acceptTermsRequestDto(acceptTermsRequestDto)
+                .build();
+        ResponseDTO<ApplicationResponseDto> result = applicationController.create(requestDto);
 
         assertEquals(response, result.getData());
         verify(applicationService, times(1)).create(any(ApplicationRequestDto.class), any(AcceptTermsRequestDto.class));

@@ -2,10 +2,7 @@ package com.example.applicationserver.client.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.List;
 
@@ -13,9 +10,9 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Getter
+@Setter
 public class AcceptTermsRequestDto {
 
-    @NotNull(message = "Application id cannot be null or empty")
     private Long applicationId;
 
     @NotNull(message = "Terms ids cannot be null or empty")

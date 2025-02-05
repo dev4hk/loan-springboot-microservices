@@ -175,10 +175,7 @@ public class ApplicationServiceImpl implements IApplicationService {
             throw new BaseException(ResultType.BAD_REQUEST, "Terms do not match", HttpStatus.BAD_REQUEST);
         }
 
-        AcceptTermsRequestDto.builder()
-                .termsIds(requestTermsIds)
-                .applicationId(applicationId)
-                .build();
+        request.setApplicationId(applicationId);
 
         acceptTermsClient.create(request);
 

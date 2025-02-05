@@ -1,6 +1,7 @@
 package com.example.applicationserver.controller;
 
 import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
+import com.example.applicationserver.client.dto.CombinedApplicationRequestDto;
 import com.example.applicationserver.constants.CommunicationStatus;
 import com.example.applicationserver.dto.CommunicationStatusStats;
 import com.example.applicationserver.dto.ApplicationRequestDto;
@@ -66,10 +67,9 @@ public class ApplicationController {
     )
     @RateLimiter(name = "createRateLimiter")
     @PostMapping
-    public ResponseDTO<ApplicationResponseDto> create(@Valid @RequestBody ApplicationRequestDto applicationRequestDto, @RequestBody AcceptTermsRequestDto acceptTermsRequestDto) {
+    public ResponseDTO<ApplicationResponseDto> create(@Valid @RequestBody CombinedApplicationRequestDto requestDto) {
         logger.info("ApplicationController - create started");
-        logger.debug("ApplicationController - request: {}", applicationRequestDto.toString());
-        ApplicationResponseDto applicationResponseDto = applicationService.create(applicationRequestDto, acceptTermsRequestDto);
+        ApplicationResponseDto applicationResponseDto = applicationService.create(requestDto.getApplicationRequestDto(), requestDto.getAcceptTermsRequestDto());
         logger.info("ApplicationController - create finished");
         return ok(applicationResponseDto);
     }
