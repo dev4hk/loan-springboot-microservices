@@ -70,7 +70,7 @@ public class RepaymentServiceImpl implements IRepaymentService {
         RepaymentResponseDto repaymentResponseDto = RepaymentMapper.mapToRepaymentResponseDto(repayment);
         repaymentResponseDto.setBalance(balanceResponseDto.getData().getFirst().getBalance());
         sendCommunication(repayment, applicationResponseDto, CommunicationStatus.REPAYMENT_CREATED);
-        if(repaymentResponseDto.getBalance().equals(BigDecimal.ZERO)) {
+        if(repaymentResponseDto.getBalance().compareTo(BigDecimal.ZERO) == 0) {
             sendCommunication(repayment, applicationResponseDto, CommunicationStatus.REPAYMENT_COMPLETE);
             applicationClient.complete(applicationId);
         }

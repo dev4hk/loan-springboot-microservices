@@ -2,9 +2,11 @@ package com.example.entry_server.service.impl;
 
 import com.example.entry_server.client.ApplicationClient;
 import com.example.entry_server.client.BalanceClient;
+import com.example.entry_server.client.JudgementClient;
 import com.example.entry_server.client.dto.ApplicationResponseDto;
 import com.example.entry_server.client.dto.BalanceRequestDto;
 import com.example.entry_server.client.dto.BalanceUpdateRequestDto;
+import com.example.entry_server.client.dto.JudgementResponseDto;
 import com.example.entry_server.constants.CommunicationStatus;
 import com.example.entry_server.constants.ResultType;
 import com.example.entry_server.dto.*;
@@ -32,6 +34,7 @@ public class EntryServiceImpl implements IEntryService {
 
     private final EntryRepository entryRepository;
     private final ApplicationClient applicationClient;
+    private final JudgementClient judgementClient;
     private final BalanceClient balanceClient;
     private final StreamBridge streamBridge;
 
@@ -40,6 +43,7 @@ public class EntryServiceImpl implements IEntryService {
         logger.info("EntryServiceImpl - create invoked");
 
         ApplicationResponseDto applicationResponseDto = checkContractAndGetApplication(applicationId);
+        ResponseDTO<JudgementResponseDto> judgementResponseDto = judgementClient.getJudgmentOfApplication(applicationId);
 
         Entry entry = EntryMapper.mapToEntry(request);
         entry.setApplicationId(applicationId);
@@ -48,7 +52,7 @@ public class EntryServiceImpl implements IEntryService {
         balanceClient.create(applicationId,
                 BalanceRequestDto.builder()
                         .applicationId(applicationId)
-                        .entryAmount(request.getEntryAmount())
+                        .entryAmount(judgementResponseDto.getData().getTotal())
                         .build()
         );
         sendCommunication(created, applicationResponseDto, CommunicationStatus.ENTRY_CREATED);

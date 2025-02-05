@@ -169,8 +169,9 @@ export class RepaymentComponent implements OnInit {
               snackbarConfig
             );
             this.repaymentForm.reset();
-            this.getBalance(this.application!.applicationId!);
+            this.balance!.balance = res.data?.balance;
             this.getRepayments(this.application!.applicationId!);
+            this.repayments?.push(res.data!);
           },
           error: (error) => {
             console.error('Error submitting repayment:', error);

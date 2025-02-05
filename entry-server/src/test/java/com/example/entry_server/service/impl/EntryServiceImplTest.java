@@ -2,10 +2,8 @@ package com.example.entry_server.service.impl;
 
 import com.example.entry_server.client.ApplicationClient;
 import com.example.entry_server.client.BalanceClient;
-import com.example.entry_server.client.dto.ApplicationResponseDto;
-import com.example.entry_server.client.dto.BalanceRequestDto;
-import com.example.entry_server.client.dto.BalanceResponseDto;
-import com.example.entry_server.client.dto.BalanceUpdateRequestDto;
+import com.example.entry_server.client.JudgementClient;
+import com.example.entry_server.client.dto.*;
 import com.example.entry_server.constants.ResultType;
 import com.example.entry_server.dto.*;
 import com.example.entry_server.entity.Entry;
@@ -43,6 +41,9 @@ class EntryServiceImplTest {
 
     @Mock
     BalanceClient balanceClient;
+
+    @Mock
+    JudgementClient judgementClient;
 
     @Mock
     StreamBridge streamBridge;
@@ -94,6 +95,16 @@ class EntryServiceImplTest {
                                 .desc(ResultType.SUCCESS.getDesc())
                                 .build(),
                         new BalanceResponseDto())
+        );
+
+        when(judgementClient.getJudgmentOfApplication(applicationId)).thenReturn(
+                new ResponseDTO<>(
+                        ResultObject.builder()
+                                .code(ResultType.SUCCESS.getCode())
+                                .desc(ResultType.SUCCESS.getDesc())
+                                .build(),
+                        new JudgementResponseDto()
+                )
         );
 
 
