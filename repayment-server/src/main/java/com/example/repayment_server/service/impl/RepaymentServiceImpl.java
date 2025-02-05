@@ -46,6 +46,11 @@ public class RepaymentServiceImpl implements IRepaymentService {
     public RepaymentResponseDto create(Long applicationId, RepaymentRequestDto repaymentRequestDto) {
         logger.info("RepaymentServiceImpl - create invoked");
 
+        ResponseDTO<BalanceResponseDto> balanceResponse = balanceClient.get(applicationId);
+        if(balanceResponse != null && balanceResponse.getData().getBalance().equals(BigDecimal.ZERO)) {
+            throw new BaseException(ResultType.BAD_REQUEST, "No Balance found", HttpStatus.BAD_REQUEST);
+        }
+
         ApplicationResponseDto applicationResponseDto = checkRepayableAndGetApplication(applicationId);
 
         Repayment repayment = RepaymentMapper.mapToRepayment(repaymentRequestDto);
@@ -65,6 +70,10 @@ public class RepaymentServiceImpl implements IRepaymentService {
         RepaymentResponseDto repaymentResponseDto = RepaymentMapper.mapToRepaymentResponseDto(repayment);
         repaymentResponseDto.setBalance(balanceResponseDto.getData().getFirst().getBalance());
         sendCommunication(repayment, applicationResponseDto, CommunicationStatus.REPAYMENT_CREATED);
+        if(repaymentResponseDto.getBalance().equals(BigDecimal.ZERO)) {
+            sendCommunication(repayment, applicationResponseDto, CommunicationStatus.REPAYMENT_COMPLETE);
+            applicationClient.complete(applicationId);
+        }
         return repaymentResponseDto;
     }
 

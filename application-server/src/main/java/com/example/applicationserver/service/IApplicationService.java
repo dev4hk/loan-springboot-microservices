@@ -34,4 +34,6 @@ public interface IApplicationService {
     Page<ApplicationResponseDto> getAll(Pageable pageable);
 
     Map<CommunicationStatus, Long> getApplicationStatistics();
+
+    void complete(Long applicationId);
 }

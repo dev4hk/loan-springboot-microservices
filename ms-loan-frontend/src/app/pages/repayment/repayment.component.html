@@ -72,6 +72,14 @@
       <div class="card bg-dark text-white mb-2">
         <div class="card-header px-3 header-color">Submit Repayment</div>
         <div class="card-body">
+          @if(application?.communicationStatus ===
+          "APPLICATION_REPAYMENT_COMPLETE") {
+          <p class="card-text">
+            You have completed all repayment process. Your outstanding balance
+            is 0.
+          </p>
+          } @else {
+
           <form [formGroup]="repaymentForm" (ngSubmit)="onSubmitRepayment()">
             <div class="d-flex align-items-center">
               <input
@@ -103,6 +111,7 @@
               </small>
             </div>
           </form>
+          }
         </div>
       </div>
 

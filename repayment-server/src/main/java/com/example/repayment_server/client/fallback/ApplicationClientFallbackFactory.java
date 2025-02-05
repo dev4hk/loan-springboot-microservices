@@ -44,6 +44,29 @@ public class ApplicationClientFallbackFactory implements FallbackFactory<Applica
                 throw new BaseException(ResultType.SERVICE_UNAVAILABLE, "Application server unavailable", HttpStatus.SERVICE_UNAVAILABLE);
 
             }
+
+            @Override
+            public ResponseDTO<Void> complete(Long applicationId) {
+                if (cause instanceof FeignException) {
+                    FeignException feignException = (FeignException) cause;
+                    HttpStatus status = HttpStatus.valueOf(feignException.status());
+                    ObjectMapper objectMapper = new ObjectMapper();
+                    objectMapper.registerModule(new JavaTimeModule());
+
+                    try {
+                        String responseBody = feignException.contentUTF8();
+                        TypeReference<ResponseDTO<ErrorResponseDto>> typeReference = new TypeReference<ResponseDTO<ErrorResponseDto>>() {
+                        };
+                        ResponseDTO<ErrorResponseDto> errorResponseDto = objectMapper.readValue(responseBody, typeReference);
+                        throw new CustomFeignException(status, errorResponseDto);
+                    } catch (IOException e) {
+                        throw new CustomFeignException(HttpStatus.INTERNAL_SERVER_ERROR, null);
+                    }
+                }
+
+                throw new BaseException(ResultType.SERVICE_UNAVAILABLE, "Application server unavailable", HttpStatus.SERVICE_UNAVAILABLE);
+
+            }
         };
     }
 }

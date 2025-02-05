@@ -110,7 +110,7 @@ class RepaymentServiceImplTest {
         when(entryClient.getEntry(applicationId)).thenReturn(new ResponseDTO<>(entryResponseDto));
         when(repaymentRepository.save(any(Repayment.class))).thenReturn(repayment);
         when(balanceClient.repaymentUpdate(eq(applicationId), anyList())).thenReturn(new ResponseDTO<>(List.of(balanceResponseDto)));
-
+        when(balanceClient.get(applicationId)).thenReturn((new ResponseDTO<>(balanceResponseDto)));
         RepaymentResponseDto response = repaymentService.create(applicationId, repaymentRequestDto);
 
         assertEquals(BigDecimal.valueOf(1000), response.getBalance());

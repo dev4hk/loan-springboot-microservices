@@ -124,6 +124,17 @@ public class ApplicationServiceImpl implements IApplicationService {
     }
 
     @Override
+    public void complete(Long applicationId) {
+        logger.info("ApplicationServiceImpl - complete invoked");
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> {
+                    logger.error("ApplicationServiceImpl - Application does not exist");
+                    return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
+                });
+        sendCommunication(application, CommunicationStatus.APPLICATION_REPAYMENT_COMPLETE);
+    }
+
+    @Override
     public ApplicationResponseDto update(Long applicationId, ApplicationRequestDto request) {
         logger.info("ApplicationServiceImpl - update invoked");
         Application application = applicationRepository.findById(applicationId)

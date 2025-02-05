@@ -3,7 +3,6 @@ package com.example.applicationserver.controller;
 import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
 import com.example.applicationserver.client.dto.CombinedApplicationRequestDto;
 import com.example.applicationserver.constants.CommunicationStatus;
-import com.example.applicationserver.dto.CommunicationStatusStats;
 import com.example.applicationserver.dto.ApplicationRequestDto;
 import com.example.applicationserver.dto.ApplicationResponseDto;
 import com.example.applicationserver.dto.GrantAmountDto;
@@ -378,6 +377,38 @@ public class ApplicationController {
         Map<CommunicationStatus, Long> stats = applicationService.getApplicationStatistics();
         logger.info("ApplicationController - getStats finished");
         return ok(stats);
+    }
+
+    @Operation(
+            summary = "complete REST API",
+            description = "REST API to complete application"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "HTTP Not Found",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @RateLimiter(name = "completeLimiter")
+    @PutMapping("/{applicationId}/complete")
+    public ResponseDTO<Void> complete(@PathVariable Long applicationId) {
+        logger.info("ApplicationController - complete started");
+        logger.debug("ApplicationController - applicationID: {}", applicationId);
+        applicationService.complete(applicationId);
+        logger.info("ApplicationController - complete finished");
+        return ok();
     }
 
 }
