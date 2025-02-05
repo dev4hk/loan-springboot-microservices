@@ -1,9 +1,6 @@
 package com.example.applicationserver;
 
-import com.example.applicationserver.client.AcceptTermsClient;
-import com.example.applicationserver.client.CounselClient;
-import com.example.applicationserver.client.JudgementClient;
-import com.example.applicationserver.client.TermsClient;
+import com.example.applicationserver.client.*;
 import com.example.applicationserver.client.dto.*;
 import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.ApplicationMsgDto;
@@ -47,6 +44,9 @@ class ApplicationServerApplicationTests {
     private CounselClient counselClient;
 
     @MockitoBean
+    private FileStorageClient fileStorageClient;
+
+    @MockitoBean
     private StreamBridge streamBridge;
 
     private TermsResponseDto termsResponseDto;
@@ -65,7 +65,7 @@ class ApplicationServerApplicationTests {
         termsResponseDto = TermsResponseDto.builder()
                 .name("term1")
                 .termsId(1L)
-                .termsDetailUrl("http://someurl")
+                .termsDetail("http://someurl")
                 .build();
 
         acceptTermsResponseDto = AcceptTermsResponseDto.builder()
@@ -96,38 +96,24 @@ class ApplicationServerApplicationTests {
         when(counselClient.getByEmail(anyString())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), counselResponseDto));
         when(judgementClient.getJudgmentOfApplication(anyLong())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), judgementResponseDto));
         when(streamBridge.send(anyString(), any(ApplicationMsgDto.class))).thenReturn(true);
+        when(fileStorageClient.getFilesInfo(anyLong())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), List.of()));
     }
 
     @Order(1)
     @Test
     void should_create_application() {
-        String requestDto = """
-                {
-                        "firstname": "firstname",
-                        "lastname": "lastname",
-                        "cellPhone": "1111111111",
-                        "email": "email@email.com",
-                        "hopeAmount": 1000.00
-                }
-                """;
-
-        String acceptTermsRequestDto = """
-                {
-                        "termsIds": [1, 2]
-                }
-                """;
         String request = """
                 {
-                    {
-                            "firstname": "firstname",
-                            "lastname": "lastname",
-                            "cellPhone": "1111111111",
-                            "email": "email@email.com",
-                            "hopeAmount": 1000.00
-                    },
-                    {
-                        "termsIds": [1, 2]
-                    }
+                   "applicationRequestDto": {
+                     "firstname": "firstname",
+                     "lastname": "lastname",
+                     "cellPhone": "1111111111",
+                     "email": "email@email.com",
+                     "hopeAmount": 1000.00
+                   },
+                   "acceptTermsRequestDto": {
+                     "termsIds": [1]
+                   }
                 }
                 """;
         RestAssured.given()
@@ -135,6 +121,7 @@ class ApplicationServerApplicationTests {
                 .body(request)
                 .post("/api")
                 .then()
+                .log().all()
                 .statusCode(200)
                 .body("data.firstname", equalTo("firstname"));
     }
@@ -326,13 +313,18 @@ class ApplicationServerApplicationTests {
     @Test
     void should_throw_exception_when_request_post_application_with_invalid_data() {
         String requestDto = """
-                {
-                        "firstname": "a1",
-                        "lastname": "lastname",
-                        "cellPhone": "1111111111",
-                        "email": "email@email.com",
-                        "hopeAmount": 1000.00
-                }
+               {
+                   "applicationRequestDto": {
+                     "firstname": "f1",
+                     "lastname": "lastname",
+                     "cellPhone": "1111111111",
+                     "email": "email@email.com",
+                     "hopeAmount": 1000.00
+                   },
+                   "acceptTermsRequestDto": {
+                     "termsIds": [1]
+                   }
+                 }
                 """;
 
         RestAssured.given()
@@ -340,8 +332,10 @@ class ApplicationServerApplicationTests {
                 .body(requestDto)
                 .post("/api")
                 .then()
+                .log().all()
                 .statusCode(400)
-                .body("data.firstname", equalTo("First name must contain only letters"));
+                .body("data['applicationRequestDto.firstname']", equalTo("First name must contain only letters"));
+
     }
 
 }
