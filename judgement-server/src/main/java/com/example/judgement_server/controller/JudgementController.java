@@ -272,6 +272,22 @@ public class JudgementController {
         return ok(grant);
     }
 
+    @Operation(
+            summary = "Get Stats REST API",
+            description = "REST API to get stats"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @RateLimiter(name = "getStatsRateLimiter")
     @GetMapping("/stats")
     public ResponseDTO<Map<CommunicationStatus, Long>> getStats() {
         logger.info("JudgementController - getStats started");
