@@ -1,5 +1,6 @@
 package com.example.entry_server.controller;
 
+import com.example.entry_server.constants.CommunicationStatus;
 import com.example.entry_server.constants.ResultType;
 import com.example.entry_server.dto.EntryRequestDto;
 import com.example.entry_server.dto.EntryResponseDto;
@@ -22,6 +23,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
+
+import static com.example.entry_server.dto.ResponseDTO.ok;
 
 @Tag(
         name = "Entry",
@@ -66,7 +71,7 @@ public class EntryController {
         logger.debug("EntryController - request: {}", request.toString());
         EntryResponseDto response = entryService.create(applicationId, request);
         logger.info("EntryController - createEntry finished");
-        return ResponseDTO.ok(response);
+        return ok(response);
     }
 
     @Operation(
@@ -99,7 +104,7 @@ public class EntryController {
         logger.debug("EntryController - applicationId: {}", applicationId);
         EntryResponseDto response = entryService.get(applicationId);
         logger.info("EntryController - getEntry finished");
-        return ResponseDTO.ok(response);
+        return ok(response);
     }
 
     @Operation(
@@ -132,7 +137,7 @@ public class EntryController {
         logger.debug("EntryController - request: {}", request.toString());
         EntryUpdateResponseDto response = entryService.update(entryId, request);
         logger.info("EntryController - updateEntry finished");
-        return ResponseDTO.ok(response);
+        return ok(response);
     }
 
     @Operation(
@@ -164,6 +169,31 @@ public class EntryController {
         logger.debug("EntryController - entryId: {}", entryId);
         entryService.delete(entryId);
         logger.info("EntryController - deleteEntry finished");
-        return ResponseDTO.ok();
+        return ok();
     }
+
+    @Operation(
+            summary = "Get Stats REST API",
+            description = "REST API to get stats"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @RateLimiter(name = "getStatsRateLimiter")
+    @GetMapping("/stats")
+    public ResponseDTO<Map<CommunicationStatus, Long>> getStats() {
+        logger.info("EntryController - getStats started");
+        Map<CommunicationStatus, Long> stats = entryService.getEntryStatistics();
+        logger.info("EntryController - getStats finished");
+        return ok(stats);
+    }
+
 }

@@ -24,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
@@ -163,6 +165,13 @@ public class EntryServiceImpl implements IEntryService {
                 });
         entry.setCommunicationStatus(communicationStatus);
 
+    }
+
+    @Override
+    public Map<CommunicationStatus, Long> getEntryStatistics() {
+        logger.info("EntryServiceImpl - getEntryStatistics invoked");
+        return entryRepository.getCommunicationStatusStats()
+                .stream().collect(Collectors.toMap(CommunicationStatusStats::getCommunicationStatus, CommunicationStatusStats::getCount));
     }
 
     private void sendCommunication(Entry entry, ApplicationResponseDto applicationResponseDto, CommunicationStatus communicationStatus) {
