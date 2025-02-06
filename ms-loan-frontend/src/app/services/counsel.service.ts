@@ -5,6 +5,7 @@ import { ResponseDTO } from '../dtos/response-dto';
 import { CounselResponseDto } from '../dtos/counsel-response-dto';
 import { KeycloakService } from '../utils/keycloak/keycloak.service';
 import { Page } from '../dtos/page-dto';
+import { CommunicationStatus } from '../dtos/communitation-status';
 
 @Injectable({
   providedIn: 'root',
@@ -55,4 +56,10 @@ export class CounselService {
       { params: params }
     );
   }
+
+  getStats() {
+      return this.http.get<ResponseDTO<Record<CommunicationStatus, number>>>(
+        `${this.BASE_URL}/stats`
+      );
+    }
 }

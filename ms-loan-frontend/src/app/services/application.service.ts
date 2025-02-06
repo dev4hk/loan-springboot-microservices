@@ -6,6 +6,7 @@ import { KeycloakService } from '../utils/keycloak/keycloak.service';
 import { ApplicationResponseDto } from '../dtos/application-response-dto';
 import { Page } from '../dtos/page-dto';
 import { AcceptTermsRequestDto } from '../dtos/accept-terms-request-dto';
+import { CommunicationStatus } from '../dtos/communitation-status';
 
 @Injectable({
   providedIn: 'root',
@@ -57,6 +58,12 @@ export class ApplicationService {
     return this.http.put<ResponseDTO<ApplicationResponseDto>>(
       `${this.BASE_URL}/${applicationId}/contract`,
       {}
+    );
+  }
+
+  getStats() {
+    return this.http.get<ResponseDTO<Record<CommunicationStatus, number>>>(
+      `${this.BASE_URL}/stats`
     );
   }
 }
