@@ -255,6 +255,30 @@ public class CounselController {
         return ok();
     }
 
+    @Operation(
+            summary = "Counsel Statistics REST API",
+            description = "REST API to get counsel statistics"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status Bad Request",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @RateLimiter(name = "getStatsRateLimiter")
+    @GetMapping("/stats")
     public ResponseDTO<Map<CommunicationStatus, Long>> getStats() {
         logger.info("CounselController - getStats started");
         Map<CommunicationStatus, Long> stats = counselService.getCounselStatistics();

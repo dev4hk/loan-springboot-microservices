@@ -349,8 +349,8 @@ public class ApplicationController {
     }
 
     @Operation(
-            summary = "getStats REST API",
-            description = "REST API to get stats"
+            summary = "Application Statistics REST API",
+            description = "REST API to get application statistics"
     )
     @ApiResponses({
             @ApiResponse(
@@ -370,7 +370,7 @@ public class ApplicationController {
             )
     }
     )
-    @RateLimiter(name = "contractRateLimiter")
+    @RateLimiter(name = "getStatsRateLimiter")
     @GetMapping("/stats")
     public ResponseDTO<Map<CommunicationStatus, Long>> getStats() {
         logger.info("ApplicationController - getStats started");
