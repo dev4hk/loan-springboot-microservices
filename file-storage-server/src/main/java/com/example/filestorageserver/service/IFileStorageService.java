@@ -11,4 +11,5 @@ public interface IFileStorageService {
     Resource load(Long applicationId, String fileName);
     Stream<Path> loadAll(Long applicationId);
     void deleteAll(Long applicationId);
+    void deleteFile(Long applicationId, String fileName);
 }

@@ -1,0 +1,361 @@
+<div class="container mt-5 text-light">
+  <div
+    class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
+  >
+    <h1 class="display-4">
+      {{ application ? "Your Application Details" : "Apply for a Loan" }}
+    </h1>
+    <p class="lead">
+      {{
+        application
+          ? "Review your application summary below."
+          : "Please fill out the form below to submit your loan application."
+      }}
+    </p>
+  </div>
+
+  <div class="row my-5">
+    <div class="col-md-7 slide-right">
+      <div style="width: 100%; height: 400px; margin: 0 auto">
+        <app-image-slider [slides]="slides"></app-image-slider>
+      </div>
+      @if (!application) {
+
+      <h2 class="mt-5">Loan Application Form</h2>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="firstname">First Name</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="firstname"
+                placeholder="Enter your first name"
+                formControlName="firstname"
+                readonly
+              />
+              <div
+                *ngIf="
+                  form.controls['firstname'].invalid &&
+                  (form.controls['firstname'].dirty ||
+                    form.controls['firstname'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("firstname")
+                }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="lastname">Last Name</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="lastname"
+                placeholder="Enter your last name"
+                formControlName="lastname"
+                readonly
+              />
+              <div
+                *ngIf="
+                  form.controls['lastname'].invalid &&
+                  (form.controls['lastname'].dirty ||
+                    form.controls['lastname'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("lastname")
+                }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group my-3">
+              <label for="cellPhone">Cell Phone</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="cellPhone"
+                placeholder="Enter your cell phone"
+                formControlName="cellPhone"
+              />
+              <div
+                *ngIf="
+                  form.controls['cellPhone'].invalid &&
+                  (form.controls['cellPhone'].dirty ||
+                    form.controls['cellPhone'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("cellPhone")
+                }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group my-3">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                class="form-control my-1"
+                id="email"
+                placeholder="Enter your email"
+                formControlName="email"
+                readonly
+              />
+              <div
+                *ngIf="
+                  form.controls['email'].invalid &&
+                  (form.controls['email'].dirty ||
+                    form.controls['email'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("email")
+                }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group my-3">
+              <label for="hopeAmount">Hope Amount</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="hopeAmount"
+                placeholder="Enter hope amount"
+                formControlName="hopeAmount"
+              />
+              <div
+                *ngIf="
+                  form.controls['hopeAmount'].invalid &&
+                  (form.controls['hopeAmount'].dirty ||
+                    form.controls['hopeAmount'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("hopeAmount")
+                }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-custom my-3">
+          Submit Application
+        </button>
+      </form>
+      } @else {
+      <div class="card bg-dark text-white mt-5">
+        <div class="card-header px-3 header-color">
+          Loan Application Details
+        </div>
+        <div class="card-body row">
+          <div class="col">
+            <p class="card-text">
+              Application ID: {{ application.applicationId }}
+            </p>
+            <p class="card-text">First Name: {{ application.firstname }}</p>
+            <p class="card-text">Last Name: {{ application.lastname }}</p>
+            <p class="card-text">Cell Phone: {{ application.cellPhone }}</p>
+            <p class="card-text">Email: {{ application.email }}</p>
+          </div>
+          <div class="col">
+            <p class="card-text">
+              Hope Amount: {{ application.hopeAmount | currency }}
+            </p>
+            <p class="card-text">
+              Approval Amount:
+              {{
+                application.approvalAmount
+                  ? (application.approvalAmount | currency)
+                  : "Not Available"
+              }}
+            </p>
+            <p class="card-text">
+              Applied At: {{ application.appliedAt | date : "yyyy-MM-dd" }}
+            </p>
+            <p class="card-text">
+              Contracted At: @if (application.contractedAt) {
+              {{ application.contractedAt | date : "yyyy-MM-dd" }}
+              } @else if (application.approvalAmount) {
+              <span class="contract-button cursor-pointer" (click)="contract()"
+                >Click to Contract</span
+              >
+              } @else { <span>Not Available</span> }
+            </p>
+
+            <p class="card-text">
+              Communication Status: {{ application.communicationStatus }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="card bg-dark text-white mt-3">
+        <div class="card-header px-3 header-color">Counsel Information</div>
+        @if(application.counselInfo) {
+        <div class="card-body row">
+          <div class="col">
+            <p class="card-text">
+              Applied At:
+              {{ application.counselInfo.appliedAt | date : "yyyy-MM-dd" }}
+            </p>
+            <p class="card-text">
+              Communication Status:
+              {{ application.counselInfo.communicationStatus }}
+            </p>
+          </div>
+          <div class="col">
+            <p class="card-text">
+              Created At:
+              {{ application.counselInfo.createdAt | date : "yyyy-MM-dd" }}
+            </p>
+            <p class="card-text">
+              Created By: {{ application.counselInfo.createdBy }}
+            </p>
+          </div>
+        </div>
+        } @else {
+        <div class="card-body">
+          <h5 class="card-title">No Counsel Information Found</h5>
+          <p class="card-text">
+            It looks like there is no counsel information available at the
+            moment. If you would like to receive counsel, please click the link
+            below to get started.
+          </p>
+          <a [routerLink]="['/counsel']" class="btn btn-custom-inverse"
+            >Get Counsel</a
+          >
+        </div>
+        }
+      </div>
+
+      <div class="card bg-dark text-white mt-3">
+        <div class="card-header px-3 header-color">Document Section</div>
+        <div class="card-body row">
+          <div class="col">
+            <h5 class="card-title">Mandatory Documents</h5>
+            <ul>
+              <li
+                class="list-group-item bg-dark text-white"
+                *ngFor="
+                  let doc of ['Valid ID', 'Proof of Income', 'Bank Statement']
+                "
+              >
+                {{ doc }}
+              </li>
+            </ul>
+            <div>
+              <div class="d-flex align-items-center">
+                <input
+                  type="file"
+                  #fileInput
+                  (change)="onFileSelected($event)"
+                  class="d-none"
+                />
+                <span
+                  (click)="fileInput.click()"
+                  class="file-select cursor-pointer"
+                >
+                  Select File
+                </span>
+                @if (selectedFile) {
+                <span class="ms-2">{{ selectedFile.name }}</span>
+                }
+              </div>
+              <button
+                class="btn btn-custom-inverse mt-2"
+                (click)="uploadFile()"
+                [ngClass]="selectedFile ? '' : 'd-none'"
+                [disabled]="!selectedFile"
+              >
+                Submit Document
+              </button>
+            </div>
+          </div>
+          <div class="col">
+            <h5 class="card-title">Submitted Documents</h5>
+
+            <ul>
+              <li
+                class="list-group-item bg-dark text-white"
+                *ngFor="let file of filesInfo"
+              >
+                <span
+                  class="file-download cursor-pointer me-2"
+                  (click)="downloadFile(file.name)"
+                >
+                  {{ file.name }}
+                </span>
+                <i
+                  class="fa-regular fa-circle-xmark cursor-pointer delete-icon"
+                  (click)="deleteFile(file.name)"
+                ></i>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      }
+    </div>
+    <div class="col-md-5 slide-left">
+      <div class="faq-wrapper px-4">
+        <div>
+          <h2>Frequently Asked Questions</h2>
+        </div>
+        <div class="faq p-4">
+          <div class="faq-item">
+            <button class="faq-question">
+              What documents do I need to apply?
+            </button>
+            <div class="faq-answer">
+              <p>
+                You will need a valid ID, proof of income, and bank statements.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              How long does the application process take?
+            </button>
+            <div class="faq-answer">
+              <p>The application process typically takes 1-2 business days.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              Can I check my application status online?
+            </button>
+            <div class="faq-answer">
+              <p>
+                Yes, you can check the status of your application through our
+                online portal.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              What are the interest rates for the loan?
+            </button>
+            <div class="faq-answer">
+              <p>
+                Interest rates vary depending on your credit score and loan
+                type. Contact us for more details.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

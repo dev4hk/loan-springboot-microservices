@@ -14,9 +14,11 @@ import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -36,6 +38,9 @@ public class JudgementServerApplicationTests {
 
     private JudgementRequestDto judgementRequestDto;
 
+    @MockitoBean
+    private StreamBridge streamBridge;
+
     @BeforeEach
     void setup() {
         RestAssured.port = port;
@@ -46,6 +51,10 @@ public class JudgementServerApplicationTests {
                 .firstname("firstname")
                 .lastname("lastname")
                 .approvalAmount(BigDecimal.TEN)
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().plusMonths(12))
+                .payDay(15)
+                .interest(BigDecimal.valueOf(5.00))
                 .build();
 
         Judgement judgement = Judgement.builder()
@@ -54,6 +63,10 @@ public class JudgementServerApplicationTests {
                 .firstname("firstname")
                 .lastname("lastname")
                 .approvalAmount(BigDecimal.TEN)
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().plusMonths(12))
+                .payDay(15)
+                .interest(BigDecimal.valueOf(5.00))
                 .build();
 
         ApplicationResponseDto applicationResponseDto = new ApplicationResponseDto();
@@ -154,7 +167,7 @@ public class JudgementServerApplicationTests {
                 .applicationId(1L)
                 .firstname("John")
                 .lastname("Doe")
-                .approvalAmount(new BigDecimal("1234567890123456.00"))  // Exceeds the allowed precision
+                .approvalAmount(new BigDecimal("1234567890123456.00"))
                 .build();
 
         RestAssured.given()
@@ -164,7 +177,7 @@ public class JudgementServerApplicationTests {
                 .post("/api")
                 .then()
                 .statusCode(400)
-                .body("data.approvalAmount", equalTo("Hope amount must be a number with up to 2 decimal places"));
+                .body("data.approvalAmount", equalTo("Approval amount must be a number with up to 2 decimal places"));
     }
 
     @Order(2)
@@ -226,6 +239,10 @@ public class JudgementServerApplicationTests {
                 .firstname("UpdatedFirstname")
                 .lastname("UpdatedLastname")
                 .approvalAmount(BigDecimal.valueOf(20))
+                .startDate(LocalDateTime.now())
+                .endDate(LocalDateTime.now().plusMonths(12))
+                .payDay(15)
+                .interest(BigDecimal.valueOf(5.00))
                 .build();
 
         String updateResponse = RestAssured.given()

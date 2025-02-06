@@ -1,0 +1,31 @@
+.custom-navbar {
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.profile-link {
+  color: #29d0b2 !important;
+  text-transform: capitalize;
+
+  &:hover {
+    color: #ffffff !important;
+  }
+}
+
+.mat-menu-item {
+  display: flex;
+  align-items: center;
+
+  mat-icon {
+    margin-right: 8px;
+  }
+}
+
+.navbar-nav .nav-item button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  display: flex;
+  align-items: center;
+}

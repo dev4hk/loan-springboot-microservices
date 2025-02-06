@@ -2,10 +2,8 @@ package com.example.entry_server;
 
 import com.example.entry_server.client.ApplicationClient;
 import com.example.entry_server.client.BalanceClient;
-import com.example.entry_server.client.dto.ApplicationResponseDto;
-import com.example.entry_server.client.dto.BalanceRequestDto;
-import com.example.entry_server.client.dto.BalanceResponseDto;
-import com.example.entry_server.client.dto.BalanceUpdateRequestDto;
+import com.example.entry_server.client.JudgementClient;
+import com.example.entry_server.client.dto.*;
 import com.example.entry_server.constants.ResultType;
 import com.example.entry_server.dto.EntryRequestDto;
 import com.example.entry_server.dto.ResponseDTO;
@@ -44,10 +42,14 @@ class EntryServerApplicationTests {
     private BalanceClient balanceClient;
 
     @MockitoBean
+    private JudgementClient judgementClient;
+
+    @MockitoBean
     private StreamBridge streamBridge;
 
     private ApplicationResponseDto applicationResponseContractedDto;
     private BalanceResponseDto balanceResponseDto;
+    private JudgementResponseDto judgementResponseDto;
 
     @BeforeEach
     void setup() {
@@ -68,6 +70,12 @@ class EntryServerApplicationTests {
                 .balance(BigDecimal.valueOf(4000))
                 .build();
 
+        judgementResponseDto = JudgementResponseDto.builder()
+                .applicationId(1L)
+                .approvalAmount(BigDecimal.valueOf(5000))
+                .total(BigDecimal.valueOf(5500))
+                .build();
+
         Entry entry = Entry.builder()
                 .entryId(1L)
                 .applicationId(1L)
@@ -77,6 +85,7 @@ class EntryServerApplicationTests {
         when(applicationClient.get(anyLong())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), applicationResponseContractedDto));
         when(balanceClient.create(anyLong(), any(BalanceRequestDto.class))).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), balanceResponseDto));
         when(balanceClient.update(anyLong(), any(BalanceUpdateRequestDto.class))).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), balanceResponseDto));
+        when(judgementClient.getJudgmentOfApplication(anyLong())).thenReturn(new ResponseDTO<>(new ResultObject(ResultType.SUCCESS, "success"), judgementResponseDto));
     }
 
     @Order(1)
@@ -96,7 +105,7 @@ class EntryServerApplicationTests {
                 .log().all()
                 .statusCode(200)
                 .body("data.entryId", equalTo(1))
-                .body("data.entryAmount", equalTo(1000));
+                .body("data.entryAmount", equalTo(1000.0F));
 
     }
 
@@ -112,7 +121,7 @@ class EntryServerApplicationTests {
                 .log().all()
                 .statusCode(200)
                 .body("data.applicationId", equalTo(1))
-                .body("data.entryAmount", equalTo(1000));
+                .body("data.entryAmount", equalTo(1000.0F));
     }
 
     @Order(3)

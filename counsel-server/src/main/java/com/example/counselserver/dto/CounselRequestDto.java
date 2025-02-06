@@ -6,7 +6,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.*;
 
 @Schema(
-        name = "Counsel Request",
+        name = "CounselRequestDto",
         description = "Schema to hold counsel information"
 )
 @NoArgsConstructor
@@ -54,13 +54,24 @@ public class CounselRequestDto {
             description = "address", example = "123 Main St"
     )
     @NotEmpty(message = "Address cannot be null or empty")
-    private String address;
+    private String address1;
 
     @Schema(
-            description = "address detail", example = "Apt 1"
+            description = "address2", example = "Apt 1"
     )
-    @NotEmpty(message = "Address detail cannot be null or empty")
-    private String addressDetail;
+    private String address2;
+
+    @Schema(
+            description = "city", example = "New York"
+    )
+    @NotEmpty(message = "City cannot be null or empty")
+    private String city;
+
+    @Schema(
+            description = "state", example = "NY"
+    )
+    @NotEmpty(message = "State cannot be null or empty")
+    private String state;
 
     @Schema(
             description = "zip code", example = "12345"

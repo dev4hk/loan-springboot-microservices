@@ -1,13 +1,7 @@
 package com.example.applicationserver.service.impl;
 
-import com.example.applicationserver.client.AcceptTermsClient;
-import com.example.applicationserver.client.CounselClient;
-import com.example.applicationserver.client.JudgementClient;
-import com.example.applicationserver.client.TermsClient;
-import com.example.applicationserver.client.dto.AcceptTermsRequestDto;
-import com.example.applicationserver.client.dto.CounselResponseDto;
-import com.example.applicationserver.client.dto.JudgementResponseDto;
-import com.example.applicationserver.client.dto.TermsResponseDto;
+import com.example.applicationserver.client.*;
+import com.example.applicationserver.client.dto.*;
 import com.example.applicationserver.constants.CommunicationStatus;
 import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.*;
@@ -20,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +24,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
@@ -39,16 +38,28 @@ public class ApplicationServiceImpl implements IApplicationService {
     private final AcceptTermsClient acceptTermsClient;
     private final CounselClient counselClient;
     private final JudgementClient judgementClient;
+    private final FileStorageClient fileStorageClient;
     private final StreamBridge streamBridge;
 
     @Override
-    public ApplicationResponseDto create(ApplicationRequestDto request) {
+    public ApplicationResponseDto create(ApplicationRequestDto applicationRequestDto, AcceptTermsRequestDto acceptTermsRequestDto) {
         logger.info("ApplicationServiceImpl - create invoked");
-        Application application = ApplicationMapper.mapToApplication(request);
+        applicationRepository.findByEmail(applicationRequestDto.getEmail())
+                .ifPresent(application -> {
+                    throw new BaseException(ResultType.CONFLICT, HttpStatus.CONFLICT);
+                });
+        Application application = ApplicationMapper.mapToApplication(applicationRequestDto);
         application.setAppliedAt(LocalDateTime.now());
         Application created = applicationRepository.save(application);
+        acceptTerms(created.getApplicationId(), acceptTermsRequestDto);
+
+        ApplicationResponseDto responseDto = ApplicationMapper.mapToApplicationResponseDto(created);
+        ResponseDTO<CounselResponseDto> counselResponse = counselClient.getByEmail(application.getEmail());
+        if (counselResponse != null) {
+            responseDto.setCounselInfo(counselResponse.getData());
+        }
         sendCommunication(created, CommunicationStatus.APPLICATION_RECEIVED);
-        return ApplicationMapper.mapToApplicationResponseDto(created);
+        return responseDto;
     }
 
     @Transactional(readOnly = true)
@@ -62,12 +73,73 @@ public class ApplicationServiceImpl implements IApplicationService {
                 });
 
         ResponseDTO<CounselResponseDto> counselResponse = counselClient.getByEmail(application.getEmail());
+        ResponseDTO<List<FileResponseDto>> fileStorageResponse = fileStorageClient.getFilesInfo(applicationId);
 
         ApplicationResponseDto responseDto = ApplicationMapper.mapToApplicationResponseDto(application);
-        if (counselResponse != null && counselResponse.getData() != null) {
+        if (counselResponse != null) {
             responseDto.setCounselInfo(counselResponse.getData());
         }
+        if (fileStorageResponse != null) {
+            responseDto.setFileInfo(fileStorageResponse.getData());
+        }
         return responseDto;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public ApplicationResponseDto getByEmail(String email) {
+        logger.info("ApplicationServiceImpl - getByEmail invoked");
+        Application application = applicationRepository.findByEmail(email)
+                .orElseThrow(() -> {
+                    logger.error("ApplicationServiceImpl - Application does not exist");
+                    return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
+                });
+
+        ResponseDTO<CounselResponseDto> counselResponse = counselClient.getByEmail(application.getEmail());
+        ResponseDTO<List<FileResponseDto>> fileStorageResponse = fileStorageClient.getFilesInfo(application.getApplicationId());
+
+        ApplicationResponseDto responseDto = ApplicationMapper.mapToApplicationResponseDto(application);
+        if (counselResponse != null) {
+            responseDto.setCounselInfo(counselResponse.getData());
+        }
+        if (fileStorageResponse != null) {
+            responseDto.setFileInfo(fileStorageResponse.getData());
+        }
+        return responseDto;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<ApplicationResponseDto> getAll(Pageable pageable) {
+        logger.info("ApplicationServiceImpl - getAll invoked");
+        return applicationRepository.findAll(pageable)
+                .map(ApplicationMapper::mapToApplicationResponseDto);
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Map<CommunicationStatus, Long> getApplicationStatistics() {
+        logger.info("ApplicationServiceImpl - getApplicationStatistics invoked");
+        return applicationRepository.getCommunicationStatusStats()
+                .stream().collect(Collectors.toMap(CommunicationStatusStats::getCommunicationStatus, CommunicationStatusStats::getCount));
+    }
+
+    @Override
+    public void complete(Long applicationId) {
+        logger.info("ApplicationServiceImpl - complete invoked");
+        Application application = applicationRepository.findById(applicationId)
+                .orElseThrow(() -> {
+                    logger.error("ApplicationServiceImpl - Application does not exist");
+                    return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
+                });
+        sendCommunication(application, CommunicationStatus.APPLICATION_REPAYMENT_COMPLETE);
+    }
+
+    @Override
+    public List<ApplicationResponseDto> getNewApplications() {
+        logger.info("ApplicationServiceImpl - getNewApplications invoked");
+        List<Application> applications =  applicationRepository.getNewApplications(CommunicationStatus.APPLICATION_RECEIVED, PageRequest.of(0, 5));
+        return applications.stream().map(ApplicationMapper::mapToApplicationResponseDto).toList();
     }
 
     @Override
@@ -104,12 +176,10 @@ public class ApplicationServiceImpl implements IApplicationService {
     @Override
     public void acceptTerms(Long applicationId, AcceptTermsRequestDto request) {
         logger.info("ApplicationServiceImpl - acceptTerms invoked");
-        get(applicationId);
+
         ResponseDTO<List<TermsResponseDto>> termsResponse = termClient.getAll();
 
         List<TermsResponseDto> terms = termsResponse.getData();
-
-
         List<Long> requestTermsIds = request.getTermsIds();
 
         if (terms.size() != requestTermsIds.size()) {
@@ -124,10 +194,7 @@ public class ApplicationServiceImpl implements IApplicationService {
             throw new BaseException(ResultType.BAD_REQUEST, "Terms do not match", HttpStatus.BAD_REQUEST);
         }
 
-        AcceptTermsRequestDto.builder()
-                .termsIds(requestTermsIds)
-                .applicationId(applicationId)
-                .build();
+        request.setApplicationId(applicationId);
 
         acceptTermsClient.create(request);
 
@@ -192,5 +259,7 @@ public class ApplicationServiceImpl implements IApplicationService {
                 });
         application.setCommunicationStatus(communicationStatus);
     }
+
+
 
 }

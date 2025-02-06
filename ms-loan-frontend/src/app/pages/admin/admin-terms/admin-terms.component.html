@@ -1,0 +1,105 @@
+<div class="container mt-5 text-light">
+  <div
+    class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
+  >
+    <h1 class="display-4">Terms & Conditions</h1>
+    <p class="lead">Review all terms and conditions below.</p>
+  </div>
+  <p class="create-link cursor-pointer" (click)="toggleShowForm()">
+    {{ showForm ? "Hide Form" : "Open Form" }}
+  </p>
+  <div [ngClass]="{ 'slide-container': true, show: showForm }">
+    <form *ngIf="showForm" [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="form-group my-3">
+            <label for="name">Name</label>
+            <input
+              type="text"
+              class="form-control my-1"
+              id="name"
+              placeholder="Enter term name"
+              formControlName="name"
+            />
+            <div
+              *ngIf="
+                form.controls['name'].invalid &&
+                (form.controls['name'].dirty || form.controls['name'].touched)
+              "
+            >
+              <small class="text-danger">{{ getErrorMessage("name") }}</small>
+            </div>
+          </div>
+
+          <div class="form-group my-3">
+            <label for="termsDetail">Terms Detail</label>
+            <textarea
+              class="form-control my-1"
+              id="termsDetail"
+              placeholder="Enter terms detail"
+              formControlName="termsDetail"
+              rows="4"
+            ></textarea>
+            <div
+              *ngIf="
+                form.controls['termsDetail'].invalid &&
+                (form.controls['termsDetail'].dirty ||
+                  form.controls['termsDetail'].touched)
+              "
+            >
+              <small class="text-danger">{{
+                getErrorMessage("termsDetail")
+              }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <button
+        type="submit"
+        class="btn btn-custom-inverse"
+        [disabled]="form.invalid"
+      >
+        Submit
+      </button>
+    </form>
+  </div>
+
+  <div class="table-responsive">
+    <table class="table table-dark table-striped">
+      <thead>
+        <tr>
+          <th>Term ID</th>
+          <th>Name</th>
+          <th>Detail</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let term of terms; let i = index" class="table-row">
+          <td>{{ term.termsId }}</td>
+          <td>
+            <a class="view-details-link" (click)="openTermDetails(term)">{{
+              term.name
+            }}</a>
+          </td>
+          <td>{{ term.termsDetail?.slice(0, 20) }}...</td>
+          <td>
+            <button
+              class="btn btn-sm btn-warning mx-1"
+              (click)="editTerm(term)"
+            >
+              Update
+            </button>
+            <button
+              class="btn btn-sm btn-danger mx-1"
+              (click)="deleteTerm(term.termsId!)"
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

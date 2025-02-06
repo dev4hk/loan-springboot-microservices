@@ -15,7 +15,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: "http://localhost:7080/realms/master/protocol/openid-connect/certs"
+          jwk-set-uri: "http://localhost:7080/realms/msloan/protocol/openid-connect/certs"
 
 management:
   endpoints:
@@ -53,5 +53,5 @@ resilience4j.circuitbreaker:
     default:
       slidingWindowSize: 10
       permittedNumberOfCallsInHalfOpenState: 2
-      failureRateThreshold: 50
+      failureRateThreshold: 40
       waitDurationInOpenState: 10000

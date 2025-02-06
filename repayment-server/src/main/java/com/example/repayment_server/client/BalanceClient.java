@@ -6,6 +6,7 @@ import com.example.repayment_server.client.fallback.BalanceClientFallbackFactory
 import com.example.repayment_server.config.FeignConfig;
 import com.example.repayment_server.dto.ResponseDTO;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,5 +18,8 @@ public interface BalanceClient {
 
     @PutMapping("/api/{applicationId}/repayment")
     ResponseDTO<List<BalanceResponseDto>> repaymentUpdate(@PathVariable Long applicationId, @RequestBody List<BalanceRepaymentRequestDto> request);
+
+    @GetMapping("/api/{applicationId}")
+    ResponseDTO<BalanceResponseDto> get(@PathVariable Long applicationId);
 
 }

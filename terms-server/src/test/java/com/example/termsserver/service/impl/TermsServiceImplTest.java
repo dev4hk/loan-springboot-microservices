@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -35,17 +34,17 @@ class TermsServiceImplTest {
     void Should_ReturnResponseOfNewTermsEntity_When_RequestTerms() {
         Terms entity = Terms.builder()
                 .name("Loan Terms")
-                .termsDetailUrl("https://randomTermsPage.")
+                .termsDetail("https://randomTermsPage.")
                 .build();
         TermsRequestDto request = TermsRequestDto.builder()
                 .name("Loan Terms")
-                .termsDetailUrl("https://randomTermsPage")
+                .termsDetail("https://randomTermsPage")
                 .build();
         when(termsRepository.save(any(Terms.class))).thenReturn(entity);
         TermsResponseDto actual = termsService.create(request);
         assertThat(actual).isNotNull();
         assertThat(actual.getName()).isSameAs(entity.getName());
-        assertThat(actual.getTermsDetailUrl()).isSameAs(entity.getTermsDetailUrl());
+        assertThat(actual.getTermsDetail()).isSameAs(entity.getTermsDetail());
     }
 
     @DisplayName("Get a Terms by id")
@@ -65,11 +64,11 @@ class TermsServiceImplTest {
     void Should_ReturnAllResponseOfExistTermsEntities_When_RequestTermsList() {
         Terms terms1 = Terms.builder()
                 .name("Terms 1")
-                .termsDetailUrl("https://randomTermsPage/terms1")
+                .termsDetail("https://randomTermsPage/terms1")
                 .build();
         Terms terms2 = Terms.builder()
                 .name("Terms 2")
-                .termsDetailUrl("https://randomTermsPage/terms2")
+                .termsDetail("https://randomTermsPage/terms2")
                 .build();
         List<Terms> list = new ArrayList<>(Arrays.asList(terms1, terms2));
         when(termsRepository.findAll()).thenReturn(list);
@@ -85,17 +84,17 @@ class TermsServiceImplTest {
         Terms entity = Terms.builder()
                 .termsId(1L)
                 .name("Terms 1")
-                .termsDetailUrl("https://randomTermsPage/terms1")
+                .termsDetail("https://randomTermsPage/terms1")
                 .build();
         TermsRequestDto request = TermsRequestDto.builder()
                 .name("Terms 2")
-                .termsDetailUrl("https://randomTermsPage/terms2")
+                .termsDetail("https://randomTermsPage/terms2")
                 .build();
         when(termsRepository.findById(termsId)).thenReturn(Optional.of(entity));
         TermsResponseDto actual = termsService.update(termsId, request);
         assertThat(actual.getTermsId()).isSameAs(termsId);
         assertThat(actual.getName()).isSameAs(request.getName());
-        assertThat(actual.getTermsDetailUrl()).isSameAs(request.getTermsDetailUrl());
+        assertThat(actual.getTermsDetail()).isSameAs(request.getTermsDetail());
     }
 
     @DisplayName("Delete a Terms")
@@ -105,7 +104,7 @@ class TermsServiceImplTest {
         Terms entity = Terms.builder()
                 .termsId(1L)
                 .name("Terms 1")
-                .termsDetailUrl("https://randomTermsPage/terms1")
+                .termsDetail("https://randomTermsPage/terms1")
                 .build();
         when(termsRepository.findById(termsId)).thenReturn(Optional.of(entity));
         termsService.delete(termsId);

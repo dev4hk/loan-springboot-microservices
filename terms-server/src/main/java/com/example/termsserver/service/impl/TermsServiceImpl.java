@@ -1,7 +1,6 @@
 package com.example.termsserver.service.impl;
 
 import com.example.termsserver.constants.ResultType;
-import com.example.termsserver.controller.TermsController;
 import com.example.termsserver.dto.TermsRequestDto;
 import com.example.termsserver.dto.TermsResponseDto;
 import com.example.termsserver.entity.Terms;
@@ -66,7 +65,7 @@ public class TermsServiceImpl implements ITermsService {
                 }
         );
         terms.setName(request.getName());
-        terms.setTermsDetailUrl(request.getTermsDetailUrl());
+        terms.setTermsDetail(request.getTermsDetail());
         return TermsMapper.mapToTermsResponseDto(terms);
     }
 

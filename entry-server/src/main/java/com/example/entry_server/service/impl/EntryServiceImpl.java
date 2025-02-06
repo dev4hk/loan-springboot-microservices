@@ -2,9 +2,11 @@ package com.example.entry_server.service.impl;
 
 import com.example.entry_server.client.ApplicationClient;
 import com.example.entry_server.client.BalanceClient;
+import com.example.entry_server.client.JudgementClient;
 import com.example.entry_server.client.dto.ApplicationResponseDto;
 import com.example.entry_server.client.dto.BalanceRequestDto;
 import com.example.entry_server.client.dto.BalanceUpdateRequestDto;
+import com.example.entry_server.client.dto.JudgementResponseDto;
 import com.example.entry_server.constants.CommunicationStatus;
 import com.example.entry_server.constants.ResultType;
 import com.example.entry_server.dto.*;
@@ -22,6 +24,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
@@ -32,6 +36,7 @@ public class EntryServiceImpl implements IEntryService {
 
     private final EntryRepository entryRepository;
     private final ApplicationClient applicationClient;
+    private final JudgementClient judgementClient;
     private final BalanceClient balanceClient;
     private final StreamBridge streamBridge;
 
@@ -40,6 +45,7 @@ public class EntryServiceImpl implements IEntryService {
         logger.info("EntryServiceImpl - create invoked");
 
         ApplicationResponseDto applicationResponseDto = checkContractAndGetApplication(applicationId);
+        ResponseDTO<JudgementResponseDto> judgementResponseDto = judgementClient.getJudgmentOfApplication(applicationId);
 
         Entry entry = EntryMapper.mapToEntry(request);
         entry.setApplicationId(applicationId);
@@ -48,7 +54,7 @@ public class EntryServiceImpl implements IEntryService {
         balanceClient.create(applicationId,
                 BalanceRequestDto.builder()
                         .applicationId(applicationId)
-                        .entryAmount(request.getEntryAmount())
+                        .entryAmount(judgementResponseDto.getData().getTotal())
                         .build()
         );
         sendCommunication(created, applicationResponseDto, CommunicationStatus.ENTRY_CREATED);
@@ -98,6 +104,7 @@ public class EntryServiceImpl implements IEntryService {
                 );
         BigDecimal beforeEntryAmount = entry.getEntryAmount();
         entry.setEntryAmount(request.getEntryAmount());
+        Entry updated = entryRepository.save(entry);
         Long applicationId = entry.getApplicationId();
 
         ApplicationResponseDto applicationResponseDto = getApplication(applicationId);
@@ -110,13 +117,15 @@ public class EntryServiceImpl implements IEntryService {
                         .build()
         );
 
-        sendCommunication(entry, applicationResponseDto, CommunicationStatus.ENTRY_CREATED);
+        sendCommunication(entry, applicationResponseDto, CommunicationStatus.ENTRY_UPDATED);
 
         return EntryUpdateResponseDto.builder()
                 .entryId(entryId)
                 .applicationId(applicationId)
                 .beforeEntryAmount(beforeEntryAmount)
                 .afterEntryAmount(request.getEntryAmount())
+                .updatedAt(updated.getUpdatedAt())
+                .updatedBy(updated.getUpdatedBy())
                 .build();
     }
 
@@ -156,6 +165,13 @@ public class EntryServiceImpl implements IEntryService {
                 });
         entry.setCommunicationStatus(communicationStatus);
 
+    }
+
+    @Override
+    public Map<CommunicationStatus, Long> getEntryStatistics() {
+        logger.info("EntryServiceImpl - getEntryStatistics invoked");
+        return entryRepository.getCommunicationStatusStats()
+                .stream().collect(Collectors.toMap(CommunicationStatusStats::getCommunicationStatus, CommunicationStatusStats::getCount));
     }
 
     private void sendCommunication(Entry entry, ApplicationResponseDto applicationResponseDto, CommunicationStatus communicationStatus) {

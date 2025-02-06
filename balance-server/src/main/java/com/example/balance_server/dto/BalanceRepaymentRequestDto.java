@@ -10,7 +10,7 @@ import lombok.*;
 import java.math.BigDecimal;
 
 @Schema(
-        name = "Balance Repayment Request",
+        name = "BalanceRepaymentRequestDto",
         description = "Schema to hold balance repayment information"
 )
 @NoArgsConstructor

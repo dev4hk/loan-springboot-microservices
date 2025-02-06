@@ -14,8 +14,10 @@ public class CounselMapper {
                 .email(request.getEmail())
                 .memo(request.getMemo())
                 .zipCode(request.getZipCode())
-                .address(request.getAddress())
-                .addressDetail(request.getAddressDetail())
+                .address1(request.getAddress1())
+                .address2(request.getAddress2())
+                .city(request.getCity())
+                .state(request.getState())
                 .build();
     }
 
@@ -28,8 +30,10 @@ public class CounselMapper {
                 .email(counsel.getEmail())
                 .memo(counsel.getMemo())
                 .zipCode(counsel.getZipCode())
-                .address(counsel.getAddress())
-                .addressDetail(counsel.getAddressDetail())
+                .address1(counsel.getAddress1())
+                .address2(counsel.getAddress2())
+                .city(counsel.getCity())
+                .state(counsel.getState())
                 .appliedAt(counsel.getAppliedAt())
                 .communicationStatus(counsel.getCommunicationStatus())
                 .createdAt(counsel.getCreatedAt())

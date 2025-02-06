@@ -6,9 +6,9 @@ spring:
     driverClassName: org.h2.Driver
     username: ${DATASOURCE_USERNAME}
     password: ${DATASOURCE_PASSWORD}
-    h2:
-      console:
-        enabled: true
+  h2:
+    console:
+      enabled: true
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
     hibernate:
@@ -79,12 +79,12 @@ resilience4j.circuitbreaker:
     default:
       slidingWindowSize: 10
       permittedNumberOfCallsInHalfOpenState: 2
-      failureRateThreshold: 50
+      failureRateThreshold: 40
       waitDurationInOpenState: 10000
 resilience4j.retry:
   configs:
     default:
-      maxRetryAttempts: 3
+      maxRetryAttempts: 2
       waitDuration: 500
       enableExponentialBackoff: true
       exponentialBackoffMultiplier: 2
@@ -93,7 +93,8 @@ resilience4j.retry:
 resilience4j.ratelimiter:
   configs:
     default:
-      limitForPeriod: 1
-      limitRefreshPeriod: 1s
-      timeoutDuration: 1s
+      timeoutDuration: 1000
+      limitRefreshPeriod: 5000
+      limitForPeriod: 5
+
 

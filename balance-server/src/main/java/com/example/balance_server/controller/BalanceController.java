@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Tag(
-        name = "CRUD REST APIs for Balance",
+        name = "Balance",
         description = "CRUD REST APIs to CREATE, UPDATE, FETCH AND DELETE balance details"
 )
 @Validated

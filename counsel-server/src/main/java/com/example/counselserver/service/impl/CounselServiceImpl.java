@@ -2,6 +2,7 @@ package com.example.counselserver.service.impl;
 
 import com.example.counselserver.constants.CommunicationStatus;
 import com.example.counselserver.constants.ResultType;
+import com.example.counselserver.dto.CommunicationStatusStats;
 import com.example.counselserver.dto.CounselMsgDto;
 import com.example.counselserver.dto.CounselRequestDto;
 import com.example.counselserver.dto.CounselResponseDto;
@@ -14,11 +15,17 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -36,7 +43,7 @@ public class CounselServiceImpl implements ICounselService {
         counsel.setAppliedAt(LocalDateTime.now());
         counsel.setIsDeleted(false);
         Counsel created = counselRepository.save(counsel);
-        sendCommunication(created, CommunicationStatus.COUNSEL_CREATED);
+        sendCommunication(created, CommunicationStatus.COUNSEL_RECEIVED);
         return CounselMapper.mapToCounselResponseDto(created);
     }
 
@@ -68,8 +75,10 @@ public class CounselServiceImpl implements ICounselService {
         counsel.setCellPhone(request.getCellPhone());
         counsel.setEmail(request.getEmail());
         counsel.setMemo(request.getMemo());
-        counsel.setAddress(request.getAddress());
-        counsel.setAddressDetail(request.getAddressDetail());
+        counsel.setAddress1(request.getAddress1());
+        counsel.setAddress2(request.getAddress2());
+        counsel.setCity(request.getCity());
+        counsel.setState(request.getState());
         counsel.setZipCode(request.getZipCode());
         sendCommunication(counsel, CommunicationStatus.COUNSEL_UPDATED);
         return CounselMapper.mapToCounselResponseDto(counsel);
@@ -126,5 +135,39 @@ public class CounselServiceImpl implements ICounselService {
                 );
         return CounselMapper.mapToCounselResponseDto(counsel);
 
+    }
+
+    @Override
+    public Page<CounselResponseDto> getAll(Pageable pageable) {
+        logger.info("CounselServiceImpl - getAll invoked");
+        return counselRepository.findAll(pageable)
+                .map(CounselMapper::mapToCounselResponseDto);
+    }
+
+    @Override
+    public void complete(Long counselId) {
+        logger.info("CounselServiceImpl - complete invoked");
+        Counsel counsel = counselRepository.findById(counselId)
+                .orElseThrow(() ->
+                        {
+                            logger.error("CounselServiceImpl - Counsel does not exist");
+                            return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Counsel does not exist", HttpStatus.NOT_FOUND);
+                        }
+                );
+        sendCommunication(counsel, CommunicationStatus.COUNSEL_COMPLETE);
+    }
+
+    @Override
+    public Map<CommunicationStatus, Long> getCounselStatistics() {
+        logger.info("CounselServiceImpl - getCounselStatistics invoked");
+        return counselRepository.getCommunicationStatusStats()
+                .stream().collect(Collectors.toMap(CommunicationStatusStats::getCommunicationStatus, CommunicationStatusStats::getCount));
+    }
+
+    @Override
+    public List<CounselResponseDto> getNewCounsels() {
+        logger.info("CounselServiceImpl - getNewCounsels invoked");
+        List<Counsel> counsels = counselRepository.getNewCounsels(CommunicationStatus.COUNSEL_RECEIVED, PageRequest.of(0, 5));
+        return counsels.stream().map(CounselMapper::mapToCounselResponseDto).toList();
     }
 }

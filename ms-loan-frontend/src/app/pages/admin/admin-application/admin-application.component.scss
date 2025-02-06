@@ -1,0 +1,95 @@
+.container {
+  margin-top: 30px;
+  color: #f8f9fa;
+  margin-bottom: 20px;
+}
+
+.custom-jumbotron {
+  background-color: #343a40;
+  color: #f8f9fa;
+  padding: 30px;
+  margin-bottom: 30px;
+  border-left: 2px solid #29d0b2;
+}
+
+input.form-control {
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 20px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table th,
+.table td {
+  padding: 15px;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.table th {
+  background-color: #343a40;
+  color: #29d0b2;
+}
+
+.table td {
+  background-color: #495057;
+  color: #f8f9fa;
+}
+
+.table-striped tbody tr:nth-child(odd) {
+  background-color: #2c3035;
+}
+
+.table-row:hover {
+  background-color: #1d2327;
+}
+
+.view-details-link {
+  color: #29d0b2;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.15s ease-in-out;
+}
+
+.view-details-link:hover {
+  color: white;
+  cursor: pointer;
+}
+
+.form-control-sm {
+  width: 250px;
+  margin-bottom: 20px;
+}
+
+.pagination-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.pagination-container button {
+  padding: 8px 16px;
+  margin: 0 10px;
+  border: 1px solid #29d0b2;
+  background-color: #343a40;
+  color: #29d0b2;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.pagination-container button:disabled {
+  background-color: #495057;
+  cursor: not-allowed;
+}
+
+.pagination-container span {
+  color: #f8f9fa;
+  font-size: 1rem;
+  font-weight: bold;
+}

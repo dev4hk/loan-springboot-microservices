@@ -1,0 +1,472 @@
+<div class="container mt-5 text-light">
+  <div
+    class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
+  >
+    <h1 class="display-4">Application Details</h1>
+    <p class="lead">Here are the details for the selected loan application.</p>
+  </div>
+
+  <div class="row my-5">
+    <div class="col-md-7 slide-right">
+      <div class="card bg-dark text-white">
+        <div class="card-header px-3 header-color">
+          Loan Application Details
+        </div>
+        <div class="card-body row">
+          <div class="col">
+            <p class="card-text">
+              Application ID: {{ application?.applicationId }}
+            </p>
+            <p class="card-text">First Name: {{ application?.firstname }}</p>
+            <p class="card-text">Last Name: {{ application?.lastname }}</p>
+            <p class="card-text">Cell Phone: {{ application?.cellPhone }}</p>
+            <p class="card-text">Email: {{ application?.email }}</p>
+          </div>
+          <div class="col">
+            <p class="card-text">
+              Hope Amount: {{ application?.hopeAmount | currency }}
+            </p>
+            <p class="card-text">
+              Approval Amount:
+              {{
+                application?.approvalAmount
+                  ? (application?.approvalAmount | currency)
+                  : "Not Available"
+              }}
+            </p>
+            <p class="card-text">
+              Applied At: {{ application?.appliedAt | date : "yyyy-MM-dd" }}
+            </p>
+            <p class="card-text">
+              Contracted At:
+              {{
+                application?.contractedAt
+                  ? (application?.contractedAt | date : "yyyy-MM-dd")
+                  : "Not Available"
+              }}
+            </p>
+            <p class="card-text">
+              Communication Status: {{ application?.communicationStatus }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="card bg-dark text-white my-2">
+        <div class="card-header px-3 header-color">Document Section</div>
+        <div class="card-body row">
+          <div class="col">
+            <h5 class="card-title">Mandatory Documents</h5>
+            <ul>
+              <li
+                class="list-group-item bg-dark text-white"
+                *ngFor="
+                  let doc of ['Valid ID', 'Proof of Income', 'Bank Statement']
+                "
+              >
+                {{ doc }}
+              </li>
+            </ul>
+          </div>
+          <div class="col">
+            <h5 class="card-title">Submitted Documents</h5>
+            <ul>
+              @for(file of filesInfo; track file.url) {
+              <li class="list-group-item bg-dark text-white">
+                <span
+                  class="file-download cursor-pointer me-2"
+                  (click)="downloadFile(file.name)"
+                >
+                  {{ file.name }}
+                </span>
+              </li>
+              }
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="card bg-dark text-white">
+        <div class="card-header px-3 header-color">Judgement Details</div>
+        @if(judgement) {
+
+        <div class="card-body row">
+          <div class="col">
+            <p class="card-text">Judgement ID: {{ judgement.judgementId }}</p>
+            <p class="card-text">Judge First Name: {{ judgement.firstname }}</p>
+            <p class="card-text">Judge Last Name: {{ judgement.lastname }}</p>
+            <p class="card-text">
+              Application ID: {{ judgement.applicationId }}
+            </p>
+            <p class="card-text">
+              Approval Amount:
+              {{ judgement.approvalAmount | currency }}
+            </p>
+            <p class="card-text">
+              Created At: {{ judgement.createdAt | date : "yyyy-MM-dd" }}
+            </p>
+            <p class="card-text">
+              Communication Status: {{ judgement.communicationStatus }}
+            </p>
+          </div>
+          <div class="col">
+            <p class="card-text">
+              Loan Start Date: {{ judgement.startDate | date : "yyyy-MM-dd" }}
+            </p>
+            <p class="card-text">
+              Loan End Date: {{ judgement.endDate | date : "yyyy-MM-dd" }}
+            </p>
+            <p class="card-text">
+              Pay Day: {{ "Every " + (judgement.payDay! | ordinal) }}
+            </p>
+            <p class="card-text">
+              Monthly Payment: {{ judgement.monthlyPayment | currency }}
+            </p>
+            <p class="card-text">
+              Number of Payments: {{ judgement.numberOfPayments }}
+            </p>
+            <p class="card-text">
+              Interest: {{ judgement.interest | number : "1.2-2" }}%
+            </p>
+            <p class="card-text">Total: {{ judgement.total | currency }}</p>
+          </div>
+          @if(!application?.approvalAmount) {
+          <span (click)="grant()" class="grant-button cursor-pointer mt-3">
+            Grant Approval Amount
+          </span>
+          }
+        </div>
+        } @else {
+        <div class="card-body">
+          <p class="card-text">Judgement not available</p>
+        </div>
+        }
+      </div>
+    </div>
+    <div class="col-md-5 slide-left">
+      @if(application?.contractedAt) {
+      <div class="card bg-dark text-white mb-2">
+        <div class="card-header px-3 header-color">Payout Details</div>
+        <div class="card-body row">
+          <div class="col">
+            <div
+              class="d-flex align-items-center"
+              [ngStyle]="{ 'margin-bottom': '16px' }"
+            >
+              <p class="card-text my-auto me-2">
+                Entry ID: {{ entry?.entryId || "No data" }}
+              </p>
+              @if (entry && repayments?.length === 0) {
+              <i
+                class="fa-regular fa-circle-xmark cursor-pointer delete-icon"
+                (click)="deleteEntry()"
+              ></i>
+              }
+            </div>
+            <p class="card-text">
+              Entry Amount: {{ (entry?.entryAmount | currency) || "No data" }}
+            </p>
+            <p class="card-text">
+              Communication Status:
+              {{ entry?.communicationStatus || "No data" }}
+            </p>
+          </div>
+          <div class="col">
+            <p class="card-text">
+              Created At:
+              {{ (entry?.createdAt | date : "yyyy-MM-dd") || "No data" }}
+            </p>
+            <p class="card-text">
+              Created By: {{ entry?.createdBy || "No data" }}
+            </p>
+            <p class="card-text">
+              Updated At:
+              {{ (entry?.updatedAt | date : "yyyy-MM-dd") || "No data" }}
+            </p>
+            <p class="card-text">
+              Updated By: {{ entry?.updatedBy || "No data" }}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      @if(repayments?.length === 0) {
+      <div class="card bg-dark text-white mb-2">
+        <div class="card-header px-3 header-color">
+          {{ entry ? "Update" : "Create" }} Payout
+        </div>
+        <div class="card-body row">
+          <div class="col">
+            <form [formGroup]="entryForm">
+              <input
+                type="number"
+                class="form-control bg-secondary text-white"
+                placeholder="Entry Payout Amount."
+                formControlName="entryAmount"
+              />
+              <div
+                *ngIf="
+                  entryForm.controls['entryAmount'].invalid &&
+                  (entryForm.controls['entryAmount'].dirty ||
+                    entryForm.controls['entryAmount'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getEntryErrorMessage("entryAmount")
+                }}</small>
+              </div>
+            </form>
+          </div>
+          <div class="col">
+            <button
+              class="btn btn-custom-inverse"
+              (click)="createUpdatePayout()"
+              [disabled]="entryForm.invalid"
+            >
+              {{ entry ? "Update Payout" : "Create Payout" }}
+            </button>
+          </div>
+        </div>
+      </div>
+      }
+      <div class="card bg-dark text-white mb-2">
+        <div class="card-header header-color">Loan Balance</div>
+        <div class="card-body">
+          <p class="card-text">
+            Outstanding Balance:
+            <strong>{{ balance?.balance | currency }}</strong>
+          </p>
+        </div>
+      </div>
+
+      } @if (!application?.approvalAmount) {
+      <div class="card bg-dark text-white">
+        <div class="card-header px-3 header-color">
+          {{ judgement ? "Update Judgement" : "Create Judgement" }}
+        </div>
+        <div class="card-body">
+          <form
+            [formGroup]="judgementForm"
+            (ngSubmit)="judgement ? updateJudgement() : submitJudgement()"
+          >
+            <div class="mb-3">
+              <label for="appId" class="form-label">Application ID</label>
+              <input
+                type="text"
+                id="appId"
+                class="form-control bg-secondary text-white"
+                formControlName="applicationId"
+                readonly
+              />
+              <div
+                *ngIf="
+                  judgementForm.controls['applicationId'].invalid &&
+                  (judgementForm.controls['applicationId'].dirty ||
+                    judgementForm.controls['applicationId'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("applicationId")
+                }}</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="judgeFirstname" class="form-label"
+                >Judge Firstname</label
+              >
+              <input
+                type="text"
+                id="judgeFirstname"
+                class="form-control bg-secondary text-white"
+                formControlName="firstname"
+                readonly
+              />
+              <div
+                *ngIf="
+                  judgementForm.controls['firstname'].invalid &&
+                  (judgementForm.controls['firstname'].dirty ||
+                    judgementForm.controls['firstname'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("firstname")
+                }}</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="judgeLastname" class="form-label"
+                >Judge Lastname</label
+              >
+              <input
+                type="text"
+                id="judgeLastname"
+                class="form-control bg-secondary text-white"
+                formControlName="lastname"
+                readonly
+              />
+              <div
+                *ngIf="
+                  judgementForm.controls['lastname'].invalid &&
+                  (judgementForm.controls['lastname'].dirty ||
+                    judgementForm.controls['lastname'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("lastname")
+                }}</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="approvalAmount" class="form-label"
+                >Approval Amount</label
+              >
+              <input
+                type="number"
+                id="approvalAmount"
+                class="form-control"
+                formControlName="approvalAmount"
+                name="approvalAmount"
+                required
+              />
+              <div
+                *ngIf="
+                  judgementForm.controls['approvalAmount'].invalid &&
+                  (judgementForm.controls['approvalAmount'].dirty ||
+                    judgementForm.controls['approvalAmount'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("approvalAmount")
+                }}</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="startDate" class="form-label">Start Date</label>
+              <input
+                type="date"
+                id="startDate"
+                class="form-control"
+                formControlName="startDate"
+                name="startDate"
+                required
+              />
+              <div
+                *ngIf="
+                  judgementForm.controls['startDate'].invalid &&
+                  (judgementForm.controls['startDate'].dirty ||
+                    judgementForm.controls['startDate'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("startDate")
+                }}</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="endDate" class="form-label">End Date</label>
+              <input
+                type="date"
+                id="endDate"
+                class="form-control"
+                formControlName="endDate"
+                name="endDate"
+                required
+              />
+              <div
+                *ngIf="
+                  judgementForm.controls['endDate'].invalid &&
+                  (judgementForm.controls['endDate'].dirty ||
+                    judgementForm.controls['endDate'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("endDate")
+                }}</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="payDay" class="form-label">Pay Day</label>
+              <input
+                type="number"
+                id="payDay"
+                class="form-control"
+                formControlName="payDay"
+                name="payDay"
+                required
+              />
+              <div
+                *ngIf="
+                  judgementForm.controls['payDay'].invalid &&
+                  (judgementForm.controls['payDay'].dirty ||
+                    judgementForm.controls['payDay'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("payDay")
+                }}</small>
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="interest" class="form-label">Interest</label>
+              <input
+                type="number"
+                id="interest"
+                class="form-control"
+                formControlName="interest"
+                name="interest"
+                required
+              />
+              <div
+                *ngIf="
+                  judgementForm.controls['interest'].invalid &&
+                  (judgementForm.controls['interest'].dirty ||
+                    judgementForm.controls['interest'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getJudgementErrorMessage("interest")
+                }}</small>
+              </div>
+            </div>
+
+            <button type="submit" class="btn btn-custom-inverse w-100">
+              {{ judgement ? "Update" : "Submit Judgment" }}
+            </button>
+          </form>
+        </div>
+      </div>
+      } @if(repayments) {
+      <div class="card bg-dark text-white">
+        <div class="card-header header-color">Repayment History</div>
+        <div class="card-body">
+          @if (repayments && repayments.length > 0) {
+          <div>
+            <ul>
+              @for(repayment of repayments; track repayment.repaymentId) {
+              <li class="list-group-item bg-dark text-white">
+                <div class="d-flex justify-content-between">
+                  <span>{{ repayment.createdAt | date : "yyyy-MM-dd" }}</span>
+                  <span>{{ repayment.repaymentAmount | currency }}</span>
+                </div>
+              </li>
+              } @empty {
+              <li class="list-group-item bg-dark text-white">
+                No repayment history available.
+              </li>
+              }
+            </ul>
+          </div>
+          } @else {
+          <p class="card-text">No History Available</p>
+          }
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>

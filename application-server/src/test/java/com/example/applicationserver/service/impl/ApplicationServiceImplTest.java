@@ -1,9 +1,6 @@
 package com.example.applicationserver.service.impl;
 
-import com.example.applicationserver.client.AcceptTermsClient;
-import com.example.applicationserver.client.CounselClient;
-import com.example.applicationserver.client.JudgementClient;
-import com.example.applicationserver.client.TermsClient;
+import com.example.applicationserver.client.*;
 import com.example.applicationserver.client.dto.*;
 import com.example.applicationserver.constants.ResultType;
 import com.example.applicationserver.dto.ApplicationRequestDto;
@@ -14,7 +11,6 @@ import com.example.applicationserver.entity.Application;
 import com.example.applicationserver.exception.BaseException;
 import com.example.applicationserver.exception.CustomFeignException;
 import com.example.applicationserver.repository.ApplicationRepository;
-import feign.FeignException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.cloud.stream.function.StreamBridge;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 
 import java.math.BigDecimal;
@@ -56,16 +53,20 @@ class ApplicationServiceImplTest {
     CounselClient counselClient;
 
     @Mock
+    FileStorageClient fileStorageClient;
+
+    @Mock
     StreamBridge streamBridge;
 
     @DisplayName("Create Application")
     @Test
     void Should_ReturnResponseOfNewApplicationEntity_When_RequestCreateApplication() {
+        String email = "mail@abcd.efg";
         Application entity = Application.builder()
                 .firstname("firstname")
                 .lastname("lastname")
                 .cellPhone("1234567890")
-                .email("mail@abcd.efg")
+                .email(email)
                 .hopeAmount(BigDecimal.valueOf(50000))
                 .build();
 
@@ -73,15 +74,88 @@ class ApplicationServiceImplTest {
                 .firstname("firstname")
                 .lastname("lastname")
                 .cellPhone("1234567890")
-                .email("mail@abcd.efg")
+                .email(email)
                 .hopeAmount(BigDecimal.valueOf(50000))
                 .build();
 
+        AcceptTermsRequestDto acceptTermsRequestDto = AcceptTermsRequestDto.builder()
+                .applicationId(1L)
+                .termsIds(List.of(1L, 2L))
+                .build();
+
+        when(termsClient.getAll()).thenReturn(
+                new ResponseDTO<>(
+                        ResultObject.builder()
+                                .code(ResultType.SUCCESS.getCode())
+                                .desc(ResultType.SUCCESS.getDesc())
+                                .build(),
+                        List.of(
+                                TermsResponseDto
+                                        .builder()
+                                        .name("terms1")
+                                        .termsId(1L)
+                                        .build(),
+                                TermsResponseDto
+                                        .builder()
+                                        .name("terms2")
+                                        .termsId(2L)
+                                        .build()
+                        )
+                ));
+        when(acceptTermsClient.create(acceptTermsRequestDto)).thenReturn(new ResponseDTO<>(
+                ResultObject.builder()
+                        .code(ResultType.SUCCESS.getCode())
+                        .desc(ResultType.SUCCESS.getDesc())
+                        .build(),
+                List.of(
+                        AcceptTermsResponseDto
+                                .builder()
+                                .applicationId(1L)
+                                .termsId(1L)
+                                .build(),
+                        AcceptTermsResponseDto
+                                .builder()
+                                .applicationId(1L)
+                                .termsId(2L)
+                                .build()
+                )));
+
+
+        when(applicationRepository.findByEmail(eq(email))).thenReturn(Optional.empty());
         when(applicationRepository.save(ArgumentMatchers.any(Application.class))).thenReturn(entity);
-        ApplicationResponseDto actual = applicationService.create(request);
+        ApplicationResponseDto actual = applicationService.create(request, acceptTermsRequestDto);
         assertThat(actual).isNotNull();
         assertThat(actual.getHopeAmount()).isSameAs(entity.getHopeAmount());
         assertThat(actual.getFirstname()).isSameAs(entity.getFirstname());
+    }
+
+    @DisplayName("Create Application throw exception with application already exists")
+    @Test
+    void Should_Throws_Exception_When_RequestCreateApplication_With_Existing_Email() {
+        String email = "mail@abcd.efg";
+        Application entity = Application.builder()
+                .firstname("firstname")
+                .lastname("lastname")
+                .cellPhone("1234567890")
+                .email(email)
+                .hopeAmount(BigDecimal.valueOf(50000))
+                .build();
+
+        ApplicationRequestDto request = ApplicationRequestDto.builder()
+                .firstname("firstname")
+                .lastname("lastname")
+                .cellPhone("1234567890")
+                .email(email)
+                .hopeAmount(BigDecimal.valueOf(50000))
+                .build();
+
+        AcceptTermsRequestDto acceptTermsRequestDto = AcceptTermsRequestDto.builder()
+                .applicationId(1L)
+                .termsIds(List.of(1L, 2L))
+                .build();
+
+        when(applicationRepository.findByEmail(eq(email))).thenReturn(Optional.of(entity));
+        assertThrows(BaseException.class, () -> applicationService.create(request, acceptTermsRequestDto));
     }
 
     @DisplayName("Get An Application by ApplicationId")
@@ -99,16 +173,54 @@ class ApplicationServiceImplTest {
                                 .lastname("lastname")
                                 .cellPhone("0123456789")
                                 .email("email@email.com")
-                                .address("address")
+                                .address1("address")
                                 .appliedAt(LocalDateTime.now())
                                 .counselId(1L)
                                 .memo("memo")
                                 .build()
                 )
         );
+        when(fileStorageClient.getFilesInfo(anyLong())).thenReturn(
+                new ResponseDTO<>(
+                        List.of(FileResponseDto.builder().build())
+                )
+        );
         ApplicationResponseDto actual = applicationService.get(applicationId);
         assertThat(actual).isNotNull();
         assertThat(actual.getApplicationId()).isSameAs(applicationId);
+    }
+
+    @DisplayName("Get An Application by email")
+    @Test
+    void Should_ReturnResponseOfExistApplicationEntity_When_RequestExistEmail() {
+        String email = "email@email.com";
+        Application entity = Application.builder()
+                .applicationId(1L)
+                .email(email)
+                .build();
+        when(applicationRepository.findByEmail(email)).thenReturn(Optional.ofNullable(entity));
+        when(counselClient.getByEmail(entity.getEmail())).thenReturn(
+                new ResponseDTO<>(
+                        CounselResponseDto.builder()
+                                .firstname("firstname")
+                                .lastname("lastname")
+                                .cellPhone("0123456789")
+                                .email("email@email.com")
+                                .address1("address")
+                                .appliedAt(LocalDateTime.now())
+                                .counselId(1L)
+                                .memo("memo")
+                                .build()
+                )
+        );
+        when(fileStorageClient.getFilesInfo(anyLong())).thenReturn(
+                new ResponseDTO<>(
+                        List.of(FileResponseDto.builder().build())
+                )
+        );
+        ApplicationResponseDto actual = applicationService.getByEmail(email);
+        assertThat(actual).isNotNull();
+        assertThat(actual.getEmail()).isSameAs(email);
     }
 
     @DisplayName("Get non-existing Application by id")
@@ -117,6 +229,37 @@ class ApplicationServiceImplTest {
         Long applicationId = 1L;
         when(applicationRepository.findById(applicationId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
         assertThrows(BaseException.class, () -> applicationService.get(applicationId));
+    }
+
+    @DisplayName("Get non-existing Application by email")
+    @Test
+    void Should_ThrowException_When_RequestNonExistEmail() {
+        String email = "email@email.com";
+        when(applicationRepository.findByEmail(email)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
+        assertThrows(BaseException.class, () -> applicationService.getByEmail(email));
+    }
+
+    @DisplayName("Should return paginated application response when requested")
+    @Test
+    void should_Return_Paginated_Application_Response() {
+        Pageable pageable = PageRequest.of(0, 2, Sort.by("appliedAt").descending());
+        List<Application> applications = List.of(
+                Application.builder().applicationId(1L).firstname("John").lastname("Doe").email("john@example.com").build(),
+                Application.builder().applicationId(2L).firstname("Jane").lastname("Doe").email("jane@example.com").build()
+        );
+        Page<Application> applicationPage = new PageImpl<>(applications, pageable, applications.size());
+
+        when(applicationRepository.findAll(pageable)).thenReturn(applicationPage);
+
+        Page<ApplicationResponseDto> result = applicationService.getAll(pageable);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getContent()).hasSize(2);
+        assertThat(result.getTotalElements()).isEqualTo(2);
+        assertThat(result.getContent().get(0).getApplicationId()).isEqualTo(1L);
+        assertThat(result.getContent().get(1).getApplicationId()).isEqualTo(2L);
+
+        verify(applicationRepository, times(1)).findAll(pageable);
     }
 
     @DisplayName("Update an Application")
@@ -181,7 +324,6 @@ class ApplicationServiceImplTest {
                 .applicationId(applicationId)
                 .termsIds(List.of(1L, 2L))
                 .build();
-        when(applicationRepository.findById(applicationId)).thenReturn(Optional.of(entity));
         when(termsClient.getAll()).thenReturn(
                 new ResponseDTO<>(
                         ResultObject.builder()
@@ -221,28 +363,34 @@ class ApplicationServiceImplTest {
 
         applicationService.acceptTerms(applicationId, request);
 
-        verify(applicationRepository, times(1)).findById(applicationId);
         verify(termsClient, times(1)).getAll();
         verify(acceptTermsClient, times(1)).create(request);
 
-    }
-
-    @DisplayName("accept terms throw exception with non-existing applicationId")
-    @Test
-    void Should_ThrowException_When_RequestAcceptTermsWithNonExistingApplicationId() {
-        Long applicationId = 1L;
-        AcceptTermsRequestDto request = AcceptTermsRequestDto.builder()
-                .applicationId(applicationId)
-                .termsIds(List.of(1L, 2L))
-                .build();
-        when(applicationRepository.findById(applicationId)).thenThrow(new BaseException(ResultType.RESOURCE_NOT_FOUND, HttpStatus.NOT_FOUND));
-        assertThrows(BaseException.class, () -> applicationService.acceptTerms(applicationId, request));
     }
 
     @DisplayName("accept terms throw exception with empty termsIds")
     @Test
     void Should_ThrowException_When_RequestAcceptTermsWithEmptyTermsIds() {
         Long applicationId = 1L;
+        when(termsClient.getAll()).thenReturn(
+                new ResponseDTO<>(
+                        ResultObject.builder()
+                                .code(ResultType.SUCCESS.getCode())
+                                .desc(ResultType.SUCCESS.getDesc())
+                                .build(),
+                        List.of(
+                                TermsResponseDto
+                                        .builder()
+                                        .name("terms1")
+                                        .termsId(1L)
+                                        .build(),
+                                TermsResponseDto
+                                        .builder()
+                                        .name("terms2")
+                                        .termsId(2L)
+                                        .build()
+                        )
+                ));
         AcceptTermsRequestDto request = AcceptTermsRequestDto.builder()
                 .applicationId(applicationId)
                 .termsIds(List.of())

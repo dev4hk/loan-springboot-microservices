@@ -1,0 +1,30 @@
+<div class="slider">
+  <div class="arrow-container">
+    <div (click)="goToPrevious()" class="leftArrow">❰</div>
+    <div (click)="goToNext()" class="rightArrow">❱</div>
+  </div>
+  <div class="slide-container">
+    <div
+      *ngFor="let slide of slides; let i = index"
+      class="slide"
+      [class.active]="i === currentIndex"
+      [ngStyle]="{ 'background-image': 'url(' + slide.url + ')' }"
+      [@slideAnimation]="currentIndex"
+    >
+      <div class="slide-text">
+        <div class="slide-title">{{ slide.title }}</div>
+        <div class="slide-description">{{ slide.description }}</div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="dotsContainer">
+    <div
+      *ngFor="let slide of slides; let slideIndex = index"
+      class="dot"
+      (click)="goToSlide(slideIndex)"
+    >
+      ●
+    </div>
+  </div>
+</div>

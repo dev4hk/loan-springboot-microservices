@@ -1,9 +1,6 @@
 package com.example.message_server.functions;
 
-import com.example.message_server.dto.ApplicationMsgDto;
-import com.example.message_server.dto.CounselMsgDto;
-import com.example.message_server.dto.EntryMsgDto;
-import com.example.message_server.dto.RepaymentMsgDto;
+import com.example.message_server.dto.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -78,6 +75,22 @@ public class MessageFunctions {
         return counselMsgDto -> {
             logger.info("Sending counsel sms with the details: " + counselMsgDto.toString());
             return counselMsgDto;
+        };
+    }
+
+    @Bean
+    public Function<JudgementMsgDto, JudgementMsgDto> judgementEmail() {
+        return judgementMsgDto -> {
+            logger.info("Sending judgement email with the details: " + judgementMsgDto.toString());
+            return judgementMsgDto;
+        };
+    }
+
+    @Bean
+    public Function<JudgementMsgDto, JudgementMsgDto> judgementSms() {
+        return judgementMsgDto -> {
+            logger.info("Sending judgement sms with the details: " + judgementMsgDto.toString());
+            return judgementMsgDto;
         };
     }
 

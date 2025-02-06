@@ -6,7 +6,7 @@ spring:
     name: message-server
   cloud:
     function:
-      definition: applicationEmail|applicationSms;entryEmail|entrySms;repaymentEmail|repaymentSms;counselEmail|counselSms
+      definition: applicationEmail|applicationSms;entryEmail|entrySms;repaymentEmail|repaymentSms;counselEmail|counselSms;judgementEmail|judgementSms
     stream:
       bindings:
         applicationEmailapplicationSms-in-0:
@@ -29,6 +29,11 @@ spring:
           group: ${spring.application.name}
         counselEmailcounselSms-out-0:
           destination: counsel-communication-sent
+        judgementEmailjudgementSms-in-0:
+          destination: judgement-send-communication
+          group: ${spring.application.name}
+        judgementEmailjudgementSms-out-0:
+          destination: judgement-communication-sent
 
   rabbitmq:
     host: localhost

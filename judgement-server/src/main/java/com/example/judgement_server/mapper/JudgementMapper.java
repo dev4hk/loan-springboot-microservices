@@ -13,6 +13,14 @@ public class JudgementMapper {
                 .firstname(judgement.getFirstname())
                 .lastname(judgement.getLastname())
                 .approvalAmount(judgement.getApprovalAmount())
+                .monthlyPayment(judgement.getMonthlyPayment())
+                .startDate(judgement.getStartDate())
+                .endDate(judgement.getEndDate())
+                .numberOfPayments(judgement.getNumberOfPayments())
+                .total(judgement.getTotal())
+                .interest(judgement.getInterest())
+                .payDay(judgement.getPayDay())
+                .communicationStatus(judgement.getCommunicationStatus())
                 .createdAt(judgement.getCreatedAt())
                 .createdBy(judgement.getCreatedBy())
                 .updatedAt(judgement.getUpdatedAt())
@@ -26,6 +34,10 @@ public class JudgementMapper {
                 .firstname(judgementRequestDto.getFirstname())
                 .lastname(judgementRequestDto.getLastname())
                 .approvalAmount(judgementRequestDto.getApprovalAmount())
+                .startDate(judgementRequestDto.getStartDate())
+                .endDate(judgementRequestDto.getEndDate())
+                .interest(judgementRequestDto.getInterest())
+                .payDay(judgementRequestDto.getPayDay())
                 .build();
     }
 }

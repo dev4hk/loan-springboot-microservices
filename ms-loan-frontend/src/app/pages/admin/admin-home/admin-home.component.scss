@@ -1,0 +1,82 @@
+@keyframes slideDown {
+  from {
+    transform: translateY(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideRight {
+  from {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideLeft {
+  from {
+    transform: translateX(50px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+.jumbotron {
+  border-left: 2px solid #29d0b2;
+  animation: slideDown 1s ease-out;
+}
+
+.header-color {
+  color: #29d0b2;
+}
+
+.slide-right {
+  animation: slideRight 1s ease-out;
+}
+
+.slide-left {
+  animation: slideLeft 1s ease-out;
+}
+
+.card-header {
+  border-color: #29d0b2;
+}
+
+.btn-custom-inverse {
+  background-color: #29d0b2;
+  color: #212529;
+  &:hover {
+    background-color: #212529;
+    color: #29d0b2;
+  }
+}
+
+.view-more-link {
+  color: #29d0b2;
+  transition: all 0.15s ease-in-out;
+  &:hover {
+    color: #fff;
+  }
+}
+
+.view-more-link-inverse {
+  color: #fff;
+  transition: all 0.15s ease-in-out;
+  &:hover {
+    color: #29d0b2;
+  }
+}
+
+.highlight {
+  color: #29d0b2;
+}

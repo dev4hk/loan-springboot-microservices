@@ -14,7 +14,7 @@ public class TermsResponseDto {
 
     private String name;
 
-    private String termsDetailUrl;
+    private String termsDetail;
 
     private LocalDateTime createdAt;
 

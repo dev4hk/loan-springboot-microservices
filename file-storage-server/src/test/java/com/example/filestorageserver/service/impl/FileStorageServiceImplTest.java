@@ -140,4 +140,16 @@ public class FileStorageServiceImplTest {
 
         assertFalse(Files.exists(dirPath));
     }
+
+    @Test
+    void testDeleteFile() throws IOException {
+        Long applicationId = 1L;
+        Path dirPath = Path.of(UPLOAD_DIR + "/" + applicationId);
+        Files.createDirectories(dirPath);
+        Files.createFile(dirPath.resolve("test1.txt"));
+        dirPath = Path.of(UPLOAD_DIR + "/" + applicationId + "/" + "test1.txt");
+        assertTrue(Files.exists(dirPath));
+        fileStorageService.deleteFile(applicationId, "test1.txt");
+        assertFalse(Files.exists(dirPath));
+    }
 }

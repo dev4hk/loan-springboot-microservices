@@ -1,0 +1,34 @@
+<h2 mat-dialog-title>Terms & Conditions</h2>
+<mat-dialog-content>
+  <p>
+    Please read and agree to the following terms before submitting your
+    application:
+  </p>
+
+  <form [formGroup]="termsForm">
+    <div *ngFor="let term of data.terms; let i = index" class="term-container">
+      <div class="term-detail">
+        {{ term.termsDetail }}
+      </div>
+      <div class="checkbox-container">
+        <input
+          type="checkbox"
+          [formControlName]="term.termsId?.toString() || 'term_' + i"
+        />
+        <span class="checkbox-label">You must agree to this condition</span>
+      </div>
+    </div>
+  </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button mat-button (click)="closeDialog()">Cancel</button>
+  <button
+    mat-button
+    color="primary"
+    [disabled]="!termsForm.valid"
+    (click)="submitAgreement()"
+  >
+    Agree & Submit
+  </button>
+</mat-dialog-actions>

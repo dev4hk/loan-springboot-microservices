@@ -28,13 +28,18 @@ public class Counsel extends BaseEntity {
 
     private String cellPhone;
 
+    @Column(unique = true)
     private String email;
 
     private String memo;
 
-    private String address;
+    private String address1;
 
-    private String addressDetail;
+    private String address2;
+
+    private String city;
+
+    private String state;
 
     private String zipCode;
 

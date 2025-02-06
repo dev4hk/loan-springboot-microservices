@@ -9,7 +9,7 @@ public class TermsMapper {
     public static Terms mapToEntity(TermsRequestDto request) {
         return Terms.builder()
                 .name(request.getName())
-                .termsDetailUrl(request.getTermsDetailUrl())
+                .termsDetail(request.getTermsDetail())
                 .build();
     }
 
@@ -17,7 +17,7 @@ public class TermsMapper {
         return TermsResponseDto.builder()
                 .termsId(terms.getTermsId())
                 .name(terms.getName())
-                .termsDetailUrl(terms.getTermsDetailUrl())
+                .termsDetail(terms.getTermsDetail())
                 .createdAt(terms.getCreatedAt())
                 .createdBy(terms.getCreatedBy())
                 .updatedAt(terms.getUpdatedAt())

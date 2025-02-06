@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @Tag(
-        name = "CRUD REST APIs for Accept Terms",
+        name = "AcceptTerms",
         description = "CRUD REST APIs to CREATE accept terms details"
 )
 @Validated

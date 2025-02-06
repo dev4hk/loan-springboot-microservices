@@ -1,0 +1,49 @@
+/* Add global styles to this file, and also import other style files */
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+@import "bootstrap/dist/css/bootstrap.min.css";
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #343a40;
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+
+ul {
+  list-style: none;
+  padding-left: 0;
+}
+
+html,
+body {
+  height: 100%;
+}
+body {
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #2c3035;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #29d0b2;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1bb89b;
+}

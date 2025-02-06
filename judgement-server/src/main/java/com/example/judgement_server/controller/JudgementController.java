@@ -1,5 +1,6 @@
 package com.example.judgement_server.controller;
 
+import com.example.judgement_server.constants.CommunicationStatus;
 import com.example.judgement_server.constants.ResultType;
 import com.example.judgement_server.dto.GrantAmountDto;
 import com.example.judgement_server.dto.JudgementRequestDto;
@@ -23,10 +24,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 import static com.example.judgement_server.dto.ResponseDTO.ok;
 
 @Tag(
-        name = "CRUD REST APIs for Judgement",
+        name = "Judgement",
         description = "CRUD REST APIs to CREATE, UPDATE, FETCH AND DELETE judgement details"
 )
 @Validated
@@ -148,7 +151,9 @@ public class JudgementController {
     public ResponseDTO<JudgementResponseDto> getJudgmentOfApplication(@PathVariable Long applicationId) {
         logger.info("JudgementController - getJudgmentOfApplication started");
         logger.debug("JudgementController - applicationId: {}", applicationId);
-        return ok(judgementService.getJudgementOfApplication(applicationId));
+        JudgementResponseDto response = judgementService.getJudgementOfApplication(applicationId);
+        logger.info("JudgementController - getJudgmentOfApplication finished");
+        return ok(response);
     }
 
     @Operation(
@@ -265,6 +270,30 @@ public class JudgementController {
         GrantAmountDto grant = judgementService.grant(judgementId);
         logger.info("JudgementController - grant finished");
         return ok(grant);
+    }
+
+    @Operation(
+            summary = "Get Stats REST API",
+            description = "REST API to get stats"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @RateLimiter(name = "getStatsRateLimiter")
+    @GetMapping("/stats")
+    public ResponseDTO<Map<CommunicationStatus, Long>> getStats() {
+        logger.info("JudgementController - getStats started");
+        Map<CommunicationStatus, Long> stats = judgementService.getJudgementStatistics();
+        logger.info("JudgementController - getStats finished");
+        return ok(stats);
     }
 
 }

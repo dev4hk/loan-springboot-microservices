@@ -126,4 +126,25 @@ public class FileStorageServerApplicationTests {
         // Assert
         assertFalse(Files.exists(dirPath));
     }
+
+    @Test
+    void testDeleteFile() throws IOException {
+        Path dirPath = Paths.get(TEST_UPLOAD_DIR + "/1");
+        Path filePath = dirPath.resolve("test1.txt");
+
+        Files.createDirectories(dirPath);
+        Files.createFile(filePath);
+
+        String url = "/api/1/file?fileName=test1.txt";
+
+        given()
+                .when()
+                .delete(url)
+                .then()
+                .statusCode(200)
+                .body("result.code", equalTo("0200"));
+
+        assertFalse(Files.exists(filePath));
+    }
+
 }

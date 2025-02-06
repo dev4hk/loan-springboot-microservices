@@ -5,6 +5,8 @@ import com.example.entry_server.dto.EntryRequestDto;
 import com.example.entry_server.dto.EntryResponseDto;
 import com.example.entry_server.dto.EntryUpdateResponseDto;
 
+import java.util.Map;
+
 public interface IEntryService {
 
     EntryResponseDto create(Long applicationId, EntryRequestDto request);
@@ -16,4 +18,6 @@ public interface IEntryService {
     void delete(Long entryId);
 
     void updateCommunicationStatus(Long applicationId, CommunicationStatus communicationStatus);
+
+    Map<CommunicationStatus, Long> getEntryStatistics();
 }

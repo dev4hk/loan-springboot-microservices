@@ -1,0 +1,109 @@
+<div class="container mt-5 text-light">
+  <div
+    class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
+  >
+    <h1 class="display-4">Admin Dashboard</h1>
+    <p class="lead">Monitor all loan applications, counsels and repayments.</p>
+  </div>
+
+  <div class="row my-5">
+    <div class="col-md-8 slide-right row">
+      <div class="col">
+        <app-donut-chart
+          class="d-flex mb-4"
+          [data]="applicationChart"
+        ></app-donut-chart>
+
+        <app-donut-chart
+          class="d-flex mb-4"
+          [data]="counselChart"
+        ></app-donut-chart>
+      </div>
+      <div class="col">
+        <app-donut-chart
+          class="d-flex mb-4"
+          [data]="judgementChart"
+        ></app-donut-chart>
+
+        <app-donut-chart
+          class="d-flex mb-4"
+          [data]="entryChart"
+        ></app-donut-chart>
+      </div>
+    </div>
+
+    <div class="col-md-4 slide-left">
+      <div class="card bg-dark text-white mb-4">
+        <div class="card-header header-color">Counsels to review</div>
+        <div class="card-body">
+          <h5 class="card-title d-flex justify-content-between">
+            <span>Number of Counsels to Review</span>
+            <span class="highlight">{{ counsels?.length }}</span>
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center w-100">
+            <h5 class="card-title mb-0">Review List</h5>
+            <a
+              [routerLink]="['/admin-counsel']"
+              class="text-decoration-none view-more-link"
+              >View More</a
+            >
+          </div>
+
+          <div class="d-flex flex-column my-2">
+            @if(counsels && counsels.length > 0) { @for(counsel of counsels;
+            track counsel.counselId) {
+            <div class="d-flex justify-content-between my-1">
+              <span
+                class="cursor-pointer view-more-link-inverse"
+                [routerLink]="['/admin-counsel', counsel.counselId]"
+                >{{ counsel.firstname + " " + counsel.lastname }}</span
+              >
+              <span>{{ counsel.createdAt | date : "yyyy-MM-dd" }}</span>
+            </div>
+            } } @else {
+            <p class="card-text">No counsels to review.</p>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-dark text-white mb-4">
+        <div class="card-header header-color">Applications to review</div>
+        <div class="card-body">
+          <h5 class="card-title d-flex justify-content-between">
+            <span>Number of Applications to Review</span>
+            <span class="highlight">{{ applications?.length }}</span>
+          </h5>
+        </div>
+        <div class="card-body">
+          <div class="d-flex justify-content-between align-items-center w-100">
+            <h5 class="card-title mb-0">Review List</h5>
+            <a
+              [routerLink]="['/admin-application']"
+              class="text-decoration-none view-more-link"
+              >View More</a
+            >
+          </div>
+          <div class="d-flex flex-column my-2">
+            @if(applications && applications.length > 0) { @for(application of
+            applications; track application.applicationId) {
+            <div class="d-flex justify-content-between my-1">
+              <span
+                class="cursor-pointer view-more-link-inverse"
+                [routerLink]="['/admin-application', application.applicationId]"
+              >
+                {{ application.firstname + " " + application.lastname }}
+              </span>
+              <span>{{ application.createdAt | date : "yyyy-MM-dd" }}</span>
+            </div>
+            } } @else {
+            <p class="card-text">No applications to review.</p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

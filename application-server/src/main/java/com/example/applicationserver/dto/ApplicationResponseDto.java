@@ -1,11 +1,13 @@
 package com.example.applicationserver.dto;
 
 import com.example.applicationserver.client.dto.CounselResponseDto;
+import com.example.applicationserver.client.dto.FileResponseDto;
 import com.example.applicationserver.constants.CommunicationStatus;
 import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -43,5 +45,7 @@ public class ApplicationResponseDto {
     private String updatedBy;
 
     private CounselResponseDto counselInfo;
+
+    private List<FileResponseDto> fileInfo;
 
 }

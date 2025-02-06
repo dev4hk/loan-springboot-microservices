@@ -1,0 +1,150 @@
+<div class="container mt-4 text-light">
+  <div
+    class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
+  >
+    <h1 class="display-4">Welcome to LoanVista!</h1>
+    <p class="lead">Your one-stop solution for all loan needs.</p>
+  </div>
+  <div class="row my-5">
+    <div class="col-md-6 d-flex flex-column slide-right justify-content-center">
+      @if(dataChart) {
+      <app-donut-chart
+        class="d-flex justify-content-center mb-4"
+        [data]="dataChart"
+        [title]="'Balance vs. Repayment Amount'"
+      ></app-donut-chart>
+      } @else {
+      <div
+        style="width: 100%; min-height: 600px; max-height: 100%; margin: 0 auto"
+      >
+        <app-image-slider [slides]="slides"></app-image-slider>
+      </div>
+      }
+    </div>
+    <div class="col-md-6 slide-left">
+      <div class="row">
+        <div class="col-12 mb-4">
+          <div class="card bg-dark text-white h-100">
+            <div class="card-header px-3 header-color">
+              {{ fullName }}'s Loan Application Details
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Current Status</h5>
+              @if (application) {
+              <p class="card-text">{{ application.communicationStatus }}</p>
+              } @else {
+              <p class="card-text">
+                Haven't applied for loan yet?
+                <a class="link ms-2" [routerLink]="['/application']"
+                  >Click here to apply</a
+                >
+              </p>
+              }
+            </div>
+            @if (application) {
+
+            <div class="card-body">
+              <h5 class="card-title">Application Summary</h5>
+              <div class="d-flex flex-column">
+                <div class="d-flex justify-content-between my-1">
+                  <div>Applied At:</div>
+                  <div>{{ application.appliedAt | date : "yyyy-MM-dd" }}</div>
+                </div>
+                <div class="d-flex justify-content-between my-1">
+                  <div>Hope Amount:</div>
+                  <div>{{ application.hopeAmount | currency }}</div>
+                </div>
+                <div class="d-flex justify-content-between my-1">
+                  <div>Contracted At:</div>
+                  <div>
+                    {{
+                      (application.contractedAt | date : "yyyy-MM-dd") ||
+                        "Not contracted"
+                    }}
+                  </div>
+                </div>
+                <div class="d-flex justify-content-between my-1">
+                  <div>Approved Amount:</div>
+                  <div>
+                    {{ (application.approvalAmount | currency) || "No data" }}
+                  </div>
+                </div>
+              </div>
+            </div>
+            }
+          </div>
+        </div>
+        @if (repayments) {
+        <div class="col-12">
+          <div class="card bg-dark text-white h-100">
+            <div class="card-header px-3 header-color">
+              Loan Balance/Repayment Summary
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Payout Summary</h5>
+              <div class="d-flex justify-content-between">
+                <p class="card-text">Total Payout:</p>
+                <p class="card-text">
+                  {{ judgement?.approvalAmount | currency }}
+                </p>
+              </div>
+              <h5 class="card-title">Balance Summary</h5>
+              <div class="d-flex justify-content-between">
+                <p class="card-text">Current Balance:</p>
+                <p class="card-text">
+                  {{ balance?.balance | currency }}
+                </p>
+              </div>
+              <h5 class="card-title">Repayment Summary</h5>
+              <div class="d-flex justify-content-between">
+                <p class="card-text">Total Repayment:</p>
+                <p class="card-text">
+                  {{
+                    (judgement?.total ?? 0) - (balance?.balance ?? 0) | currency
+                  }}
+                </p>
+              </div>
+              <h5 class="card-title">Last Repayment</h5>
+              <div class="d-flex justify-content-between">
+                @if(repayments.length > 0) {
+
+                <p class="card-text">
+                  {{
+                    repayments[repayments.length - 1].createdAt
+                      | date : "yyyy-MM-dd"
+                  }}
+                </p>
+                <p class="card-text">
+                  {{
+                    repayments[repayments.length - 1].repaymentAmount | currency
+                  }}
+                </p>
+                } @else {
+                <p class="card-text">No Data</p>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+        } @if (!application && !counsel) {
+        <div class="col-12">
+          <div class="card bg-dark text-white h-100">
+            <div class="card-header px-3 header-color">
+              Loan Counsel Summary
+            </div>
+            <div class="card-body">
+              <h5 class="card-title">Loan Counsel Summary</h5>
+              <p class="card-text">
+                Haven't talked to any counselor yet?
+                <a class="link ms-2" [routerLink]="['/counsel']"
+                  >Click here for counseling</a
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>

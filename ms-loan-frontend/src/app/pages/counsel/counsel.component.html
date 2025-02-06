@@ -1,0 +1,365 @@
+<div class="container mt-5 text-light">
+  <div
+    class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
+  >
+    <h1 class="display-4">Start Your Journey with LoanVista!</h1>
+    <p class="lead">
+      We're here to assist you with any questions you have before applying for a
+      loan.
+    </p>
+  </div>
+
+  <div class="row my-5">
+    <div class="col-md-7 slide-right">
+      @if(!counsel || isUpdate) {
+      <h2>Contact Our Loan Counselors</h2>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="firstname">First Name</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="firstname"
+                placeholder="Enter your first name"
+                formControlName="firstname"
+                readonly
+              />
+              <div
+                *ngIf="
+                  form.controls['firstname'].invalid &&
+                  (form.controls['firstname'].dirty ||
+                    form.controls['firstname'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("firstname")
+                }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="lastname">Last Name</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="lastname"
+                placeholder="Enter your last name"
+                formControlName="lastname"
+                readonly
+              />
+              <div
+                *ngIf="
+                  form.controls['lastname'].invalid &&
+                  (form.controls['lastname'].dirty ||
+                    form.controls['lastname'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("lastname")
+                }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="cellPhone">Cell Phone</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="cellPhone"
+                placeholder="Enter your cell phone"
+                formControlName="cellPhone"
+              />
+              <div
+                *ngIf="
+                  form.controls['cellPhone'].invalid &&
+                  (form.controls['cellPhone'].dirty ||
+                    form.controls['cellPhone'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("cellPhone")
+                }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="email">Email</label>
+              <input
+                type="email"
+                class="form-control my-1"
+                id="email"
+                placeholder="Enter your email"
+                formControlName="email"
+                readonly
+              />
+              <div
+                *ngIf="
+                  form.controls['email'].invalid &&
+                  (form.controls['email'].dirty ||
+                    form.controls['email'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("email")
+                }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="address1">Address 1</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="address1"
+                placeholder="Enter your address"
+                formControlName="address1"
+              />
+              <div
+                *ngIf="
+                  form.controls['address1'].invalid &&
+                  (form.controls['address1'].dirty ||
+                    form.controls['address1'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("address1")
+                }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="form-group my-3">
+              <label for="address2">Address 2</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="address2"
+                placeholder="Enter additional address info"
+                formControlName="address2"
+              />
+              <div
+                *ngIf="
+                  form.controls['address2'].invalid &&
+                  (form.controls['address2'].dirty ||
+                    form.controls['address2'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("address2")
+                }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-4">
+            <div class="form-group my-3">
+              <label for="city">City</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="city"
+                placeholder="Enter your city"
+                formControlName="city"
+              />
+              <div
+                *ngIf="
+                  form.controls['city'].invalid &&
+                  (form.controls['city'].dirty || form.controls['city'].touched)
+                "
+              >
+                <small class="text-danger">{{ getErrorMessage("city") }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group my-3">
+              <label for="state">State</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="state"
+                placeholder="Enter your state"
+                formControlName="state"
+              />
+              <div
+                *ngIf="
+                  form.controls['state'].invalid &&
+                  (form.controls['state'].dirty ||
+                    form.controls['state'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("state")
+                }}</small>
+              </div>
+            </div>
+          </div>
+
+          <div class="col-md-4">
+            <div class="form-group my-3">
+              <label for="zipCode">Zip Code</label>
+              <input
+                type="text"
+                class="form-control my-1"
+                id="zipCode"
+                placeholder="Enter your zip code"
+                formControlName="zipCode"
+              />
+              <div
+                *ngIf="
+                  form.controls['zipCode'].invalid &&
+                  (form.controls['zipCode'].dirty ||
+                    form.controls['zipCode'].touched)
+                "
+              >
+                <small class="text-danger">{{
+                  getErrorMessage("zipCode")
+                }}</small>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group my-3">
+          <label for="memo">Memo</label>
+          <textarea
+            class="form-control my-1"
+            id="memo"
+            rows="4"
+            placeholder="Enter memo"
+            formControlName="memo"
+          ></textarea>
+          <div
+            *ngIf="
+              form.controls['memo'].invalid &&
+              (form.controls['memo'].dirty || form.controls['memo'].touched)
+            "
+          >
+            <small class="text-danger">{{ getErrorMessage("memo") }}</small>
+          </div>
+        </div>
+
+        <button type="submit" class="btn btn-custom my-3">Submit</button>
+        @if (isUpdate) {
+        <button
+          type="button"
+          (click)="toggleUpdate()"
+          class="btn btn-custom my-3 mx-2"
+        >
+          Cancel
+        </button>
+        }
+      </form>
+      } @else {
+      <div class="card bg-dark text-white">
+        <div
+          class="card-header px-3 header-color d-flex justify-content-between align-items-center"
+        >
+          <span> Loan Counsel Details </span>
+          @if(counsel.communicationStatus !== "COUNSEL_COMPLETE") {
+          <button class="btn btn-custom" (click)="toggleUpdate()">
+            Update
+          </button>
+          }
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <p class="card-text">
+                Applied At:
+                {{ counsel.appliedAt | date : "yyyy-MM-dd" }}
+              </p>
+              <p class="card-text">
+                Communication Status:
+                {{ counsel.communicationStatus }}
+              </p>
+              <p class="card-text">
+                Cell Phone:
+                {{ counsel.cellPhone }}
+              </p>
+              <p class="card-text">
+                Memo:
+                <span class="memo-button" (click)="toggleMemo()">{{
+                  showMemo ? "close details" : "open details"
+                }}</span>
+              </p>
+            </div>
+            <div class="col">
+              <p class="card-text">Email: {{ counsel.email }}</p>
+              <p class="card-text">
+                Created At:
+                {{ counsel.createdAt | date : "yyyy-MM-dd" }}
+              </p>
+              <p class="card-text">Created By: {{ counsel.createdBy }}</p>
+            </div>
+          </div>
+          <div class="memo-detail" [class.open]="showMemo">
+            {{ counsel.memo }}
+          </div>
+        </div>
+      </div>
+      }
+    </div>
+    <div class="col-md-5 slide-left">
+      <div class="faq-wrapper px-4">
+        <div>
+          <h2>Frequently Asked Questions</h2>
+        </div>
+        <div class="faq p-4">
+          <div class="faq-item">
+            <button class="faq-question">How do I apply for a loan?</button>
+            <div class="faq-answer">
+              <p>
+                You can apply for a loan through our online application form.
+                It's quick and easy!
+              </p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">What documents do I need?</button>
+            <div class="faq-answer">
+              <p>
+                You will need a valid ID, proof of income, and bank statements.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              How long does the approval process take?
+            </button>
+            <div class="faq-answer">
+              <p>The approval process typically takes 1-2 business days.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">What are the interest rates?</button>
+            <div class="faq-answer">
+              <p>
+                Interest rates vary depending on the loan type and your credit
+                score. Our counselors can provide more details.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

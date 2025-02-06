@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Schema(
-        name = "Accept Terms Request",
+        name = "AcceptTermsRequestDto",
         description = "Schema to hold accept terms information"
 )
 @NoArgsConstructor

@@ -1,0 +1,190 @@
+<div class="container mt-5 text-light">
+  <div
+    class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
+  >
+    <h1 class="display-4">Loan Repayment</h1>
+    <p class="lead">
+      Manage your loan balance, view repayment history, and submit your
+      repayments below.
+    </p>
+  </div>
+
+  <div class="row my-5">
+    <div class="col-md-7 slide-right">
+      @if (!application?.contractedAt) {
+      <div class="card bg-dark text-white mb-2">
+        <div class="card-header header-color">Loan Details</div>
+        <div class="card-body row">
+          <div class="col">
+            @if(application) {
+            <p class="card-text">Application hasn't been contracted yet</p>
+            } @else {
+            <p class="card-text">
+              Haven't applied for loan yet?
+              <a class="link ms-2" [routerLink]="['/application']"
+                >Click here to apply</a
+              >
+            </p>
+            }
+          </div>
+        </div>
+      </div>
+      } @else {
+
+      <div class="card bg-dark text-white mb-2">
+        <div class="card-header header-color">Loan Details</div>
+        <div class="card-body row">
+          <div class="col">
+            <p class="card-text">
+              Start Date:
+              <strong>{{ judgement?.startDate | date : "yyyy-MM-dd" }}</strong>
+            </p>
+            <p class="card-text">
+              End Date:
+              <strong>{{ judgement?.endDate | date : "yyyy-MM-dd" }}</strong>
+            </p>
+            <p class="card-text">
+              Pay Day:
+              <strong>{{ judgement?.payDay }}</strong>
+            </p>
+            <p class="card-text">
+              Outstanding Balance:
+              <strong>{{ balance?.balance | currency }}</strong>
+            </p>
+          </div>
+          <div class="col">
+            <p class="card-text">
+              Total:
+              <strong>{{ judgement?.total | currency }}</strong>
+            </p>
+            <p class="card-text">
+              Monthly Payment:
+              <strong>{{ judgement?.monthlyPayment | currency }}</strong>
+            </p>
+            <p class="card-text">
+              Number of Payments:
+              <strong>{{ judgement?.numberOfPayments }}</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="card bg-dark text-white mb-2">
+        <div class="card-header px-3 header-color">Submit Repayment</div>
+        <div class="card-body">
+          @if( balance?.balance === 0) {
+          <p class="card-text">
+            You have completed all repayment process. Your outstanding balance
+            is 0.
+          </p>
+          } @else {
+
+          <form [formGroup]="repaymentForm" (ngSubmit)="onSubmitRepayment()">
+            <div class="d-flex align-items-center">
+              <input
+                type="number"
+                id="repaymentAmount"
+                class="form-control bg-secondary text-white me-2 w-50"
+                formControlName="repaymentAmount"
+                placeholder="Enter repayment amount"
+              />
+
+              <button
+                type="submit"
+                class="btn btn-custom-inverse"
+                [disabled]="repaymentForm.invalid || balance?.balance == 0"
+              >
+                Submit
+              </button>
+            </div>
+
+            <div
+              *ngIf="
+                repaymentForm.get('repaymentAmount')?.invalid &&
+                (repaymentForm.get('repaymentAmount')?.dirty ||
+                  repaymentForm.get('repaymentAmount')?.touched)
+              "
+            >
+              <small class="text-danger">
+                {{ getRepaymentErrorMessage("repaymentAmount") }}
+              </small>
+            </div>
+          </form>
+          }
+        </div>
+      </div>
+
+      <div class="card bg-dark text-white">
+        <div class="card-header header-color">Repayment History</div>
+        <div class="card-body">
+          <div *ngIf="repayments && repayments.length > 0; else noRepayment">
+            <ul>
+              <li
+                class="list-group-item bg-dark text-white"
+                *ngFor="let repayment of repayments"
+              >
+                <span>{{ repayment.createdAt | date : "yyyy-MM-dd" }}</span>
+                <span class="ms-3">{{
+                  repayment.repaymentAmount | currency
+                }}</span>
+              </li>
+            </ul>
+          </div>
+          <ng-template #noRepayment>
+            <p class="card-text">No repayment history available.</p>
+          </ng-template>
+        </div>
+      </div>
+      }
+    </div>
+
+    <div class="col-md-5 slide-left">
+      <div class="faq-wrapper px-4">
+        <div>
+          <h2>Frequently Asked Questions</h2>
+        </div>
+        <div class="faq p-4">
+          <div class="faq-item">
+            <button class="faq-question">How do I make a repayment?</button>
+            <div class="faq-answer">
+              <p>
+                Simply enter the amount you wish to repay in the form and click
+                "Submit Repayment."
+              </p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">When is my next repayment due?</button>
+            <div class="faq-answer">
+              <p>
+                Please check your repayment schedule or contact our support for
+                more details.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              How is my outstanding balance calculated?
+            </button>
+            <div class="faq-answer">
+              <p>
+                Your outstanding balance is calculated based on your total loan
+                payout minus all repayments made.
+              </p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question">
+              Can I repay more than the outstanding balance?
+            </button>
+            <div class="faq-answer">
+              <p>
+                No, you cannot repay more than your current outstanding balance.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
