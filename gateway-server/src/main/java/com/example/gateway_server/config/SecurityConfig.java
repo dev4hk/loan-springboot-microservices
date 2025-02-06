@@ -40,6 +40,7 @@ public class SecurityConfig {
                                 .pathMatchers(HttpMethod.POST, COUNSEL.getUri()).hasRole(CUSTOMER.getRole())
                                 .pathMatchers(HttpMethod.GET, COUNSEL.getUri()).hasAnyRole(CUSTOMER.getRole(), MANAGER.getRole())
                                 .pathMatchers(HttpMethod.PUT, COUNSEL.getUri()).hasAnyRole(CUSTOMER.getRole())
+                                .pathMatchers(HttpMethod.PATCH, COUNSEL.getUri()).hasAnyRole(MANAGER.getRole())
                                 .pathMatchers(HttpMethod.DELETE, COUNSEL.getUri()).hasAnyRole(CUSTOMER.getRole(), MANAGER.getRole())
                                 .pathMatchers(ENTRY.getUri()).hasRole(MANAGER.getRole())
                                 .pathMatchers(HttpMethod.POST, FILE_STORAGE.getUri()).hasRole(CUSTOMER.getRole())

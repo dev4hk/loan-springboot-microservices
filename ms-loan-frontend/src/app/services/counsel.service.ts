@@ -58,8 +58,15 @@ export class CounselService {
   }
 
   getStats() {
-      return this.http.get<ResponseDTO<Record<CommunicationStatus, number>>>(
-        `${this.BASE_URL}/stats`
-      );
-    }
+    return this.http.get<ResponseDTO<Record<CommunicationStatus, number>>>(
+      `${this.BASE_URL}/stats`
+    );
+  }
+
+  complete(counselId: number) {
+    return this.http.patch<ResponseDTO<void>>(
+      `${this.BASE_URL}/${counselId}`,
+      {}
+    );
+  }
 }

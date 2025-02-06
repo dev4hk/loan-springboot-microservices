@@ -13,6 +13,14 @@
           class="card-header px-3 header-color d-flex justify-content-between align-items-center"
         >
           <span> Loan Counsel Details </span>
+          @if (counsel?.communicationStatus === "COUNSEL_COMPLETE") {
+          <span>Completed</span>
+          } @else {
+
+          <span class="btn btn-custom-inverse" (click)="complete()"
+            >Mark as Complete</span
+          >
+          }
         </div>
         <div class="card-body">
           <div class="row">

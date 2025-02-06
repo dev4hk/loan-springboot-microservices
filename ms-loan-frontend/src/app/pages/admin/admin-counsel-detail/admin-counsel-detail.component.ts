@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { CounselService } from '../../../services/counsel.service';
 import { CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
+import { CounselResponseDto } from '../../../dtos/counsel-response-dto';
+import { CommunicationStatus } from '../../../dtos/communitation-status';
 
 @Component({
   selector: 'app-admin-counsel-detail',
@@ -12,7 +14,7 @@ import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 })
 export class AdminCounselDetailComponent {
   counselId!: number;
-  counsel: any;
+  counsel?: CounselResponseDto = {};
   showMemo: boolean = false;
 
   constructor(
@@ -53,5 +55,17 @@ export class AdminCounselDetailComponent {
 
   toggleMemo() {
     this.showMemo = !this.showMemo;
+  }
+
+  complete() {
+    this.counselService.complete(this.counselId).subscribe({
+      next: (res) => {
+        if (this.counsel) {
+          this.counsel.communicationStatus =
+            CommunicationStatus.COUNSEL_COMPLETE;
+        }
+      },
+      error: (res) => console.log(res.error),
+    });
   }
 }
