@@ -16,12 +16,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -41,7 +43,7 @@ public class CounselServiceImpl implements ICounselService {
         counsel.setAppliedAt(LocalDateTime.now());
         counsel.setIsDeleted(false);
         Counsel created = counselRepository.save(counsel);
-        sendCommunication(created, CommunicationStatus.COUNSEL_CREATED);
+        sendCommunication(created, CommunicationStatus.COUNSEL_RECEIVED);
         return CounselMapper.mapToCounselResponseDto(created);
     }
 
@@ -160,5 +162,10 @@ public class CounselServiceImpl implements ICounselService {
         logger.info("CounselServiceImpl - getCounselStatistics invoked");
         return counselRepository.getCommunicationStatusStats()
                 .stream().collect(Collectors.toMap(CommunicationStatusStats::getCommunicationStatus, CommunicationStatusStats::getCount));
+    }
+
+    @Override
+    public List<CounselResponseDto> getNewCounsels() {
+        return counselRepository.getNewCounsels(CommunicationStatus.COUNSEL_RECEIVED, PageRequest.of(0, 5));
     }
 }

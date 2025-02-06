@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -132,6 +133,11 @@ public class ApplicationServiceImpl implements IApplicationService {
                     return new BaseException(ResultType.RESOURCE_NOT_FOUND, "Application does not exist", HttpStatus.NOT_FOUND);
                 });
         sendCommunication(application, CommunicationStatus.APPLICATION_REPAYMENT_COMPLETE);
+    }
+
+    @Override
+    public List<ApplicationResponseDto> getNewApplications() {
+        return applicationRepository.getNewApplications(CommunicationStatus.APPLICATION_RECEIVED, PageRequest.of(0, 5));
     }
 
     @Override

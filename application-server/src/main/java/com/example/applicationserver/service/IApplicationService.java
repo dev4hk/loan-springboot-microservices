@@ -36,4 +36,6 @@ public interface IApplicationService {
     Map<CommunicationStatus, Long> getApplicationStatistics();
 
     void complete(Long applicationId);
+
+    List<ApplicationResponseDto> getNewApplications();
 }

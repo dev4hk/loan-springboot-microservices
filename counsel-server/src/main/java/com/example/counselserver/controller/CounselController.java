@@ -21,6 +21,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.example.counselserver.dto.ResponseDTO.ok;
@@ -284,6 +285,37 @@ public class CounselController {
         Map<CommunicationStatus, Long> stats = counselService.getCounselStatistics();
         logger.info("CounselController - getStats finished");
         return ok(stats);
+    }
+
+    @Operation(
+            summary = "New Counsels REST API",
+            description = "REST API to get new Counsels"
+    )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "HTTP Status OK"
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "HTTP Status Bad Request",
+                    content = @Content(
+                            schema = @Schema(implementation = ResponseDTO.class)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "HTTP Status Internal Server Error"
+            )
+    }
+    )
+    @RateLimiter(name = "getNewCounselsRateLimiter")
+    @GetMapping("/new")
+    public ResponseDTO<List<CounselResponseDto>> getNewCounsels() {
+        logger.info("CounselController - getNewCounsels started");
+        List<CounselResponseDto> counsels = counselService.getNewCounsels();
+        logger.info("CounselController - getNewCounsels finished");
+        return ok(counsels);
     }
 
 }

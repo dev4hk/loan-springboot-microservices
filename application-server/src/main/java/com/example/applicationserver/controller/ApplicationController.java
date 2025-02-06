@@ -25,6 +25,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 import static com.example.applicationserver.dto.ResponseDTO.ok;
@@ -409,6 +410,14 @@ public class ApplicationController {
         applicationService.complete(applicationId);
         logger.info("ApplicationController - complete finished");
         return ok();
+    }
+
+    @GetMapping("/new")
+    public ResponseDTO<List<ApplicationResponseDto>> getNewApplications() {
+        logger.info("ApplicationController - getNewApplications started");
+        List<ApplicationResponseDto> applications = applicationService.getNewApplications();
+        logger.info("ApplicationController - getNewApplications finished");
+        return ok(applications);
     }
 
 }
