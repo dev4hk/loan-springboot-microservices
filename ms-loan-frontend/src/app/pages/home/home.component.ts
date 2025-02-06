@@ -117,6 +117,10 @@ export class HomeComponent implements OnInit {
     }
   }
 
+  get fullName() {
+    return this.keycloakService.fullName;
+  }
+
   createChartData() {
     if (this.repayments && this.repayments.length > 0) {
       const totalRepaymentAmount = this.repayments!.reduce(

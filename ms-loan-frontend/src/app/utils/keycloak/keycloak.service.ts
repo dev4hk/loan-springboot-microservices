@@ -52,7 +52,15 @@ export class KeycloakService {
   }
 
   get fullName(): string {
-    return this.keycloak.tokenParsed?.['name'] as string;
+    const name = this.keycloak.tokenParsed?.['name'] as string;
+    return name ? this.capitalizeName(name) : '';
+  }
+
+  capitalizeName(name: string): string {
+    return name
+      .split(' ')
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+      .join(' ');
   }
 
   get email(): string {
