@@ -23,6 +23,8 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Transactional
 @RequiredArgsConstructor
@@ -185,6 +187,14 @@ public class JudgementServiceImpl implements IJudgementService {
         );
         judgement.setCommunicationStatus(communicationStatus);
 
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Map<CommunicationStatus, Long> getJudgementStatistics() {
+        logger.info("JudgementServiceImpl - getJudgementStatistics invoked");
+        return judgementRepository.getCommunicationStatusStats()
+                .stream().collect(Collectors.toMap(CommunicationStatusStats::getCommunicationStatus, CommunicationStatusStats::getCount));
     }
 
     private void sendCommunication(Judgement judgement, ApplicationResponseDto applicationResponseDto, CommunicationStatus communicationStatus) {

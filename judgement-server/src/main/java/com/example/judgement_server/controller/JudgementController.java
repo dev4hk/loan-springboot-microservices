@@ -1,5 +1,6 @@
 package com.example.judgement_server.controller;
 
+import com.example.judgement_server.constants.CommunicationStatus;
 import com.example.judgement_server.constants.ResultType;
 import com.example.judgement_server.dto.GrantAmountDto;
 import com.example.judgement_server.dto.JudgementRequestDto;
@@ -22,6 +23,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 import static com.example.judgement_server.dto.ResponseDTO.ok;
 
@@ -267,6 +270,14 @@ public class JudgementController {
         GrantAmountDto grant = judgementService.grant(judgementId);
         logger.info("JudgementController - grant finished");
         return ok(grant);
+    }
+
+    @GetMapping("/stats")
+    public ResponseDTO<Map<CommunicationStatus, Long>> getStats() {
+        logger.info("JudgementController - getStats started");
+        Map<CommunicationStatus, Long> stats = judgementService.getJudgementStatistics();
+        logger.info("JudgementController - getStats finished");
+        return ok(stats);
     }
 
 }
