@@ -137,7 +137,9 @@ public class ApplicationServiceImpl implements IApplicationService {
 
     @Override
     public List<ApplicationResponseDto> getNewApplications() {
-        return applicationRepository.getNewApplications(CommunicationStatus.APPLICATION_RECEIVED, PageRequest.of(0, 5));
+        logger.info("ApplicationServiceImpl - getNewApplications invoked");
+        List<Application> applications =  applicationRepository.getNewApplications(CommunicationStatus.APPLICATION_RECEIVED, PageRequest.of(0, 5));
+        return applications.stream().map(ApplicationMapper::mapToApplicationResponseDto).toList();
     }
 
     @Override

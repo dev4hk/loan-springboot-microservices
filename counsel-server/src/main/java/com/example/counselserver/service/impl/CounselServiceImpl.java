@@ -166,6 +166,8 @@ public class CounselServiceImpl implements ICounselService {
 
     @Override
     public List<CounselResponseDto> getNewCounsels() {
-        return counselRepository.getNewCounsels(CommunicationStatus.COUNSEL_RECEIVED, PageRequest.of(0, 5));
+        logger.info("CounselServiceImpl - getNewCounsels invoked");
+        List<Counsel> counsels = counselRepository.getNewCounsels(CommunicationStatus.COUNSEL_RECEIVED, PageRequest.of(0, 5));
+        return counsels.stream().map(CounselMapper::mapToCounselResponseDto).toList();
     }
 }

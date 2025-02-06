@@ -21,5 +21,5 @@ public interface CounselRepository extends JpaRepository<Counsel, Long> {
     List<CommunicationStatusStats> getCommunicationStatusStats();
 
     @Query("SELECT c FROM Counsel c WHERE c.communicationStatus = :status ORDER BY c.createdAt DESC")
-    List<CounselResponseDto> getNewCounsels(@Param("status") CommunicationStatus status, Pageable pageable);
+    List<Counsel> getNewCounsels(@Param("status") CommunicationStatus status, Pageable pageable);
 }
