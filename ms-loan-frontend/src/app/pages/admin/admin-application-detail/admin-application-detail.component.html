@@ -103,6 +103,9 @@
             <p class="card-text">
               Created At: {{ judgement.createdAt | date : "yyyy-MM-dd" }}
             </p>
+            <p class="card-text">
+              Communication Status: {{ judgement.communicationStatus }}
+            </p>
           </div>
           <div class="col">
             <p class="card-text">
@@ -187,7 +190,9 @@
 
       @if(repayments?.length === 0) {
       <div class="card bg-dark text-white mb-2">
-        <div class="card-header px-3 header-color">Create/Update Payout</div>
+        <div class="card-header px-3 header-color">
+          {{ entry ? "Update" : "Create" }} Payout
+        </div>
         <div class="card-body row">
           <div class="col">
             <form [formGroup]="entryForm">

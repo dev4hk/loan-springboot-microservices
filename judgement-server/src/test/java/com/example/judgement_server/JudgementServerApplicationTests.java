@@ -14,6 +14,7 @@ import org.junit.jupiter.api.*;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.cloud.stream.function.StreamBridge;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import java.math.BigDecimal;
@@ -36,6 +37,9 @@ public class JudgementServerApplicationTests {
     private ApplicationClient applicationClient;
 
     private JudgementRequestDto judgementRequestDto;
+
+    @MockitoBean
+    private StreamBridge streamBridge;
 
     @BeforeEach
     void setup() {

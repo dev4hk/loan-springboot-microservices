@@ -1,5 +1,6 @@
 package com.example.judgement_server.entity;
 
+import com.example.judgement_server.constants.CommunicationStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.SQLRestriction;
@@ -41,5 +42,8 @@ public class Judgement extends BaseEntity {
     private BigDecimal interest;
 
     private BigDecimal total;
+
+    @Enumerated(EnumType.STRING)
+    private CommunicationStatus communicationStatus;
 
 }

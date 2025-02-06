@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.cloud.stream.function.StreamBridge;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -32,6 +33,9 @@ public class JudgementServiceImplTest {
 
     @Mock
     private ApplicationClient applicationClient;
+
+    @Mock
+    StreamBridge streamBridge;
 
     @InjectMocks
     private JudgementServiceImpl judgementService;
@@ -135,7 +139,7 @@ public class JudgementServiceImplTest {
     @Test
     void testDelete() {
         when(judgementRepository.findById(1L)).thenReturn(Optional.of(judgement));
-
+        when(applicationClient.get(1L)).thenReturn(applicationResponse);
         judgementService.delete(1L);
 
         assertTrue(judgement.getIsDeleted());
@@ -165,6 +169,7 @@ public class JudgementServiceImplTest {
     @Test
     void testGrantApplicationNotFound() {
         when(judgementRepository.findById(1L)).thenReturn(Optional.of(judgement));
+        when(applicationClient.get(1L)).thenReturn(applicationResponse);
         GrantAmountDto expectedGrantAmountDto = GrantAmountDto.builder()
                 .approvalAmount(BigDecimal.valueOf(10000))
                 .applicationId(1L)

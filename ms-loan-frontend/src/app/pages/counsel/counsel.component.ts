@@ -14,6 +14,7 @@ import { CommonModule } from '@angular/common';
 import { CounselService } from '../../services/counsel.service';
 import { KeycloakService } from '../../utils/keycloak/keycloak.service';
 import { CounselResponseDto } from '../../dtos/counsel-response-dto';
+import { CommunicationStatus } from '../../dtos/communitation-status';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -154,6 +155,10 @@ export class CounselComponent implements OnInit {
                 ...snackbarConfig,
               });
               this.counsel = res.data;
+              if (this.counsel) {
+                this.counsel.communicationStatus =
+                  CommunicationStatus.COUNSEL_UPDATED;
+              }
               this.toggleUpdate();
             },
           });
@@ -165,6 +170,10 @@ export class CounselComponent implements OnInit {
               ...snackbarConfig,
             });
             this.counsel = res.data;
+            if (this.counsel) {
+              this.counsel.communicationStatus =
+                CommunicationStatus.COUNSEL_CREATED;
+            }
           },
           error: (res) => {
             console.log(res.error);

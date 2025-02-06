@@ -226,6 +226,10 @@ export class AdminApplicationDetailComponent implements OnInit {
       this.judgementService.create(request).subscribe({
         next: (res) => {
           this.judgement = res.data;
+          if (this.judgement) {
+            this.judgement.communicationStatus =
+              CommunicationStatus.JUDGEMENT_CREATED;
+          }
           this.judgementForm.patchValue({
             approvalAmount: '',
             startDate: '',
@@ -264,6 +268,10 @@ export class AdminApplicationDetailComponent implements OnInit {
         .subscribe({
           next: (res) => {
             this.judgement = res.data;
+            if (this.judgement) {
+              this.judgement.communicationStatus =
+                CommunicationStatus.JUDGEMENT_UPDATED;
+            }
             this.judgementForm.patchValue({
               approvalAmount: '',
               startDate: '',
@@ -346,6 +354,10 @@ export class AdminApplicationDetailComponent implements OnInit {
           'Close',
           snackbarConfig
         );
+        if (this.judgement) {
+          this.judgement.communicationStatus =
+            CommunicationStatus.JUDGEMENT_COMPLETE;
+        }
       },
       error: (res) => {
         this.snackBar.open(
@@ -418,6 +430,10 @@ export class AdminApplicationDetailComponent implements OnInit {
             next: (res) => {
               this.getBalance(+this.applicationId);
               this.entry = res.data;
+              if (this.entry) {
+                this.entry.communicationStatus =
+                  CommunicationStatus.ENTRY_CREATED;
+              }
               this.entryForm.reset();
               this.snackBar.open(
                 'Payout has been created.',
@@ -441,6 +457,10 @@ export class AdminApplicationDetailComponent implements OnInit {
               this.entry!.entryAmount = res.data.afterEntryAmount!;
               this.entry!.updatedAt = res.data.updatedAt!;
               this.entry!.updatedBy = res.data.updatedBy!;
+            }
+            if (this.entry) {
+              this.entry.communicationStatus =
+                CommunicationStatus.ENTRY_UPDATED;
             }
             this.entryForm.reset();
             this.snackBar.open(

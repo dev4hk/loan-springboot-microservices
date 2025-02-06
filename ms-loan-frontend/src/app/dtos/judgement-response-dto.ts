@@ -1,3 +1,5 @@
+import { CommunicationStatus } from './communitation-status';
+
 export interface JudgementResponseDto {
   judgementId?: number;
 
@@ -22,6 +24,8 @@ export interface JudgementResponseDto {
   interest?: number;
 
   total?: number;
+
+  communicationStatus: CommunicationStatus;
 
   createdAt?: string;
 

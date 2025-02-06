@@ -23,6 +23,7 @@ import { TermsAgreementDialogComponent } from '../../components/terms-agreement-
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AcceptTermsRequestDto } from '../../dtos/accept-terms-request-dto';
 import { ApplicationRequestDto } from '../../dtos/application-request-dto';
+import { CommunicationStatus } from '../../dtos/communitation-status';
 
 const snackbarConfig: MatSnackBarConfig = {
   duration: 3000,
@@ -374,6 +375,10 @@ export class ApplicationComponent implements OnInit {
     this.applicationService.contract(applicationId).subscribe({
       next: (res) => {
         this.application!.contractedAt = res.data?.contractedAt;
+        if (this.application) {
+          this.application.communicationStatus =
+            CommunicationStatus.APPLICATION_CONTRACTED;
+        }
         this.snackBar.open(
           'Application contracted successfully!',
           'Close',

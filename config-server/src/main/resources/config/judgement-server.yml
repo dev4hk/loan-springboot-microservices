@@ -18,6 +18,15 @@ spring:
     openfeign:
       circuitbreaker:
         enabled: true
+    function:
+      definition: updateCommunication
+    stream:
+      bindings:
+        sendCommunication-out-0:
+          destination: judgement-send-communication
+        updateCommunication-in-0:
+          destination: judgement-communication-sent
+          group: ${spring.application.name}
 
 management:
   endpoints:

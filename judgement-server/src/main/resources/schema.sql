@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS Judgement (
     monthly_payment DECIMAL(15, 2) NOT NULL,
     number_of_payments INT NOT NULL,
     interest DECIMAL(4, 2) NOT NULL,
+    communication_status VARCHAR(50) DEFAULT NULL,
     created_at date NOT NULL,
     created_by varchar(20) NOT NULL,
     updated_at date DEFAULT NULL,

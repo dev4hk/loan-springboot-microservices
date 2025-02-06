@@ -20,6 +20,7 @@ public class JudgementMapper {
                 .total(judgement.getTotal())
                 .interest(judgement.getInterest())
                 .payDay(judgement.getPayDay())
+                .communicationStatus(judgement.getCommunicationStatus())
                 .createdAt(judgement.getCreatedAt())
                 .createdBy(judgement.getCreatedBy())
                 .updatedAt(judgement.getUpdatedAt())

@@ -1,5 +1,6 @@
 package com.example.judgement_server.dto;
 
+import com.example.judgement_server.constants.CommunicationStatus;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -35,6 +36,8 @@ public class JudgementResponseDto {
     private BigDecimal interest;
 
     private BigDecimal total;
+
+    private CommunicationStatus communicationStatus;
 
     private LocalDateTime createdAt;
 
