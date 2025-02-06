@@ -4,6 +4,7 @@
   <a class="navbar-brand" [routerLink]="[isManager ? '/admin-home' : '/']"
     >LoanVista</a
   >
+
   <button
     class="navbar-toggler"
     type="button"
@@ -15,16 +16,17 @@
   >
     <span class="navbar-toggler-icon"></span>
   </button>
+
   <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
     <ul class="navbar-nav">
-      @if(isManager) {
+      @if (isManager) {
       <li class="nav-item active">
-        <a class="nav-link" [routerLink]="['/admin-home']"
-          >Summary <span class="sr-only">(current)</span></a
-        >
+        <a class="nav-link" [routerLink]="['/admin-home']">Summary</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" [routerLink]="['admin-application']">Application</a>
+        <a class="nav-link" [routerLink]="['/admin-application']"
+          >Application</a
+        >
       </li>
       <li class="nav-item">
         <a class="nav-link" [routerLink]="['/admin-counsel']">Counsel</a>
@@ -32,13 +34,9 @@
       <li class="nav-item">
         <a class="nav-link" [routerLink]="['/admin-terms']">Terms</a>
       </li>
-
       } @else {
-
       <li class="nav-item active">
-        <a class="nav-link" [routerLink]="['/']"
-          >Summary <span class="sr-only">(current)</span></a
-        >
+        <a class="nav-link" [routerLink]="['/']">Summary</a>
       </li>
       <li class="nav-item">
         <a class="nav-link" [routerLink]="['/application']">Application</a>
@@ -51,11 +49,26 @@
       </li>
       }
     </ul>
+
     <ul class="navbar-nav">
       <li class="nav-item">
-        <button class="nav-link btn btn-custom" (click)="logout()">
+        <button
+          mat-button
+          [matMenuTriggerFor]="profileMenu"
+          class="nav-link profile-link"
+        >
           {{ fullname }}
         </button>
+        <mat-menu #profileMenu="matMenu">
+          <button mat-menu-item (click)="manageAccount()">
+            <mat-icon>manage_accounts</mat-icon>
+            <span>Manage</span>
+          </button>
+          <button mat-menu-item (click)="logout()">
+            <mat-icon>logout</mat-icon>
+            <span>Logout</span>
+          </button>
+        </mat-menu>
       </li>
     </ul>
   </div>
