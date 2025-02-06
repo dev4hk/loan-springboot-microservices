@@ -6,7 +6,7 @@
     <p class="lead">Your one-stop solution for all loan needs.</p>
   </div>
   <div class="row my-5">
-    <div class="col-md-6 d-flex flex-column slide-right">
+    <div class="col-md-6 d-flex flex-column slide-right justify-content-center">
       @if(dataChart) {
       <app-donut-chart
         class="d-flex justify-content-center mb-4"
@@ -81,12 +81,48 @@
               Loan Balance/Repayment Summary
             </div>
             <div class="card-body">
-              <h5 class="card-title">Loan Balance Summary</h5>
-              <p class="card-text">Total Payout: $XXXX.XX</p>
+              <h5 class="card-title">Payout Summary</h5>
+              <div class="d-flex justify-content-between">
+                <p class="card-text">Total Payout:</p>
+                <p class="card-text">
+                  {{ judgement?.approvalAmount | currency }}
+                </p>
+              </div>
+              <h5 class="card-title">Balance Summary</h5>
+              <div class="d-flex justify-content-between">
+                <p class="card-text">Current Balance:</p>
+                <p class="card-text">
+                  {{ balance?.balance | currency }}
+                </p>
+              </div>
               <h5 class="card-title">Repayment Summary</h5>
-              <p class="card-text">Total Repayment: $2,000</p>
+              <div class="d-flex justify-content-between">
+                <p class="card-text">Total Repayment:</p>
+                <p class="card-text">
+                  {{
+                    (judgement?.total ?? 0) - (balance?.balance ?? 0) | currency
+                  }}
+                </p>
+              </div>
               <h5 class="card-title">Last Repayment</h5>
-              <p class="card-text">Repayment: $2,000 on XXXX-XX-XX</p>
+              <div class="d-flex justify-content-between">
+                @if(repayments.length > 0) {
+
+                <p class="card-text">
+                  {{
+                    repayments[repayments.length - 1].createdAt
+                      | date : "yyyy-MM-dd"
+                  }}
+                </p>
+                <p class="card-text">
+                  {{
+                    repayments[repayments.length - 1].repaymentAmount | currency
+                  }}
+                </p>
+                } @else {
+                <p class="card-text">No Data</p>
+                }
+              </div>
             </div>
           </div>
         </div>

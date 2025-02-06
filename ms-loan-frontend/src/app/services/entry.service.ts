@@ -4,6 +4,7 @@ import { EntryRequestDto } from '../dtos/entry-request-dto';
 import { ResponseDTO } from '../dtos/response-dto';
 import { EntryResponseDto } from '../dtos/entry-response-dto';
 import { EntryUpdateResponseDto } from '../dtos/entry-update-response-dto';
+import { CommunicationStatus } from '../dtos/communitation-status';
 
 @Injectable({
   providedIn: 'root',
@@ -30,5 +31,10 @@ export class EntryService {
   deleteEntry(entryId: number) {
     const url = `${this.BASE_URL}/${entryId}`;
     return this.http.delete<ResponseDTO<void>>(url);
+  }
+
+  getStats() {
+    const url = `${this.BASE_URL}/stats`;
+    return this.http.get<ResponseDTO<Record<CommunicationStatus, number>>>(url);
   }
 }

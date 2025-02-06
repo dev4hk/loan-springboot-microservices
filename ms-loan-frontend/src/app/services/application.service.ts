@@ -66,4 +66,10 @@ export class ApplicationService {
       `${this.BASE_URL}/stats`
     );
   }
+
+  getNewApplications() {
+    return this.http.get<ResponseDTO<Array<ApplicationResponseDto>>>(
+      `${this.BASE_URL}/new`
+    );
+  }
 }

@@ -68,3 +68,15 @@
     color: #fff;
   }
 }
+
+.view-more-link-inverse {
+  color: #fff;
+  transition: all 0.15s ease-in-out;
+  &:hover {
+    color: #29d0b2;
+  }
+}
+
+.highlight {
+  color: #29d0b2;
+}

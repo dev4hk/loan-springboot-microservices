@@ -4,6 +4,7 @@ import { JudgementRequestDto } from '../dtos/judgement-request-dto';
 import { ResponseDTO } from '../dtos/response-dto';
 import { JudgementResponseDto } from '../dtos/judgement-response-dto';
 import { GrantAmountDto } from '../dtos/grant-amount-dto';
+import { CommunicationStatus } from '../dtos/communitation-status';
 
 @Injectable({
   providedIn: 'root',
@@ -37,6 +38,12 @@ export class JudgementService {
     return this.http.patch<ResponseDTO<GrantAmountDto>>(
       `${this.BASE_URL}/${judgementId}/grants`,
       {}
+    );
+  }
+
+  getStats() {
+    return this.http.get<ResponseDTO<Record<CommunicationStatus, number>>>(
+      `${this.BASE_URL}/stats`
     );
   }
 }

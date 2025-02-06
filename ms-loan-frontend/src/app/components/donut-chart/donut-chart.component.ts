@@ -51,7 +51,7 @@ export class DonutChartComponent implements OnChanges {
     tooltip: {
       enabled: false,
       y: {
-        formatter: (val: number) => `${val}%`,
+        formatter: (val: number) => `${val}`,
         title: { formatter: (seriesName: string) => `${seriesName}:` },
       },
     },
@@ -63,7 +63,7 @@ export class DonutChartComponent implements OnChanges {
             name: { show: true, offsetY: -10, color: '#29D0B2' },
             value: {
               show: true,
-              formatter: (data) => `${data}%`,
+              formatter: (data) => `${data}`,
               color: '#29D0B2',
             },
           },
@@ -104,7 +104,7 @@ export class DonutChartComponent implements OnChanges {
       tooltip: {
         enabled: hasData,
         y: {
-          formatter: (val: number) => (hasData ? `${val}%` : 'No Data'),
+          formatter: (val: number) => (hasData ? `${val}` : 'No Data'),
           title: { formatter: (seriesName: string) => `${seriesName}:` },
         },
       },
@@ -116,7 +116,7 @@ export class DonutChartComponent implements OnChanges {
               name: { show: true, offsetY: -10, color: '#29D0B2' },
               value: {
                 show: true,
-                formatter: (data) => (hasData ? `${data}%` : 'No Data'),
+                formatter: (data) => (hasData ? `${data}` : 'No Data'),
                 color: '#29D0B2',
               },
             },

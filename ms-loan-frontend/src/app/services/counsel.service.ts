@@ -63,6 +63,12 @@ export class CounselService {
     );
   }
 
+  getNewCounsels() {
+    return this.http.get<ResponseDTO<Array<CounselResponseDto>>>(
+      `${this.BASE_URL}/new`
+    );
+  }
+
   complete(counselId: number) {
     return this.http.patch<ResponseDTO<void>>(
       `${this.BASE_URL}/${counselId}`,

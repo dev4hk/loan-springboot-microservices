@@ -172,7 +172,7 @@ export class CounselComponent implements OnInit {
             this.counsel = res.data;
             if (this.counsel) {
               this.counsel.communicationStatus =
-                CommunicationStatus.COUNSEL_CREATED;
+                CommunicationStatus.COUNSEL_RECEIVED;
             }
           },
           error: (res) => {

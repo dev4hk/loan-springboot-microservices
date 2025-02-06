@@ -9,10 +9,14 @@ import { ImageSliderComponent } from '../../components/image-slider/image-slider
 import { homeImageSlides } from '../../components/image-slider/home-image-slides';
 import { ImageSlideInterface } from '../../components/image-slider/image-slide-interface';
 import { RouterModule } from '@angular/router';
-import { KeycloakService } from '../../utils/keycloak/keycloak.service';
 import { CounselResponseDto } from '../../dtos/counsel-response-dto';
 import { CounselService } from '../../services/counsel.service';
 import { CommonModule } from '@angular/common';
+import { BalanceResponseDto } from '../../dtos/balance-response-dto';
+import { JudgementResponseDto } from '../../dtos/judgement-response-dto';
+import { BalanceService } from '../../services/balance.service';
+import { JudgementService } from '../../services/judgement.service';
+import { KeycloakService } from '../../utils/keycloak/keycloak.service';
 
 @Component({
   selector: 'app-home',
@@ -31,12 +35,16 @@ export class HomeComponent implements OnInit {
   applicationId?: number;
   counsel?: CounselResponseDto;
   dataChart?: DonutChartInterface;
+  balance?: BalanceResponseDto;
+  judgement?: JudgementResponseDto;
   slides: Array<ImageSlideInterface> = homeImageSlides;
 
   constructor(
     private applicationService: ApplicationService,
     private counselService: CounselService,
     private repaymentService: RepaymentService,
+    private balanceService: BalanceService,
+    private judgementService: JudgementService,
     private keycloakService: KeycloakService
   ) {}
 
@@ -52,8 +60,11 @@ export class HomeComponent implements OnInit {
       next: (res) => {
         this.application = res.data;
         if (this.application?.applicationId) {
-          this.applicationId = this.applicationId;
-          this.getRepayments(this.applicationId!);
+          this.applicationId = this.application.applicationId;
+          if (this.applicationId) {
+            this.getBalance();
+            this.getJudgement();
+          }
         }
       },
       error: (res) => {
@@ -62,14 +73,30 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  getRepayments(applicationId: number) {
-    this.repaymentService.getRepayments(applicationId).subscribe({
-      next: (res) => {
-        this.repayments = res.data;
-        this.createChartData();
-      },
-      error: (res) => console.log(res.error),
-    });
+  getBalance() {
+    if (this.applicationId) {
+      this.balanceService.get(this.applicationId).subscribe({
+        next: (res) => (this.balance = res.data),
+        error: (res) => {
+          console.log(res.error);
+        },
+        complete: () => {
+          this.getRepayments();
+        },
+      });
+    }
+  }
+
+  getRepayments() {
+    if (this.applicationId) {
+      this.repaymentService.getRepayments(this.applicationId).subscribe({
+        next: (res) => {
+          this.repayments = res.data;
+        },
+        error: (res) => console.log(res.error),
+        complete: () => this.createChartData(),
+      });
+    }
   }
 
   getCounsel() {
@@ -79,18 +106,38 @@ export class HomeComponent implements OnInit {
     });
   }
 
+  getJudgement() {
+    if (this.applicationId) {
+      this.judgementService
+        .getJudgementOfApplication(this.applicationId)
+        .subscribe({
+          next: (res) => (this.judgement = res.data),
+          error: (res) => console.log(res.error),
+        });
+    }
+  }
+
   createChartData() {
-    const balance = this.repayments![this.repayments!.length - 1].balance;
-    const totalRepaymentAmount = this.repayments!.reduce(
-      (sum, repayment) => sum + (repayment.repaymentAmount || 0),
-      0
-    );
-    this.dataChart = {
-      title: 'Current Balance vs. Repayment Amount',
-      data: [
-        { label: 'Balance', number: balance ?? 0 },
-        { label: 'Repayment Amount', number: totalRepaymentAmount },
-      ],
-    };
+    if (this.repayments && this.repayments.length > 0) {
+      const totalRepaymentAmount = this.repayments!.reduce(
+        (sum, repayment) => sum + (repayment.repaymentAmount ?? 0),
+        0
+      );
+      this.dataChart = {
+        title: `${this.keycloakService.fullName}'s Current Balance`,
+        data: [
+          { label: 'Balance', number: this.balance?.balance ?? 0 },
+          { label: 'Repayment', number: totalRepaymentAmount },
+        ],
+      };
+    } else if (this.balance) {
+      this.dataChart = {
+        title: `${this.keycloakService.fullName}'s Current Balance`,
+        data: [
+          { label: 'Balance', number: this.balance.balance ?? 0 },
+          { label: 'Repayment', number: 0 },
+        ],
+      };
+    }
   }
 }
