@@ -1,37 +1,27 @@
 <div class="container mt-5 text-light">
-  <h1 class="display-4">Admin Dashboard</h1>
-  <p class="lead">Monitor all loan applications and repayments.</p>
+  <div
+    class="jumbotron custom-jumbotron text-left px-4 d-flex flex-column justify-content-center"
+  >
+    <h1 class="display-4">Admin Dashboard</h1>
+    <p class="lead">Monitor all loan applications, counsels and repayments.</p>
+  </div>
 
   <div class="row my-5">
-    <div class="col-md-8 slide-right">
-      <div class="row">
-        <div class="col-md-6 d-flex flex-column">
-          <app-donut-chart
-            class="d-flex justify-content-center mb-4"
-            [data]="data1"
-          ></app-donut-chart>
+    <div class="col-md-6 slide-right">
+      <div class="row d-flex flex-column">
+        <app-donut-chart
+          class="d-flex mb-4"
+          [data]="applicationChart"
+        ></app-donut-chart>
 
-          <app-donut-chart
-            class="d-flex justify-content-center mb-4"
-            [data]="data2"
-          ></app-donut-chart>
-        </div>
-
-        <div class="col-md-6 d-flex flex-column">
-          <app-donut-chart
-            class="d-flex justify-content-center mb-4"
-            [data]="data3"
-          ></app-donut-chart>
-
-          <app-donut-chart
-            class="d-flex justify-content-center mb-4"
-            [data]="data4"
-          ></app-donut-chart>
-        </div>
+        <app-donut-chart
+          class="d-flex mb-4"
+          [data]="counselChart"
+        ></app-donut-chart>
       </div>
     </div>
 
-    <div class="col-md-4 slide-left">
+    <div class="col-md-6 slide-left">
       <div class="card bg-dark text-white mb-4">
         <div class="card-header header-color">Counsels to review</div>
         <div class="card-body">

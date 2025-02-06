@@ -1,12 +1,14 @@
-<apx-chart
-  [title]="chartOptions.title"
-  [series]="chartOptions.series"
-  [chart]="chartOptions.chart"
-  [labels]="chartOptions.labels"
-  [responsive]="chartOptions.responsive"
-  [fill]="chartOptions.fill"
-  [tooltip]="chartOptions.tooltip"
-  [plotOptions]="chartOptions.plotOptions"
-  [legend]="chartOptions.legend"
->
-</apx-chart>
+<div class="donut-chart-container">
+  <apx-chart
+    *ngIf="chartOptions"
+    [title]="chartOptions.title"
+    [series]="chartOptions.series"
+    [chart]="chartOptions.chart"
+    [labels]="chartOptions.labels"
+    [responsive]="chartOptions.responsive"
+    [fill]="chartOptions.fill"
+    [tooltip]="chartOptions.tooltip"
+    [plotOptions]="chartOptions.plotOptions"
+    [legend]="chartOptions.legend"
+  ></apx-chart>
+</div>
