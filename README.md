@@ -1,85 +1,104 @@
-# Loan Service Project
+# 💼 Loan Service Project
 
-## Description
-This project is built using Spring Boot & Angular with microservices structure in the backend. It demonstrates how to create modular services that can be independently developed, deployed, monitored.
-The project is to simulate loan processes that includes counsel, application, judgement, entry and repayment.
+A full-stack loan processing system built with **Spring Boot** and **Angular**, showcasing a modular microservices architecture.  
+This project simulates real-world loan workflows — from counseling and application to judgment, approval, repayment, and dashboard tracking — with dedicated roles for both customers and managers.
 
-### Prerequisites
-- Java 21
-- Maven
-- Spring Boot 3.4.1
-- Angular 19.1.4
+---
 
-### Tech Stack
+## 🧰 Tech Stack
 
-#### Backend
-- **Spring Boot**
-- **Spring Cloud**
-- **Resilience4j**
-- **Keycloak**
-- **Grafana**
-- **Loki**
-- **Alloy**
-- **Prometheus**
-- **OpenTelemetry**
-- **Tempo**
-- **Docker**
-- **RabbitMQ**
-- **Kafka**
-- **H2**
+### 🔧 Backend
+- **Spring Boot 3.4.1**
+- **Spring Cloud** – Service discovery & config
+- **Resilience4j** – Circuit breaking and fault tolerance
+- **Keycloak** – Authentication & authorization
+- **RabbitMQ** / **Kafka** – Messaging
+- **H2** – In-memory database (for local/testing)
+- **Docker** – Containerization
+- **Observability Stack**:
+    - **Grafana**, **Loki**, **Alloy**, **Prometheus**, **Tempo**
+    - **OpenTelemetry** – Distributed tracing & metrics
 
-#### Frontend
-- **Angular**
-- **Keycloak-js**
-- **Bootstrap**
-- **ApexCharts.js**
-- **Angular Material**
+### 🎨 Frontend
+- **Angular 19.1.4**
+- **Keycloak-js** – Client-side auth
+- **Angular Material** / **Bootstrap** – UI frameworks
+- **ApexCharts.js** – Data visualization & charts
 
+---
 
-### Architecture Diagram
+## 🎯 Project Highlights
+
+- Modular microservice architecture for each domain (counsel, application, judgment, etc.)
+- Real-time async communication using Kafka/RabbitMQ
+- Role-based access control using Keycloak (Customer / Manager)
+- Real-time monitoring and distributed tracing via OpenTelemetry stack
+- Interactive dashboards and flow-based UI for both customers and managers
+
+---
+
+## ✅ Prerequisites
+
+To run this project locally, you'll need:
+
+- **Java 21**
+- **Maven**
+- **Node.js + npm**
+- **Docker** (for supporting services like Keycloak, RabbitMQ, etc.)
+
+---
+
+## 📐 Architecture
+
+### 🗂️ System Architecture
 ![Architecture Diagram](screenshots/architecture.png)
 
-### Application Flow
+### 🔁 Application Flow
 ![Flowchart Diagram](screenshots/flowchart.png)
 
-### Customer Input Validation
+---
+
+## 👤 Customer Workflow
+
+### ✅ Input Validation
 ![Customer Input Validation Demo](screenshots/customer_input_validation.gif)
 
-### Customer Counsel
+### 💬 Counseling
 ![Customer Counsel Demo](screenshots/customer_counsel.gif)
 
-### Customer Application
+### 📝 Application Submission
 ![Customer Application Demo](screenshots/customer_application.gif)
 
-### Customer Loan Contract
+### 📄 Contract Generation
 ![Customer Loan Contract Demo](screenshots/customer_contract.gif)
 
-### Customer Repayment
+### 💸 Repayment Process
 ![Customer Repayment Demo](screenshots/customer_repayment.gif)
 
-### Customer Repayment Final
+### 📘 Final Repayment Summary
 ![Customer Repayment Final Demo](screenshots/customer_repayment_final.gif)
 
-### Customer Dashboard
+### 📊 Dashboard Overview
 ![Customer Dashboard Demo](screenshots/customer_dashboard.gif)
 
-### Manager Counsel
+---
+
+## 🧑‍💼 Manager Workflow
+
+### 🗣️ Reviewing Counseling Sessions
 ![Manager Counsel Demo](screenshots/manager_counsel.gif)
 
-### Manager Judgement
+### 🧐 Application Judgment
 ![Manager Judgement Demo](screenshots/manager_Judgement.gif)
 
-### Manager Grant Judgement
+### ✅ Approving Loan Decisions
 ![Manager Grant Judgement Demo](screenshots/manager_grant_judgement.gif)
 
-### Manager Payout
+### 💵 Final Payout
 ![Manager Payout Demo](screenshots/manager_payout.gif)
 
-### Manager Application Final
+### 🧾 Final Application Review
 ![Manager Application Final Demo](screenshots/manager_application_final.png)
 
-### Manager Dashboard
+### 📈 Manager Dashboard
 ![Manager Dashboard Demo](screenshots/manager_dashboard.gif)
-
-
-
